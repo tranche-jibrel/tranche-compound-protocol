@@ -10,7 +10,7 @@ import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/SafeERC20.sol";
-import "./TransferETHHelper.sol";
+import "../TransferETHHelper.sol";
 import "./JFeesCollectorStorage.sol";
 import "./IJFeesCollector.sol";
 

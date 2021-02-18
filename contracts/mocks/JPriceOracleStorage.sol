@@ -7,8 +7,6 @@
 pragma solidity 0.6.12;
 
 import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
-import '@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol';
-import "./OrFeedInterface.sol";
 
 contract JPriceOracleStorage is OwnableUpgradeSafe {
 /* WARNING: NEVER RE-ORDER VARIABLES! Always double-check that new variables are added APPEND-ONLY. Re-ordering variables can permanently BREAK the deployed proxy contract.*/
@@ -36,7 +34,4 @@ contract JPriceOracleStorage is OwnableUpgradeSafe {
     mapping(uint256 => Pair) public pairs;
     // mapping for Price Oracle administrators
     mapping (address => bool) public _Admins;
-
-    IUniswapV2Router02 public uniV2Router02;
-    OrFeedInterface public orfeed;
 }

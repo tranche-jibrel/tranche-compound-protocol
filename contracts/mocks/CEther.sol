@@ -2,17 +2,22 @@
 pragma solidity 0.6.12;
 
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/ERC20.sol";
-import "../../TransferETHHelper.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
+import "../TransferETHHelper.sol";
 
 
-contract CETH is ERC20 {
+contract CEther is OwnableUpgradeSafe, ERC20UpgradeSafe {
+    using SafeMath for uint256;
+
     uint256 internal exchangeRate;
-    uint256 internal exchangeRateStored;
+    uint256 internal exchangeRateStoredVal;
     uint256 internal supplyRate;
     uint256 public redeemPercentage;
 
-    constructor(string memory name_, string memory symbol_, uint256 _initialSupply) public ERC20(name_, symbol_) {
-        _mint(msg.sender, _initialSupply * (10 ** 18));
+    function initialize(uint256 _initialSupply) public initializer {
+        OwnableUpgradeSafe.__Ownable_init();
+        ERC20UpgradeSafe.__ERC20_init_unchained("NewJNT", "NJNT");
+        _mint(msg.sender, _initialSupply.mul(10 ** 18));
     }
 
     function mint() external payable {
@@ -56,10 +61,10 @@ contract CETH is ERC20 {
     }
 
     function setExchangeRateStored(uint256 rate) external {
-        exchangeRateStored = rate;
+        exchangeRateStoredVal = rate;
     }
 
     function exchangeRateStored() external view returns (uint) {
-        return exchangeRateStored;
+        return exchangeRateStoredVal;
     }
 }
