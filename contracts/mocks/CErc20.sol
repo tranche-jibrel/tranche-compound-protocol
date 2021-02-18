@@ -21,9 +21,8 @@ contract CErc20 is OwnableUpgradeSafe, ERC20UpgradeSafe {
         _mint(msg.sender, _initialSupply.mul(10 ** 18));
     }
 
-    function mint(uint256 amount) external returns (uint256) {
-        _mint(msg.sender, amount);
-        return amount;
+    function mint(uint256 amount) external {
+        _mint(msg.sender, amount.mul(10**28).div(exchangeRateStoredVal));
     }
 
     function setToken(address _token) external {
@@ -34,7 +33,7 @@ contract CErc20 is OwnableUpgradeSafe, ERC20UpgradeSafe {
         exchangeRate = rate;
     }
 
-    function exchangeRateCurrent() external returns (uint256) {
+    function exchangeRateCurrent() external view returns (uint256) {
         return exchangeRate;
     }
 
@@ -42,7 +41,7 @@ contract CErc20 is OwnableUpgradeSafe, ERC20UpgradeSafe {
         supplyRate = rate;
     }
 
-    function supplyRatePerBlock() external returns (uint256) {
+    function supplyRatePerBlock() external view returns (uint256) {
         return supplyRate;
     }
 
@@ -51,7 +50,7 @@ contract CErc20 is OwnableUpgradeSafe, ERC20UpgradeSafe {
     }
 
     function redeem(uint redeemAmount) external returns (uint) {
-        uint256 amount = redeemAmount + (redeemAmount * redeemPercentage)/100;
+        uint256 amount = redeemAmount.add(redeemAmount.mul( redeemPercentage).div(100));
 
         SafeERC20.safeTransfer(token, msg.sender, amount);
 

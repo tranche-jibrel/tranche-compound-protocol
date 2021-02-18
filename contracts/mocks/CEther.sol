@@ -21,16 +21,17 @@ contract CEther is OwnableUpgradeSafe, ERC20UpgradeSafe {
     }
 
     function mint() external payable {
-        _mint(msg.sender, msg.value);
+        _mint(msg.sender, msg.value.mul(10**28).div(exchangeRateStoredVal));
     }
 
     fallback() external payable {}
+    receive() external payable {}
 
     function setExchangeRateCurrent(uint256 rate) external {
         exchangeRate = rate;
     }
 
-    function exchangeRateCurrent() external returns (uint256) {
+    function exchangeRateCurrent() external view returns (uint256) {
         return exchangeRate;
     }
 
@@ -38,7 +39,7 @@ contract CEther is OwnableUpgradeSafe, ERC20UpgradeSafe {
         supplyRate = rate;
     }
 
-    function supplyRatePerBlock() external returns (uint256) {
+    function supplyRatePerBlock() external view returns (uint256) {
         return supplyRate;
     }
 
@@ -47,7 +48,7 @@ contract CEther is OwnableUpgradeSafe, ERC20UpgradeSafe {
     }
 
     function redeem(uint redeemAmount) external returns (uint) {
-        uint256 amount = redeemAmount + (redeemAmount * redeemPercentage)/100;
+        uint256 amount = redeemAmount.add(redeemAmount.mul( redeemPercentage).div(100));
 
         TransferETHHelper.safeTransferETH(msg.sender, amount);
 

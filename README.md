@@ -31,38 +31,6 @@ Limit is 24 KiB for single contract
             <td><code>1.39 KiB</code></td>
         </tr>
         <tr>
-            <td>JERC20TrancheA</td>
-            <td><code>9.37 KiB</code></td>
-        </tr>
-        <tr>
-            <td>JERC20TrancheB</td>
-            <td><code>9.37 KiB</code></td>
-        </tr>
-        <tr>
-            <td>JETHTrancheA</td>
-            <td><code>9.21 KiB</code></td>
-        </tr>
-        <tr>
-            <td>JETHTrancheB</td>
-            <td><code>9.21 KiB</code></td>
-        </tr>
-		<tr>
-            <td>JFeesCollector</td>
-            <td><code>4.56 KiB</code></td>
-        </tr>
-		<tr>
-            <td>JFeesCollectorStorage</td>
-            <td><code>0.85 KiB</code></td>
-        </tr>
-		<tr>
-            <td>JPriceOracle</td>
-            <td><code>12.70 KiB</code></td>
-        </tr>
-		<tr>
-            <td>JPriceOracleStorage</td>
-            <td><code>1.76 KiB</code></td>
-        </tr>
-        <tr>
             <td>JTrancheAToken</td>
             <td><code>7.46 KiB</code></td>
         </tr>
