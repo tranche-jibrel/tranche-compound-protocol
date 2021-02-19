@@ -17,31 +17,26 @@ contract CEther is OwnableUpgradeSafe, ERC20UpgradeSafe {
     function initialize() public initializer {
         OwnableUpgradeSafe.__Ownable_init();
         ERC20UpgradeSafe.__ERC20_init_unchained("NewJNT", "NJNT");
-        exchangeRateStoredVal = 200335783821833335165549849;
+        exchangeRateStoredVal = 200344979984441318958053512;
     }
 
-    function mint() external payable {
+    function mint() external payable returns (uint256) {
         _mint(msg.sender, msg.value.mul(10**28).div(exchangeRateStoredVal));
+        return msg.value;
     }
 
     fallback() external payable {}
     receive() external payable {}
 
-/*    function setExchangeRateCurrent(uint256 rate) external {
-        exchangeRate = rate;
-    }
-
-    function exchangeRateCurrent() external view returns (uint256) {
-        return exchangeRate;
-    }
-
+/*
     function setSupplyRatePerBlock(uint256 rate) external {
         supplyRate = rate;
     }
 
     function supplyRatePerBlock() external view returns (uint256) {
         return supplyRate;
-    }*/
+    }
+*/
 
     function setRedeemPercentage(uint256 _redeemPercentage) external {
         redeemPercentage = _redeemPercentage;
@@ -56,12 +51,6 @@ contract CEther is OwnableUpgradeSafe, ERC20UpgradeSafe {
     }
 
     function redeemUnderlying(uint redeemAmount) external returns (uint) {
-        /*
-         * We calculate the new total supply and redeemer balance, checking for underflow:
-         *  totalSupplyNew = totalSupply - redeemTokens
-         *  accountTokensNew = accountTokens[redeemer] - redeemTokens
-         */
-        super._burn(msg.sender, redeemAmount);
         redeemFresh(msg.sender, 0, redeemAmount);
         //TransferETHHelper.safeTransferETH(msg.sender, redeemAmount);
         return 0;
@@ -120,10 +109,12 @@ contract CEther is OwnableUpgradeSafe, ERC20UpgradeSafe {
             return fail(Error.MARKET_NOT_FRESH, FailureInfo.REDEEM_FRESHNESS_CHECK);
         }*/
 
-
-        /////////////////////////
-        // EFFECTS & INTERACTIONS
-        // (No safe failures beyond this point)
+        /*
+         * We calculate the new total supply and redeemer balance, checking for underflow:
+         *  totalSupplyNew = totalSupply - redeemTokens
+         *  accountTokensNew = accountTokens[redeemer] - redeemTokens
+         */
+        super._burn(redeemer, redeemTokens);
 
         /*
          * We invoke doTransferOut for the redeemer and the redeemAmount.

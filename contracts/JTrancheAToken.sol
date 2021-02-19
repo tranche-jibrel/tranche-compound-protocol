@@ -5,9 +5,9 @@ import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/ERC20.sol
 import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
-import "./IJTranchesCompound.sol";
+import "./IJTrancheTokens.sol";
 
-contract JTrancheAToken is OwnableUpgradeSafe, ERC20UpgradeSafe, AccessControlUpgradeSafe, IJTranchesCompound {
+contract JTrancheAToken is OwnableUpgradeSafe, ERC20UpgradeSafe, AccessControlUpgradeSafe, IJTrancheTokens {
 	using SafeMath for uint256;
 
     // Create a new role identifier for the minter role

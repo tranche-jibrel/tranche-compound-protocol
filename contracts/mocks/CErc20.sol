@@ -2,7 +2,7 @@
 pragma solidity 0.6.12;
 
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/SafeERC20.sol";
+//import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
 
 contract CErc20 is OwnableUpgradeSafe, ERC20UpgradeSafe {
@@ -13,30 +13,32 @@ contract CErc20 is OwnableUpgradeSafe, ERC20UpgradeSafe {
     //uint256 internal supplyRate;
     uint256 public redeemPercentage;
 
+    address public allowedToken;
     IERC20 public token;
 
     function initialize() public initializer {
         OwnableUpgradeSafe.__Ownable_init();
         ERC20UpgradeSafe.__ERC20_init_unchained("NewJNT", "NJNT");
-        exchangeRateStoredVal = 200335783821833335165549849;
+        exchangeRateStoredVal = 211169029306843123217966361;
     }
 
-    function mint(uint256 amount) external {
-        _mint(msg.sender, amount.mul(10**28).div(exchangeRateStoredVal));
+    function mint(uint256 amount) external returns (uint256){
+        token.transferFrom(msg.sender, address(this), amount);
+        mintFresh(msg.sender, amount);
+        //super._mint(msg.sender, amount);
+        return amount;
     }
 
     function setToken(address _token) external {
-        token = IERC20(_token);
+        allowedToken = _token;
+        token = IERC20(allowedToken);
     }
 
-/*    function setExchangeRateCurrent(uint256 rate) external {
-        exchangeRate = rate;
+    function getAllowedToken() external view returns (address) {
+        return allowedToken;
     }
 
-    function exchangeRateCurrent() external view returns (uint256) {
-        return exchangeRate;
-    }
-
+/*
     function setSupplyRatePerBlock(uint256 rate) external {
         supplyRate = rate;
     }
@@ -52,21 +54,14 @@ contract CErc20 is OwnableUpgradeSafe, ERC20UpgradeSafe {
     function redeem(uint redeemAmount) external returns (uint) {
         uint256 amount = redeemAmount.mul(exchangeRateStoredVal).div(10**28);
 
-        SafeERC20.safeTransfer(token, msg.sender, amount);
+        token.transfer(msg.sender, amount);
 
         return amount;
     }
 
     function redeemUnderlying(uint redeemAmount) external returns (uint) {
-        /*
-         * We calculate the new total supply and redeemer balance, checking for underflow:
-         *  totalSupplyNew = totalSupply - redeemTokens
-         *  accountTokensNew = accountTokens[redeemer] - redeemTokens
-         */
-        super._burn(msg.sender, redeemAmount);
-        //SafeERC20.safeTransfer(token, msg.sender, redeemAmount);
         redeemFresh(msg.sender, 0, redeemAmount);
-        return redeemAmount;
+        return 0;
     }
 
     function setExchangeRateStored(uint256 rate) external {
@@ -78,6 +73,23 @@ contract CErc20 is OwnableUpgradeSafe, ERC20UpgradeSafe {
     }
 
     /**
+     * @notice User supplies assets into the market and receives cTokens in exchange
+     * @dev Assumes interest has already been accrued up to the current block
+     * @param minter The address of the account which is supplying the assets
+     * @param mintAmount The amount of the underlying asset to supply
+     */
+    function mintFresh(address minter, uint mintAmount) internal {
+        uint256 exchangeRateMantissa = exchangeRateStored();
+        /*
+         * We get the current exchange rate and calculate the number of cTokens to be minted:
+         *  mintTokens = actualMintAmount / exchangeRate
+         */
+        uint256 mintTokens = mintAmount.mul(10**28).div(exchangeRateMantissa);
+
+        super._mint(minter, mintTokens);
+    }
+
+    /**
      * @dev Similar to EIP20 transfer, except it handles a False success from `transfer` and returns an explanatory
      *      error code rather than reverting. If caller has not called checked protocol's balance, this may revert due to
      *      insufficient cash held in this contract. If caller has checked protocol's balance prior to this call, and verified
@@ -86,9 +98,8 @@ contract CErc20 is OwnableUpgradeSafe, ERC20UpgradeSafe {
      *      Note: This wrapper safely handles non-standard ERC-20 tokens that do not return a value.
      *            See here: https://medium.com/coinmonks/missing-return-value-bug-at-least-130-tokens-affected-d67bf08521ca
      */
-    function doTransferOut(address payable to, uint amount) internal {
-        //token.transfer(to, amount);
-        SafeERC20.safeTransfer(token, to, amount);
+    function doTransferOut(address to, uint amount) internal {
+        token.transfer(to, amount);
     }
 
     /**
@@ -121,19 +132,17 @@ contract CErc20 is OwnableUpgradeSafe, ERC20UpgradeSafe {
              *  redeemTokens = redeemAmountIn / exchangeRate
              *  redeemAmount = redeemAmountIn
              */
-
             redeemTokens = redeemAmountIn.mul(10**28).div(exchangeRateMantissa);
             redeemAmount = redeemAmountIn;
         }
 
-        /* Verify market's block number equals current block number */
-        /*if (accrualBlockNumber != getBlockNumber()) {
-            return fail(Error.MARKET_NOT_FRESH, FailureInfo.REDEEM_FRESHNESS_CHECK);
-        }*/
-
-        /////////////////////////
-        // EFFECTS & INTERACTIONS
-        // (No safe failures beyond this point)
+        //token.transferFrom(msg.sender, address(this), redeemTokens);
+        /*
+         * We calculate the new total supply and redeemer balance, checking for underflow:
+         *  totalSupplyNew = totalSupply - redeemTokens
+         *  accountTokensNew = accountTokens[redeemer] - redeemTokens
+         */
+        super._burn(redeemer, redeemTokens);
 
         /*
          * We invoke doTransferOut for the redeemer and the redeemAmount.

@@ -49,7 +49,7 @@ function deployMinimumFactory(tokenOwner, factoryOwner, factoryAdmin) {
     });
     expect(this.DAI.address).to.be.not.equal(ZERO_ADDRESS);
     expect(this.DAI.address).to.match(/0x[0-9a-fA-F]{40}/);
-    console.log(`Coll Token Address: ${this.DAI.address}`);
+    console.log(`DAI Address: ${this.DAI.address}`);
     result = await this.DAI.totalSupply();
     expect(result.toString()).to.be.equal(new BN(0).toString());
     console.log("DAI total supply: " + result);
@@ -138,6 +138,11 @@ function deployMinimumFactory(tokenOwner, factoryOwner, factoryAdmin) {
     console.log("CErc20 total supply: " + result);
 
     console.log("CErc20 exch rate: " + (await this.CErc20.exchangeRateStored()).toString());
+
+    tx = await this.CErc20.setToken(this.DAI.address); // just for mockup!!!
+    tok = await this.CErc20.getAllowedToken();
+    console.log(tok);
+    expect(tok).to.be.equal(this.DAI.address);
   });
 
   it('deploys JFeeCollector', async function () {

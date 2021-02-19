@@ -10,7 +10,7 @@ import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/SafeERC20.sol";
 import "./TransferETHHelper.sol";
 import "./IJPriceOracle.sol";
-import "./IJTranchesCompound.sol";
+import "./IJTrancheTokens.sol";
 import "./IJTranchesDeployer.sol";
 import "./JCompoundStorage.sol";
 import "./IJCompound.sol";
@@ -140,8 +140,9 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
      * @dev send an amount of tokens to corresponding compound contract (it takes tokens from this contract). Only allowed token should be sent
      * @param _erc20Contract token contract address
      * @param _numTokensToSupply token amount to be sent
+     * @return mint result
      */
-    function sendErc20ToCompound(address _erc20Contract, uint256 _numTokensToSupply) internal returns (uint) {
+    function sendErc20ToCompound(address _erc20Contract, uint256 _numTokensToSupply) internal returns(uint256) {
         require(cTokenContracts[_erc20Contract] != address(0), "token not accepted");
         // i.e. DAI contract, on Kovan: 0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa
         IERC20 underlying = IERC20(_erc20Contract);
@@ -150,8 +151,9 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
         ICErc20 cToken = ICErc20(cTokenContracts[_erc20Contract]);
 
         underlying.approve(cTokenContracts[_erc20Contract], _numTokensToSupply);
+        require(underlying.allowance(address(this), cTokenContracts[_erc20Contract]) >= _numTokensToSupply, "JCompound: cannot send to compound contract");
 
-        uint mintResult = cToken.mint(_numTokensToSupply);
+        uint256 mintResult = cToken.mint(_numTokensToSupply);
         return mintResult;
     }
 
@@ -273,7 +275,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
         uint256 taAmount = _amount.mul(10**18).div(getTrancheAExchangeRate(_trancheNum));
 
         //Mint trancheA tokens and send them to msg.sender;
-        IJTranchesCompound(trancheAddresses[_trancheNum].ATrancheAddress).mint(msg.sender, taAmount);
+        IJTrancheTokens(trancheAddresses[_trancheNum].ATrancheAddress).mint(msg.sender, taAmount);
         emit TrancheATokenMinted(_trancheNum, msg.sender, _amount, taAmount);
     }
 
@@ -312,10 +314,10 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
             //     cTokenAmount = initCTokenBal;
             require(redeemCErc20Tokens(trancheAddresses[_trancheNum].buyerCoinAddress, taAmount, false) == 0, "JCompound: incorrect answer from cToken");
             newBal = getTokenBalance(trancheAddresses[_trancheNum].buyerCoinAddress);
-            SafeERC20.safeTransferFrom(IERC20(trancheAddresses[_trancheNum].buyerCoinAddress), address(this), msg.sender, newBal.sub(initBal));
+            SafeERC20.safeTransfer(IERC20(trancheAddresses[_trancheNum].buyerCoinAddress), msg.sender, newBal.sub(initBal));
         }
         
-        IJTranchesCompound(trancheAddresses[_trancheNum].ATrancheAddress).burn(_amount);
+        IJTrancheTokens(trancheAddresses[_trancheNum].ATrancheAddress).burn(_amount);
         emit TrancheATokenBurned(_trancheNum, msg.sender, _amount, taAmount);
     }
 
@@ -412,7 +414,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
         }
 
         //Mint trancheB tokens and send them to msg.sender;
-        IJTranchesCompound(trancheAddresses[_trancheNum].BTrancheAddress).mint(msg.sender, tbAmount);
+        IJTrancheTokens(trancheAddresses[_trancheNum].BTrancheAddress).mint(msg.sender, tbAmount);
         emit TrancheBTokenMinted(_trancheNum, msg.sender, _amount, tbAmount);
     }
 
@@ -451,10 +453,10 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
             //     cTokenAmount = initCTokenBal;
             require(redeemCErc20Tokens(trancheAddresses[_trancheNum].buyerCoinAddress, tbAmount, false) == 0, "JCompound: incorrect answer from cToken");
             newBal = getTokenBalance(trancheAddresses[_trancheNum].buyerCoinAddress);
-            SafeERC20.safeTransferFrom(IERC20(trancheAddresses[_trancheNum].buyerCoinAddress), address(this), msg.sender, newBal.sub(initBal));
+            SafeERC20.safeTransfer(IERC20(trancheAddresses[_trancheNum].buyerCoinAddress), msg.sender, newBal.sub(initBal));
         }
         
-        IJTranchesCompound(trancheAddresses[_trancheNum].BTrancheAddress).burn(_amount);
+        IJTrancheTokens(trancheAddresses[_trancheNum].BTrancheAddress).burn(_amount);
         emit TrancheBTokenBurned(_trancheNum, msg.sender, _amount, tbAmount);
     }
 
