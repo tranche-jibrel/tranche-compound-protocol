@@ -1,18 +1,23 @@
 require('dotenv').config();
 const { deployProxy, upgradeProxy } = require('@openzeppelin/truffle-upgrades');
-var myERC20 = artifacts.require("./myERC20.sol");
 var { abi } = require('../build/contracts/myERC20.json');
-var JFeesCollector = artifacts.require("./JFeesCollector.sol");
-var JPriceOracle = artifacts.require("./JPriceOracle.sol");
 
-//compound tranche import
-var JCompound = artifacts.require("./compound/JCompound.sol");
-var JCompoundDeployer = artifacts.require("./compound/JTranchesDeployer.sol");
+var JFeesCollector = artifacts.require("./mocks/JFeesCollector.sol");
+var JPriceOracle = artifacts.require("./mocks/JPriceOracle.sol");
+var myERC20 = artifacts.require("./mocks/myERC20.sol");
+var CErc20 = artifacts.require('./mocks/CErc20.sol');
+var CEther = artifacts.require('./mocks/CEther.sol');
+
+var JCompound = artifacts.require('./JCompound');
+var JTranchesDeployer = artifacts.require('./JTranchesDeployer');
+
+var JTrancheAToken = artifacts.require('./JTrancheAToken');
+var JTrancheBToken = artifacts.require('./JTrancheBToken');
+
 
 module.exports = async (deployer, network, accounts) => {
   const MYERC20_TOKEN_SUPPLY = 5000000;
   const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
-  const emptyString = "0x0000000000000000000000000000000000000000000000000000000000000000";
   //const daiRequest = 100 * Math.pow(10, 18);
   //const DAI_REQUEST_HEX = "0x" + daiRequest.toString(16);
   //const ethRpb = 1 * Math.pow(10, 9);
@@ -20,18 +25,50 @@ module.exports = async (deployer, network, accounts) => {
 
   if (network == "development") {
     const tokenOwner = accounts[0];
-    const myERC20instance = await deployProxy(myERC20, [MYERC20_TOKEN_SUPPLY], { from: tokenOwner });
-    console.log('myERC20 Deployed: ', myERC20instance.address);
+    const myDAIinstance = await deployProxy(myERC20, [MYERC20_TOKEN_SUPPLY], { from: tokenOwner });
+    console.log('myDAI Deployed: ', myDAIinstance.address);
+
+    const mycEthinstance = await deployProxy(CEther, [], { from: tokenOwner });
+    console.log('myCEth Deployed: ', mycEthinstance.address);
+
+    const mycDaiinstance = await deployProxy(CErc20, [], { from: tokenOwner });
+    console.log('myCErc20 Deployed: ', mycDaiinstance.address);
 
     const factoryOwner = accounts[0];
     const JFCinstance = await deployProxy(JFeesCollector, [], { from: factoryOwner });
-    const JFCinst = await JFeesCollector.at(JFCinstance.address);
-    const JFCinstance2 = await upgradeProxy(JFCinst.address, JFeesCollector2, { from: factoryOwner });
-    console.log('JFeesCollector Deployed: ', JFCinst.address);
-    console.log('JFeesCollector2 Deployed: ', JFCinstance2.address);
+    console.log('JFeesCollector Deployed: ', JFCinstance.address);
 
-    const JPOinstance = await deployProxy(JPriceOracle, [ZERO_ADDRESS, ZERO_ADDRESS], { from: factoryOwner, unsafeAllowCustomTypes: true });
+    const JPOinstance = await deployProxy(JPriceOracle, [], { from: factoryOwner });
     console.log('JPriceOracle Deployed: ', JPOinstance.address);
+
+    const JTDeployer = await deployProxy(JTranchesDeployer, [], { from: factoryOwner });
+    console.log("Tranches Deployer: " + JTDeployer.address);
+
+    const JCinstance = await deployProxy(JCompound, [JPOinstance.address, JFCinstance.address, JTDeployer.address], { from: factoryOwner });
+    console.log('JCompound Deployed: ', JCinstance.address);  
+    
+    await JTDeployer.setJCompoundAddress(JCinstance.address, { from: factoryOwner });
+
+    await JCinstance.setCEtherContract(mycEthinstance.address, { from: factoryOwner });
+    await JCinstance.setCTokenContract(myDAIinstance.address, mycDaiinstance.address, { from: factoryOwner });
+
+    await JCinstance.addTrancheToProtocol(ZERO_ADDRESS, "jEthTrancheAToken", "JEA", "jEthTrancheBToken", "JEB", 400, 8, 18, 1, { from: factoryOwner });
+    trParams = await JCinstance.trancheAddresses(0);
+    let EthTrA = await JTrancheAToken.at(trParams.ATrancheAddress);
+    console.log("Eth Tranche A Token Address: " + EthTrA.address);
+    let EthTrB = await JTrancheBToken.at(trParams.BTrancheAddress);
+    console.log("Eth Tranche B Token Address: " + EthTrB.address);
+    console.log("Eth Tranche A Total supply: " + await EthTrA.totalSupply());
+    console.log("Eth Tranche B Total supply: " + await EthTrB.totalSupply());
+
+    await JCinstance.addTrancheToProtocol(myDAIinstance.address, "jDaiTrancheAToken", "JDA", "jDaiTrancheBToken", "JDB", 400, 8, 18, 1, { from: factoryOwner });
+    trParams = await JCinstance.trancheAddresses(1);
+    let DaiTrA = await JTrancheAToken.at(trParams.ATrancheAddress);
+    console.log("Eth Tranche A Token Address: " + DaiTrA.address);
+    let DaiTrB = await JTrancheBToken.at(trParams.BTrancheAddress);
+    console.log("Eth Tranche B Token Address: " + DaiTrB.address);
+    console.log("Eth Tranche A Total supply: " + await DaiTrA.totalSupply());
+    console.log("Eth Tranche B Total supply: " + await DaiTrB.totalSupply());
 
   } else if (network == "kovan") {
     let {
@@ -45,14 +82,6 @@ module.exports = async (deployer, network, accounts) => {
       console.log('Contracts are upgrading, process started: ')
       console.log(`PRICE_ORACLE_ADDRESS=${PRICE_ORACLE_ADDRESS}`)
       console.log(`FEE_COLLECTOR_ADDRESS=${FEE_COLLECTOR_ADDRESS}`)
-      console.log(`LOAN_HELPER_ADDRESS=${LOAN_HELPER_ADDRESS}`)
-      console.log(`LOAN_ADDRESS=${LOAN_ADDRESS}`)
-      console.log(`PROTOCOL_ADDRESS=${PROTOCOL_ADDRESS}`)
-
-      if (IS_LOAN_ADDRESS_UPGRADE == 'true') {
-        const JLinstance = await upgradeProxy(LOAN_ADDRESS, JLoan, { from: factoryOwner, unsafeAllowCustomTypes: true });
-        console.log(`LOAN_ADDRESS=${JLinstance.address}`)
-      }
 
       if (IS_PRICE_ORACLE_ADDRESS_UPGRADE == 'true') {
         const JPOinstance = await upgradeProxy(PRICE_ORACLE_ADDRESS, JPriceOracle, { from: factoryOwner, unsafeAllowCustomTypes: true });
@@ -64,10 +93,6 @@ module.exports = async (deployer, network, accounts) => {
         console.log(`FEE_COLLECTOR_ADDRESS=${JFCinstance.address}`)
       }
 
-      if (IS_PROTOCOL_ADDRESS_UPGRADE == 'true') {
-        const JPinstance = await upgradeProxy(PROTOCOL_ADDRESS, JProtocol, { from: factoryOwner });
-        console.log(`PROTOCOL_ADDRESS=${JPinstance.address}`)
-      }
       //const JLHinstance = await upgradeProxy(LOAN_HELPER_ADDRESS, JLoanHelper, { from: factoryOwner});
       //console.log(`LOAN_HELPER_ADDRESS=${JLHinstance.address}`)
       console.log('contracts are upgraded')

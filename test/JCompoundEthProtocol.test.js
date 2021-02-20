@@ -159,26 +159,26 @@ describe('JProtocol', function () {
   }); 
 
   it("user2 buys some token EthTrB", async function () {
-    console.log("User1 Eth balance: "+ web3.utils.fromWei(await web3.eth.getBalance(user2), "ether") + " ETH");
+    console.log("User2 Eth balance: "+ web3.utils.fromWei(await web3.eth.getBalance(user2), "ether") + " ETH");
     bal = await this.EthTrB.balanceOf(user2);
-    console.log("User1 trB tokens: "+ web3.utils.fromWei(bal, "ether") + " ETA");
+    console.log("User2 trB tokens: "+ web3.utils.fromWei(bal, "ether") + " ETA");
     console.log("JCompound cEth balance: "+ web3.utils.fromWei(await this.CEther.balanceOf(this.JCompound.address), "ether") + " cEth");
     tx = await this.EthTrB.approve(this.JCompound.address, bal, {from: user2});
     tx = await this.JCompound.redeemTrancheBToken(0, bal, {from: user2});
-    console.log("User1 New Eth balance: "+ web3.utils.fromWei(await web3.eth.getBalance(user2), "ether") + " ETH");
-    console.log("User1 trB tokens: "+ web3.utils.fromWei(await this.EthTrA.balanceOf(user2), "ether") + " ETA");
+    console.log("User2 New Eth balance: "+ web3.utils.fromWei(await web3.eth.getBalance(user2), "ether") + " ETH");
+    console.log("User2 trB tokens: "+ web3.utils.fromWei(await this.EthTrA.balanceOf(user2), "ether") + " ETA");
     console.log("JCompound new cEth balance: "+ web3.utils.fromWei(await this.CEther.balanceOf(this.JCompound.address), "ether") + " cEth");
   });
 
-  it("user2 buys some token EthTrB", async function () {
-    console.log("User1 Eth balance: "+ web3.utils.fromWei(await web3.eth.getBalance(user3), "ether") + " ETH");
+  it("user3 buys some token EthTrB", async function () {
+    console.log("User3 Eth balance: "+ web3.utils.fromWei(await web3.eth.getBalance(user3), "ether") + " ETH");
     bal = await this.EthTrB.balanceOf(user3);
-    console.log("User1 trB tokens: "+ web3.utils.fromWei(bal, "ether") + " ETA");
+    console.log("User3 trB tokens: "+ web3.utils.fromWei(bal, "ether") + " ETA");
     console.log("JCompound cEth balance: "+ web3.utils.fromWei(await this.CEther.balanceOf(this.JCompound.address), "ether") + " cEth");
     tx = await this.EthTrB.approve(this.JCompound.address, bal, {from: user3});
     tx = await this.JCompound.redeemTrancheBToken(0, bal, {from: user3});
-    console.log("User1 New Eth balance: "+ web3.utils.fromWei(await web3.eth.getBalance(user3), "ether") + " ETH");
-    console.log("User1 trB tokens: "+ web3.utils.fromWei(await this.EthTrA.balanceOf(user3), "ether") + " ETA");
+    console.log("User3 New Eth balance: "+ web3.utils.fromWei(await web3.eth.getBalance(user3), "ether") + " ETH");
+    console.log("User3 trB tokens: "+ web3.utils.fromWei(await this.EthTrA.balanceOf(user3), "ether") + " ETA");
     console.log("JCompound new cEth balance: "+ web3.utils.fromWei(await this.CEther.balanceOf(this.JCompound.address), "ether") + " cEth");
   });
 });

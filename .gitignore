@@ -7,3 +7,5 @@ dist/*
 Flatters.bat
 package-lock.json
 *.txt
+.openzeppelin/dev*.json
+.openzeppelin/unknown*.json

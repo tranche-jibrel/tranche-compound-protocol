@@ -47,13 +47,14 @@ describe('JProtocol', function () {
   //sendDAItoProtocol(tokenOwner);
 
   sendDAItoUsers(tokenOwner, user1, user2, user3, user4, user5, user6);
+  /*
   it("try to mint some token from mockup", async function () {
     tx = await this.DAI.approve(this.CErc20.address, web3.utils.toWei("1", "ether"), {from: user1});
     tx = await this.CErc20.mint(web3.utils.toWei("1", "ether"), {from: user1});
     console.log("user1 bal: " + web3.utils.fromWei(await this.CErc20.balanceOf(user1), "ether") + " cDai");
     console.log("cerc20 supply: " + web3.utils.fromWei(await this.CErc20.totalSupply(), "ether") + " cDai");
   });
-
+  */
   it("user1 buys some token EthTrA", async function () {
     console.log("is Dai allowed in JCompound: "+ await this.JCompound.isCTokenAllowed(this.DAI.address));
     trParams = await this.JCompound.trancheAddresses(1);

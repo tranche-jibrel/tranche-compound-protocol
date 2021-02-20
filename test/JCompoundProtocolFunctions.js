@@ -20,8 +20,6 @@ const {
   ZERO_ADDRESS
 } = constants;
 
-const FAKE_ADDRESS = "0xc81f5980EA3ABFfe06A3cedB3A68db07469B9390";
-
 const myERC20 = contract.fromArtifact("myERC20");
 const CEther = contract.fromArtifact("CEther");
 const CErc20 = contract.fromArtifact("CErc20");
