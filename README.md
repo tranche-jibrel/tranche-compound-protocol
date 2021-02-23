@@ -7,7 +7,7 @@ b) call setCEtherContract(address payable _cEtherContract) (cETH address) and se
 c) set jCompound address in jTranchesDeployer contract
 
 c) call addTrancheToProtocol(address _erc20Contract, string memory _nameA, string memory _symbolA, 
-            string memory _nameB, string memory _symbolB, uint256 _fixedRpb, uint8 _cTokenDec, uint8 _underlyingDec, uint256 _initBSupply) to set a new tranche set (_initBSupply is internally multiplied by 10 ** 18, it could be set to 1 just to have a total supply not equal to zero).
+            string memory _nameB, string memory _symbolB, uint256 _fixedRpb, uint8 _cTokenDec, uint8 _underlyingDec) to set a new tranche set
 
 Users can now call buy and redeem functions for tranche A & B tokens
 
@@ -24,11 +24,11 @@ Limit is 24 KiB for single contract
     <tbody>
         <tr>
             <td>JCompound</td>
-            <td><code>15.20 KiB</code></td>
+            <td><code>14.57 KiB</code></td>
         </tr>
         <tr>
             <td>JCompoundStorage</td>
-            <td><code>1.39 KiB</code></td>
+            <td><code>1.41 KiB</code></td>
         </tr>
         <tr>
             <td>JTrancheAToken</td>
@@ -40,7 +40,7 @@ Limit is 24 KiB for single contract
         </tr>
         <tr>
             <td>JTranchesDeployer</td>
-            <td><code>18.86 KiB</code></td>
+            <td><code>18.08 KiB</code></td>
         </tr>
 		<tr>
             <td>TransferETHHelper</td>

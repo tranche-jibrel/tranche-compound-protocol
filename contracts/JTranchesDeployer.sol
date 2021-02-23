@@ -40,11 +40,10 @@ contract JTranchesDeployer is OwnableUpgradeSafe, IJTranchesDeployer {
         return address(jTrancheA);
     }
 
-    function deployNewTrancheBTokens(string memory _nameB, string memory _symbolB, address _sender, uint256 _initialSupply) public override onlyProtocol returns (address) {
+    function deployNewTrancheBTokens(string memory _nameB, string memory _symbolB, address _sender) public override onlyProtocol returns (address) {
         JTrancheBToken jTrancheB = new JTrancheBToken();
         jTrancheB.initialize(_nameB, _symbolB);
         jTrancheB.setJCompoundMinter(msg.sender);
-        jTrancheB.mint(msg.sender, _initialSupply.mul(10 ** 18));
         jTrancheB.transferOwnership(_sender);
         return address(jTrancheB);
     }

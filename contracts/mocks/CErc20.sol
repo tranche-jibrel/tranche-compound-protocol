@@ -10,7 +10,7 @@ contract CErc20 is OwnableUpgradeSafe, ERC20UpgradeSafe {
 
     //uint256 internal exchangeRate;
     uint256 internal exchangeRateStoredVal;
-    //uint256 internal supplyRate;
+    uint256 public supplyRate;
     uint256 public redeemPercentage;
 
     address public allowedToken;
@@ -18,8 +18,10 @@ contract CErc20 is OwnableUpgradeSafe, ERC20UpgradeSafe {
 
     function initialize() public initializer {
         OwnableUpgradeSafe.__Ownable_init();
-        ERC20UpgradeSafe.__ERC20_init_unchained("NewJNT", "NJNT");
+        ERC20UpgradeSafe.__ERC20_init_unchained("cToken", "cToken");
         exchangeRateStoredVal = 211169029306843123217966361;
+        supplyRate = 30368789660;
+        super._mint(msg.sender, uint(1000000) ** 18);
     }
 
     function mint(uint256 amount) external returns (uint256){
@@ -37,7 +39,6 @@ contract CErc20 is OwnableUpgradeSafe, ERC20UpgradeSafe {
     function getAllowedToken() external view returns (address) {
         return allowedToken;
     }
-
 /*
     function setSupplyRatePerBlock(uint256 rate) external {
         supplyRate = rate;

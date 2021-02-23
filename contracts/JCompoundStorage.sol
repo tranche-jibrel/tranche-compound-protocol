@@ -23,6 +23,7 @@ contract JCompoundStorage is OwnableUpgradeSafe {
     struct TrancheParameters {
         uint256 trancheAFixedRPB;
         uint256 genesisBlock;
+        uint256 initialCompoundPrice;
         uint16 redemptionPercentage;    // percentage with 2 decimals (divided by 10000, i.e. 95% is 9500)
         uint8 cTokenDecimals;
         uint8 underlyingDecimals;

@@ -98,7 +98,7 @@ function deployMinimumFactory(tokenOwner, factoryOwner, factoryAdmin) {
     console.log("CEther owner address: " + result);
 
     result = await this.CEther.totalSupply();
-    expect(result.toString()).to.be.equal(new BN(0).toString());
+    //expect(result.toString()).to.be.equal(new BN(0).toString());
     console.log("CEther total supply: " + result);
 
     console.log("CEther exch rate: " + (await this.CEther.exchangeRateStored()).toString());
@@ -132,7 +132,7 @@ function deployMinimumFactory(tokenOwner, factoryOwner, factoryAdmin) {
     console.log("CErc20 owner address: " + result);
 
     result = await this.CErc20.totalSupply();
-    expect(result.toString()).to.be.equal(new BN(0).toString());
+    //expect(result.toString()).to.be.equal(new BN(0).toString());
     console.log("CErc20 total supply: " + result);
 
     console.log("CErc20 exch rate: " + (await this.CErc20.exchangeRateStored()).toString());
@@ -261,7 +261,7 @@ function deployMinimumFactory(tokenOwner, factoryOwner, factoryAdmin) {
       from: factoryOwner
     });
 
-    tx = await this.JCompound.addTrancheToProtocol(ZERO_ADDRESS, "jEthTrancheAToken", "JEA", "jEthTrancheBToken", "JEB", 400, 8, 18, 1, {
+    tx = await this.JCompound.addTrancheToProtocol(ZERO_ADDRESS, "jEthTrancheAToken", "JEA", "jEthTrancheBToken", "JEB", 400, 8, 18, {
       from: factoryOwner
     });
     trParams = await this.JCompound.trancheAddresses(0);
@@ -269,10 +269,8 @@ function deployMinimumFactory(tokenOwner, factoryOwner, factoryAdmin) {
     console.log("Eth Tranche A Token Address: " + this.EthTrA.address);
     this.EthTrB = await JTrancheBToken.at(trParams.BTrancheAddress);
     console.log("Eth Tranche B Token Address: " + this.EthTrB.address);
-    console.log("Eth Tranche A Total supply: " + await this.EthTrA.totalSupply());
-    console.log("Eth Tranche B Total supply: " + await this.EthTrB.totalSupply());
 
-    tx = await this.JCompound.addTrancheToProtocol(this.DAI.address, "jDaiTrancheAToken", "JDA", "jDaiTrancheBToken", "JDB", 400, 8, 18, 1, {
+    tx = await this.JCompound.addTrancheToProtocol(this.DAI.address, "jDaiTrancheAToken", "JDA", "jDaiTrancheBToken", "JDB", 400, 8, 18, {
       from: factoryOwner
     });
     trParams = await this.JCompound.trancheAddresses(1);
@@ -280,25 +278,38 @@ function deployMinimumFactory(tokenOwner, factoryOwner, factoryAdmin) {
     console.log("Dai Tranche A Token Address: " + this.DaiTrA.address);
     this.DaiTrB = await JTrancheBToken.at(trParams.BTrancheAddress);
     console.log("Dai Tranche B Token Address: " + this.DaiTrB.address);
-    console.log("Dai Tranche A Total supply: " + await this.DaiTrA.totalSupply());
-    console.log("Dai Tranche B Total supply: " + await this.DaiTrB.totalSupply());
   });
 }
 
 
-
-function sendDAItoProtocol(tokenOwner) {
+function sendcETHtoProtocol(tokenOwner) {
 
   it('send some DAI to JCompound', async function () {
-    tx = await this.DAI.transfer(this.JCompound.address, web3.utils.toWei('1000000', 'ether'), {
+    tx = await this.CEther.transfer(this.JCompound.address, web3.utils.toWei('1', 'ether'), {
       from: tokenOwner
     });
     console.log("Gas to transfer DAI to JCompound: " + tx.receipt.gasUsed);
     // totcost = tx.receipt.gasUsed * GAS_PRICE;
     // console.log("transfer token costs: " + web3.utils.fromWei(totcost.toString(), 'ether') + " ETH");
-    protBal = await this.DAI.balanceOf(this.JCompound.address);
+    protBal = await this.CEther.balanceOf(this.JCompound.address);
     console.log(`protocol DAI Balance: ${web3.utils.fromWei(protBal, "ether")} DAI`)
-    expect(web3.utils.fromWei(protBal, "ether")).to.be.equal(new BN(1000000).toString());
+    expect(web3.utils.fromWei(protBal, "ether")).to.be.equal(new BN(1).toString());
+  });
+}
+
+
+function sendcDAItoProtocol(tokenOwner) {
+
+  it('send some DAI to JCompound', async function () {
+    tx = await this.CErc20.transfer(this.JCompound.address, web3.utils.toWei('10', 'ether'), {
+      from: tokenOwner
+    });
+    console.log("Gas to transfer DAI to JCompound: " + tx.receipt.gasUsed);
+    // totcost = tx.receipt.gasUsed * GAS_PRICE;
+    // console.log("transfer token costs: " + web3.utils.fromWei(totcost.toString(), 'ether') + " ETH");
+    protBal = await this.CErc20.balanceOf(this.JCompound.address);
+    console.log(`protocol DAI Balance: ${web3.utils.fromWei(protBal, "ether")} DAI`)
+    expect(web3.utils.fromWei(protBal, "ether")).to.be.equal(new BN(10).toString());
   });
 }
 
@@ -361,6 +372,7 @@ function sendDAItoUsers(tokenOwner, user1, user2, user3, user4, user5, user6) {
 
 module.exports = {
   deployMinimumFactory,
-  sendDAItoProtocol,
+  sendcETHtoProtocol,
+  sendcDAItoProtocol,
   sendDAItoUsers
 };

@@ -11,13 +11,15 @@ contract CEther is OwnableUpgradeSafe, ERC20UpgradeSafe {
 
     //uint256 internal exchangeRate;
     uint256 internal exchangeRateStoredVal;
-    //uint256 internal supplyRate;
+    uint256 public supplyRate;
     uint256 public redeemPercentage;
 
     function initialize() public initializer {
         OwnableUpgradeSafe.__Ownable_init();
-        ERC20UpgradeSafe.__ERC20_init_unchained("NewJNT", "NJNT");
+        ERC20UpgradeSafe.__ERC20_init_unchained("cETH", "cETH");
         exchangeRateStoredVal = 200344979984441318958053512;
+        supplyRate = 975104455;
+        super._mint(msg.sender, uint(1000000) ** 18);
     }
 
     function mint() external payable returns (uint256) {
@@ -27,7 +29,6 @@ contract CEther is OwnableUpgradeSafe, ERC20UpgradeSafe {
 
     fallback() external payable {}
     receive() external payable {}
-
 /*
     function setSupplyRatePerBlock(uint256 rate) external {
         supplyRate = rate;
@@ -36,12 +37,11 @@ contract CEther is OwnableUpgradeSafe, ERC20UpgradeSafe {
     function supplyRatePerBlock() external view returns (uint256) {
         return supplyRate;
     }
-*/
 
     function setRedeemPercentage(uint256 _redeemPercentage) external {
         redeemPercentage = _redeemPercentage;
     }
-
+*/
     function redeem(uint redeemAmount) external returns (uint) {
         uint256 amount = redeemAmount.mul(exchangeRateStoredVal).div(10**28);
 
