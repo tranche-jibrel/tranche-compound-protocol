@@ -10,7 +10,7 @@ contract CErc20 is OwnableUpgradeSafe, ERC20UpgradeSafe {
 
     //uint256 internal exchangeRate;
     uint256 internal exchangeRateStoredVal;
-    uint256 public supplyRate;
+    //uint256 public supplyRate;
     uint256 public redeemPercentage;
 
     address public allowedToken;
@@ -19,9 +19,10 @@ contract CErc20 is OwnableUpgradeSafe, ERC20UpgradeSafe {
     function initialize() public initializer {
         OwnableUpgradeSafe.__Ownable_init();
         ERC20UpgradeSafe.__ERC20_init_unchained("cToken", "cToken");
-        exchangeRateStoredVal = 211169029306843123217966361;
-        supplyRate = 30368789660;
-        super._mint(msg.sender, uint(1000000) ** 18);
+        //_setupDecimals(8);
+        exchangeRateStoredVal = 21116902930684312;
+        //supplyRate = 30368789660;
+        super._mint(msg.sender, uint(1000).mul(10 ** 8));
     }
 
     function mint(uint256 amount) external returns (uint256){
@@ -53,7 +54,7 @@ contract CErc20 is OwnableUpgradeSafe, ERC20UpgradeSafe {
     }
 
     function redeem(uint redeemAmount) external returns (uint) {
-        uint256 amount = redeemAmount.mul(exchangeRateStoredVal).div(10**28);
+        uint256 amount = redeemAmount.mul(exchangeRateStoredVal).div(10**18);
 
         token.transfer(msg.sender, amount);
 
@@ -85,7 +86,7 @@ contract CErc20 is OwnableUpgradeSafe, ERC20UpgradeSafe {
          * We get the current exchange rate and calculate the number of cTokens to be minted:
          *  mintTokens = actualMintAmount / exchangeRate
          */
-        uint256 mintTokens = mintAmount.mul(10**28).div(exchangeRateMantissa);
+        uint256 mintTokens = mintAmount.mul(10**18).div(exchangeRateMantissa);
 
         super._mint(minter, mintTokens);
     }
@@ -133,7 +134,7 @@ contract CErc20 is OwnableUpgradeSafe, ERC20UpgradeSafe {
              *  redeemTokens = redeemAmountIn / exchangeRate
              *  redeemAmount = redeemAmountIn
              */
-            redeemTokens = redeemAmountIn.mul(10**28).div(exchangeRateMantissa);
+            redeemTokens = redeemAmountIn.mul(10**18).div(exchangeRateMantissa);
             redeemAmount = redeemAmountIn;
         }
 

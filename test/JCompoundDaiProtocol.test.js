@@ -72,7 +72,7 @@ describe('JProtocol', function () {
     console.log("User1 trA tokens: "+ web3.utils.fromWei(await this.DaiTrA.balanceOf(user1), "ether") + " DTA");
     console.log("CErc20 DAI balance: "+ web3.utils.fromWei(await this.DAI.balanceOf(this.CErc20.address), "ether") + " DAI");
     console.log("JCompound DAI balance: "+ web3.utils.fromWei(await this.DAI.balanceOf(this.JCompound.address), "ether") + " DAI");
-    console.log("JCompound cDAI balance: "+ web3.utils.fromWei(await this.CErc20.balanceOf(this.JCompound.address), "ether") + " cDai");
+    console.log("JCompound cDAI balance: "+ web3.utils.fromWei(await this.JCompound.getTokenBalance(this.CEther.address), "ether") + " cDai");
     console.log("TrA price: " +  web3.utils.fromWei(await this.JCompound.getTrancheAExchangeRate(1), "ether"));
     console.log("Compound Price: " + await this.JCompound.getCompoundPrice(1));
   }); 
@@ -84,7 +84,7 @@ describe('JProtocol', function () {
     console.log("User2 New DAI balance: "+ web3.utils.fromWei(await this.DAI.balanceOf(user2), "ether") + " DAI");
     console.log("User2 trA tokens: "+ web3.utils.fromWei(await this.DaiTrA.balanceOf(user2), "ether") + " DTA");
     console.log("CErc20 DAI balance: "+ web3.utils.fromWei(await this.DAI.balanceOf(this.CErc20.address), "ether") + " DAI");
-    console.log("JCompound DAI balance: "+ web3.utils.fromWei(await this.CErc20.balanceOf(this.JCompound.address), "ether") + " cDai");
+    console.log("JCompound DAI balance: "+ web3.utils.fromWei(await this.JCompound.getTokenBalance(this.CEther.address), "ether") + " cDai");
     console.log("TrA price: " +  web3.utils.fromWei(await this.JCompound.getTrancheAExchangeRate(1), "ether"));
   }); 
 
@@ -95,7 +95,7 @@ describe('JProtocol', function () {
     console.log("User3 New DAI balance: "+ web3.utils.fromWei(await this.DAI.balanceOf(user3), "ether") + " DAI");
     console.log("User3 trA tokens: "+ web3.utils.fromWei(await this.DaiTrA.balanceOf(user3), "ether") + " DTA");
     console.log("CErc20 DAI balance: "+ web3.utils.fromWei(await this.DAI.balanceOf(this.CErc20.address), "ether") + " DAI");
-    console.log("JCompound DAI balance: "+ web3.utils.fromWei(await this.CErc20.balanceOf(this.JCompound.address), "ether") + " cDai");
+    console.log("JCompound DAI balance: "+ web3.utils.fromWei(await this.JCompound.getTokenBalance(this.CEther.address), "ether") + " cDai");
     console.log("TrA price: " +  web3.utils.fromWei(await this.JCompound.getTrancheAExchangeRate(1), "ether"));
   }); 
 
@@ -109,7 +109,7 @@ describe('JProtocol', function () {
     console.log("User1 New DAI balance: "+ web3.utils.fromWei(await this.DAI.balanceOf(user1), "ether") + " DAI");
     console.log("User1 trB tokens: "+ web3.utils.fromWei(await this.DaiTrB.balanceOf(user1), "ether") + " DTB");
     console.log("CErc20 DAI balance: "+ web3.utils.fromWei(await this.DAI.balanceOf(this.CErc20.address), "ether") + " DAI");
-    console.log("JCompound DAI balance: "+ web3.utils.fromWei(await this.CErc20.balanceOf(this.JCompound.address), "ether") + " cDai");
+    console.log("JCompound DAI balance: "+ web3.utils.fromWei(await this.JCompound.getTokenBalance(this.CEther.address), "ether") + " cDai");
     console.log("TrB price: " + web3.utils.fromWei(await this.JCompound.getTrancheBExchangeRate(1), "ether"));
     console.log("Compound price: " + web3.utils.fromWei(await this.JCompound.getCompoundPrice(1), "ether"));
     console.log("TrA price: " +  web3.utils.fromWei(await this.JCompound.getTrancheAExchangeRate(1), "ether"));
@@ -124,7 +124,7 @@ describe('JProtocol', function () {
     console.log("User2 New DAI balance: "+ web3.utils.fromWei(await this.DAI.balanceOf(user2), "ether") + " DAI");
     console.log("User2 trB tokens: "+ web3.utils.fromWei(await this.DaiTrB.balanceOf(user2), "ether") + " DTB");
     console.log("CErc20 DAI balance: "+ web3.utils.fromWei(await this.DAI.balanceOf(this.CErc20.address), "ether") + " DAI");
-    console.log("JCompound DAI balance: "+ web3.utils.fromWei(await this.CErc20.balanceOf(this.JCompound.address), "ether") + " cDai");
+    console.log("JCompound DAI balance: "+ web3.utils.fromWei(await this.JCompound.getTokenBalance(this.CEther.address), "ether") + " cDai");
     console.log("TrB price: " + web3.utils.fromWei(await this.JCompound.getTrancheBExchangeRate(1), "ether"));
     console.log("Compound price: " + web3.utils.fromWei(await this.JCompound.getCompoundPrice(1), "ether"));
   }); 
@@ -136,7 +136,7 @@ describe('JProtocol', function () {
     console.log("User3 New DAI balance: "+ web3.utils.fromWei(await this.DAI.balanceOf(user3), "ether") + " DAI");
     console.log("User3 trB tokens: "+ web3.utils.fromWei(await this.DaiTrB.balanceOf(user3), "ether") + " DTB");
     console.log("CErc20 DAI balance: "+ web3.utils.fromWei(await this.DAI.balanceOf(this.CErc20.address), "ether") + " DAI");
-    console.log("JCompound DAI balance: "+ web3.utils.fromWei(await this.CErc20.balanceOf(this.JCompound.address), "ether") + " cDai");
+    console.log("JCompound DAI balance: "+ web3.utils.fromWei(await this.JCompound.getTokenBalance(this.CEther.address), "ether") + " cDai");
     console.log("TrB price: " + web3.utils.fromWei(await this.JCompound.getTrancheBExchangeRate(1), "ether"));
     console.log("Compound price: " + web3.utils.fromWei(await this.JCompound.getCompoundPrice(1), "ether"));
     console.log("TrA price: " +  web3.utils.fromWei(await this.JCompound.getTrancheAExchangeRate(1), "ether"));
@@ -147,8 +147,8 @@ describe('JProtocol', function () {
     console.log("Actual Block: " + block.number);
     newBlock = block.number + 100;
     await time.advanceBlockTo(newBlock);
-    //await this.CErc20.setExchangeRateStored(new BN(211169029306843124117966361));
-    //console.log("Compound New price: " + await this.CErc20.exchangeRateStored());
+    await this.CErc20.setExchangeRateStored(new BN(21116902931684312));
+    console.log("Compound New price: " + await this.CErc20.exchangeRateStored());
   });
 
   it("user1 redeems token EthTrA", async function () {
@@ -156,7 +156,7 @@ describe('JProtocol', function () {
     console.log("User1 Dai balance: "+ oldBal + " DAI");
     bal = await this.DaiTrA.balanceOf(user1);
     console.log("User1 trA tokens: "+ web3.utils.fromWei(bal, "ether") + " DTA");
-    console.log("JCompound cDai balance: "+ web3.utils.fromWei(await this.CErc20.balanceOf(this.JCompound.address), "ether") + " cDai");
+    console.log("JCompound cDai balance: "+ web3.utils.fromWei(await this.JCompound.getTokenBalance(this.CEther.address), "ether") + " cDai");
     tx = await this.DaiTrA.approve(this.JCompound.address, bal, {from: user1});
     console.log("TrA price: " +  web3.utils.fromWei(await this.JCompound.getTrancheAExchangeRate(1), "ether"));
     tx = await this.JCompound.redeemTrancheAToken(1, bal, {from: user1});
@@ -166,7 +166,7 @@ describe('JProtocol', function () {
     console.log("User1 trA tokens: "+ web3.utils.fromWei(bal, "ether") + " DTA");
     console.log("User1 trA interest: "+ (newBal - oldBal) + " DAI");
     console.log("CErc20 DAI balance: "+ web3.utils.fromWei(await this.DAI.balanceOf(this.CErc20.address), "ether") + " DAI");
-    console.log("JCompound new DAI balance: "+ web3.utils.fromWei(await this.CErc20.balanceOf(this.JCompound.address), "ether") + " cDai");
+    console.log("JCompound new DAI balance: "+ web3.utils.fromWei(await this.JCompound.getTokenBalance(this.CEther.address), "ether") + " cDai");
   }); 
 
   it("user1 redeems token EthTrB", async function () {
@@ -174,7 +174,7 @@ describe('JProtocol', function () {
     console.log("User1 Dai balance: "+ oldBal + " DAI");
     bal = await this.DaiTrB.balanceOf(user1);
     console.log("User1 trB tokens: "+ web3.utils.fromWei(bal, "ether") + " DTB");
-    console.log("JCompound cDai balance: "+ web3.utils.fromWei(await this.CErc20.balanceOf(this.JCompound.address), "ether") + " cDai");
+    console.log("JCompound cDai balance: "+ web3.utils.fromWei(await this.JCompound.getTokenBalance(this.CEther.address), "ether") + " cDai");
     tx = await this.DaiTrB.approve(this.JCompound.address, bal, {from: user1});
     console.log("TrB price: " + web3.utils.fromWei(await this.JCompound.getTrancheBExchangeRate(1), "ether"));
     tx = await this.JCompound.redeemTrancheBToken(1, bal, {from: user1});
@@ -184,7 +184,7 @@ describe('JProtocol', function () {
     console.log("User1 trB tokens: "+ web3.utils.fromWei(bal, "ether") + " DTB");
     console.log("User1 trB interest: "+ (newBal - oldBal) + " DAI");
     console.log("CErc20 DAI balance: "+ web3.utils.fromWei(await this.DAI.balanceOf(this.CErc20.address), "ether") + " DAI");
-    console.log("JCompound new DAI balance: "+ web3.utils.fromWei(await this.CErc20.balanceOf(this.JCompound.address), "ether") + " cDai");
+    console.log("JCompound new DAI balance: "+ web3.utils.fromWei(await this.JCompound.getTokenBalance(this.CEther.address), "ether") + " cDai");
   }); 
 
   it("user2 redeems token EthTrA", async function () {
@@ -192,7 +192,7 @@ describe('JProtocol', function () {
     console.log("User2 Dai balance: "+ oldBal + " DAI");
     bal = await this.DaiTrA.balanceOf(user2);
     console.log("User2 trA tokens: "+ web3.utils.fromWei(bal, "ether") + " DTA");
-    console.log("JCompound cDai balance: "+ web3.utils.fromWei(await this.CErc20.balanceOf(this.JCompound.address), "ether") + " cDai");
+    console.log("JCompound cDai balance: "+ web3.utils.fromWei(await this.JCompound.getTokenBalance(this.CEther.address), "ether") + " cDai");
     tx = await this.DaiTrA.approve(this.JCompound.address, bal, {from: user2});
     console.log("TrA price: " +  web3.utils.fromWei(await this.JCompound.getTrancheAExchangeRate(1), "ether"));
     tx = await this.JCompound.redeemTrancheAToken(1, bal, {from: user2});
@@ -202,7 +202,7 @@ describe('JProtocol', function () {
     console.log("User2 trA tokens: "+ web3.utils.fromWei(bal, "ether") + " DTA");
     console.log("User2 trB interest: "+ (newBal - oldBal) + " DAI");
     console.log("CErc20 DAI balance: "+ web3.utils.fromWei(await this.DAI.balanceOf(this.CErc20.address), "ether") + " DAI");
-    console.log("JCompound new DAI balance: "+ web3.utils.fromWei(await this.CErc20.balanceOf(this.JCompound.address), "ether") + " cDai");
+    console.log("JCompound new DAI balance: "+ web3.utils.fromWei(await this.JCompound.getTokenBalance(this.CEther.address), "ether") + " cDai");
   }); 
 
   it("user2 redeems token EthTrB", async function () {
@@ -211,7 +211,7 @@ describe('JProtocol', function () {
     console.log("User2 Dai balance: "+ web3.utils.fromWei(await this.DAI.balanceOf(user2), "ether") + " DAI");
     bal = await this.DaiTrB.balanceOf(user2);
     console.log("User2 trB tokens: "+ web3.utils.fromWei(bal, "ether") + " DTB");
-    console.log("JCompound cDai balance: "+ web3.utils.fromWei(await this.CErc20.balanceOf(this.JCompound.address), "ether") + " cDai");
+    console.log("JCompound cDai balance: "+ web3.utils.fromWei(await this.JCompound.getTokenBalance(this.CEther.address), "ether") + " cDai");
     tx = await this.DaiTrB.approve(this.JCompound.address, bal, {from: user2});
     console.log("TrB price: " + web3.utils.fromWei(await this.JCompound.getTrancheBExchangeRate(1), "ether"));
     tx = await this.JCompound.redeemTrancheBToken(1, bal, {from: user2});
@@ -221,7 +221,7 @@ describe('JProtocol', function () {
     console.log("User2 trB tokens: "+ web3.utils.fromWei(bal, "ether") + " DTB");
     console.log("User2 trB interest: "+ (newBal - oldBal) + " DAI");
     console.log("CErc20 DAI balance: "+ web3.utils.fromWei(await this.DAI.balanceOf(this.CErc20.address), "ether") + " DAI");
-    console.log("JCompound new DAI balance: "+ web3.utils.fromWei(await this.CErc20.balanceOf(this.JCompound.address), "ether") + " cDai");
+    console.log("JCompound new DAI balance: "+ web3.utils.fromWei(await this.JCompound.getTokenBalance(this.CEther.address), "ether") + " cDai");
   }); 
 
   it("user3 redeems token EthTrA", async function () {
@@ -229,7 +229,7 @@ describe('JProtocol', function () {
     console.log("User3 Dai balance: "+ oldBal + " DAI");
     bal = await this.DaiTrA.balanceOf(user3);
     console.log("User3 trA tokens: "+ web3.utils.fromWei(bal, "ether") + " DTA");
-    console.log("JCompound cDai balance: "+ web3.utils.fromWei(await this.CErc20.balanceOf(this.JCompound.address), "ether") + " cDai");
+    console.log("JCompound cDai balance: "+ web3.utils.fromWei(await this.JCompound.getTokenBalance(this.CEther.address), "ether") + " cDai");
     tx = await this.DaiTrA.approve(this.JCompound.address, bal, {from: user3});
     console.log("TrA price: " +  web3.utils.fromWei(await this.JCompound.getTrancheAExchangeRate(1), "ether"));
     tx = await this.JCompound.redeemTrancheAToken(1, bal, {from: user3});
@@ -239,7 +239,7 @@ describe('JProtocol', function () {
     console.log("User3 trA tokens: "+ web3.utils.fromWei(bal, "ether") + " DTA");
     console.log("User3 trA interest: "+ (newBal - oldBal) + " DAI");
     console.log("CErc20 DAI balance: "+ web3.utils.fromWei(await this.DAI.balanceOf(this.CErc20.address), "ether") + " DAI");
-    console.log("JCompound new DAI balance: "+ web3.utils.fromWei(await this.CErc20.balanceOf(this.JCompound.address), "ether") + " cDai");
+    console.log("JCompound new DAI balance: "+ web3.utils.fromWei(await this.JCompound.getTokenBalance(this.CEther.address), "ether") + " cDai");
   }); 
 
   it("user3 redeems token EthTrB", async function () {
@@ -247,7 +247,7 @@ describe('JProtocol', function () {
     console.log("User3 Dai balance: "+ oldBal + " DAI");
     bal = await this.DaiTrB.balanceOf(user3);
     console.log("User3 trB tokens: "+ web3.utils.fromWei(bal, "ether") + " DTB");
-    console.log("JCompound cDai balance: "+ web3.utils.fromWei(await this.CErc20.balanceOf(this.JCompound.address), "ether") + " cDai");
+    console.log("JCompound cDai balance: "+ web3.utils.fromWei(await this.JCompound.getTokenBalance(this.CEther.address), "ether") + " cDai");
     tx = await this.DaiTrB.approve(this.JCompound.address, bal, {from: user3});
     console.log("TrB price: " + web3.utils.fromWei(await this.JCompound.getTrancheBExchangeRate(1), "ether"));
     tx = await this.JCompound.redeemTrancheBToken(1, bal, {from: user3});
@@ -257,9 +257,13 @@ describe('JProtocol', function () {
     console.log("User3 trB tokens: "+ web3.utils.fromWei(bal, "ether") + " DTB");
     console.log("User3 trA interest: "+ (newBal - oldBal) + " DAI");
     console.log("CErc20 DAI balance: "+ web3.utils.fromWei(await this.DAI.balanceOf(this.CErc20.address), "ether") + " DAI");
-    console.log("JCompound new DAI balance: "+ web3.utils.fromWei(await this.CErc20.balanceOf(this.JCompound.address), "ether") + " cDai");
-    totSup = await this.DaiTrB.totalSupply();
-    console.log("DTB total supply: " + web3.utils.fromWei(totSup, "ether") + " DTB");
+    console.log("JCompound new DAI balance: "+ web3.utils.fromWei(await this.JCompound.getTokenBalance(this.CEther.address), "ether") + " cDai");
+    bal = await this.DaiTrA.totalSupply();
+    console.log("TrA total supply: "+ web3.utils.fromWei(bal, "ether") + " ETA");
+    bal = await this.DaiTrB.totalSupply();
+    console.log("TrB total supply: "+ web3.utils.fromWei(bal, "ether") + " ETB");
+    console.log("TrB price: " + web3.utils.fromWei(await this.JCompound.getTrancheBExchangeRate(1), "ether"));
+    console.log("Compound Price: " + await this.JCompound.getCompoundPrice(1));
   }); 
 
 });

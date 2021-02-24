@@ -11,19 +11,20 @@ contract CEther is OwnableUpgradeSafe, ERC20UpgradeSafe {
 
     //uint256 internal exchangeRate;
     uint256 internal exchangeRateStoredVal;
-    uint256 public supplyRate;
+    //uint256 public supplyRate;
     uint256 public redeemPercentage;
 
     function initialize() public initializer {
         OwnableUpgradeSafe.__Ownable_init();
         ERC20UpgradeSafe.__ERC20_init_unchained("cETH", "cETH");
-        exchangeRateStoredVal = 200344979984441318958053512;
-        supplyRate = 975104455;
-        super._mint(msg.sender, uint(1000000) ** 18);
+        //_setupDecimals(8);
+        exchangeRateStoredVal = 20034497998444131;
+        //supplyRate = 975104455;
+        super._mint(msg.sender, uint(1000).mul(10 ** 8));
     }
 
     function mint() external payable returns (uint256) {
-        _mint(msg.sender, msg.value.mul(10**28).div(exchangeRateStoredVal));
+        _mint(msg.sender, msg.value.mul(10**18).div(exchangeRateStoredVal));
         return msg.value;
     }
 
@@ -43,7 +44,7 @@ contract CEther is OwnableUpgradeSafe, ERC20UpgradeSafe {
     }
 */
     function redeem(uint redeemAmount) external returns (uint) {
-        uint256 amount = redeemAmount.mul(exchangeRateStoredVal).div(10**28);
+        uint256 amount = redeemAmount.mul(exchangeRateStoredVal).div(10**18);
 
         TransferETHHelper.safeTransferETH(msg.sender, amount);
 
@@ -92,7 +93,7 @@ contract CEther is OwnableUpgradeSafe, ERC20UpgradeSafe {
              *  redeemAmount = redeemTokensIn x exchangeRateCurrent
              */
             redeemTokens = redeemTokensIn;
-            redeemAmount = exchangeRateMantissa.mul(redeemTokensIn).div(10**28);
+            redeemAmount = exchangeRateMantissa.mul(redeemTokensIn).div(10**18);
         } else {
             /*
              * We get the current exchange rate and calculate the amount to be redeemed:
@@ -100,7 +101,7 @@ contract CEther is OwnableUpgradeSafe, ERC20UpgradeSafe {
              *  redeemAmount = redeemAmountIn
              */
 
-            redeemTokens = redeemAmountIn.mul(10**28).div(exchangeRateMantissa);
+            redeemTokens = redeemAmountIn.mul(10**18).div(exchangeRateMantissa);
             redeemAmount = redeemAmountIn;
         }
 
