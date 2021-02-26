@@ -34,6 +34,7 @@ contract JCompoundStorage is OwnableUpgradeSafe {
     address public tranchesDeployerAddress;
 
     uint256 public trancheCounter;
+    uint32 public redeemTimeout;
 
     address payable public cEtherContract;
 
@@ -42,6 +43,8 @@ contract JCompoundStorage is OwnableUpgradeSafe {
     mapping(address => address) public cTokenContracts;
     mapping(uint256 => TrancheAddresses) public trancheAddresses;
     mapping(uint256 => TrancheParameters) public trancheParameters;
+    // last block number where the user withdrew/deposited tokens
+    mapping(address => uint256) public lastActivity;
 
     ICEth public cEthToken;
 }

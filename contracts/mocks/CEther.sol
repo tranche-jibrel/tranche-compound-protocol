@@ -24,7 +24,8 @@ contract CEther is OwnableUpgradeSafe, ERC20UpgradeSafe {
     }
 
     function mint() external payable returns (uint256) {
-        _mint(msg.sender, msg.value.mul(10**18).div(exchangeRateStoredVal));
+        //_mint(msg.sender, msg.value.mul(10**18).div(exchangeRateStoredVal));
+        mintFresh(msg.sender, msg.value);
         return msg.value;
     }
 
@@ -65,6 +66,23 @@ contract CEther is OwnableUpgradeSafe, ERC20UpgradeSafe {
         return exchangeRateStoredVal;
     }
 
+    /**
+     * @notice User supplies assets into the market and receives cTokens in exchange
+     * @dev Assumes interest has already been accrued up to the current block
+     * @param minter The address of the account which is supplying the assets
+     * @param mintAmount The amount of the underlying asset to supply
+     */
+    function mintFresh(address minter, uint mintAmount) internal {
+        uint256 exchangeRateMantissa = exchangeRateStored();
+        /*
+         * We get the current exchange rate and calculate the number of cTokens to be minted:
+         *  mintTokens = actualMintAmount / exchangeRate
+         */
+        uint256 mintTokens = mintAmount.mul(10**18).div(exchangeRateMantissa);
+
+        super._mint(minter, mintTokens);
+    }
+
     function doTransferOut(address payable to, uint amount) internal {
         /* Send the Ether, with minimal gas and revert on failure */
         to.transfer(amount);
@@ -93,7 +111,7 @@ contract CEther is OwnableUpgradeSafe, ERC20UpgradeSafe {
              *  redeemAmount = redeemTokensIn x exchangeRateCurrent
              */
             redeemTokens = redeemTokensIn;
-            redeemAmount = exchangeRateMantissa.mul(redeemTokensIn).div(10**18);
+            redeemAmount = exchangeRateMantissa.mul(redeemTokensIn).div(10**28);
         } else {
             /*
              * We get the current exchange rate and calculate the amount to be redeemed:

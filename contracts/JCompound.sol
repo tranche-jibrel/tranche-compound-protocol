@@ -33,6 +33,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
         priceOracleAddress = _priceOracle;
         feesCollectorAddress = _feesCollector;
         tranchesDeployerAddress = _tranchesDepl;
+        redeemTimeout = 10; //default
     }
 
     /**
@@ -102,6 +103,14 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
      */
     function setTrancheVaultPercentage(uint256 _trancheNum, uint16 _redeemPercent) external onlyAdmins {
         trancheParameters[_trancheNum].redemptionPercentage = _redeemPercent;
+    }
+
+    /**
+     * @dev set redemption timeout
+     * @param _blockNum timeout (in block numbers)
+     */
+    function setRedemptionTimeout(uint32 _blockNum) external onlyAdmins {
+        redeemTimeout = _blockNum;
     }
 
     function addTrancheToProtocol(address _erc20Contract, string memory _nameA, string memory _symbolA, string memory _nameB, 
@@ -241,12 +250,33 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
         return (trancheParameters[_trancheNum].initialCompoundPrice).add( (trancheParameters[_trancheNum].trancheAFixedRPB).mul( (block.number).sub(trancheParameters[_trancheNum].genesisBlock) ));
     }
 
+    function getTrAValue(uint256 _trancheNum) public view returns (uint256) {
+        uint256 totASupply = IERC20(trancheAddresses[_trancheNum].ATrancheAddress).totalSupply();
+        return totASupply.mul(getTrancheAExchangeRate(_trancheNum)).div(10 ** uint256(trancheParameters[_trancheNum].underlyingDecimals));
+    }
+
+    function getTrBValue(uint256 _trancheNum) public view returns (uint256) {
+        uint256 totProtValue = getTotalValue(_trancheNum);
+        uint256 totTrAValue = getTrAValue(_trancheNum);
+
+        return totProtValue.sub(totTrAValue);
+    }
+
+    function getTotalValue(uint256 _trancheNum) public view returns (uint256) {
+        uint256 compPriceDai = getCompoundPrice(_trancheNum);
+
+        uint256 totProtSupplyDai = getTokenBalance(trancheAddresses[_trancheNum].dividendCoinAddress);
+        return totProtSupplyDai.mul(compPriceDai).div(10 ** uint256(trancheParameters[_trancheNum].underlyingDecimals));
+    }
+
     /**
      * @dev get Tranche B exchange rate
      * @param _trancheNum tranche number
+     * @param _newAmount new amount entering tranche B
+     * @param _adding true if adding, false if subtracting
      * @return tbPrice tranche B token current price
      */
-    function getTrancheBExchangeRate(uint256 _trancheNum) public view returns (uint256 tbPrice) {
+    function getTrancheBExchangeRate(uint256 _trancheNum, uint256 _newAmount, bool _adding) public view returns (uint256 tbPrice) {
         // set amount of tokens to be minted via taToken price
         // Current tbDai price = (((cDai X cPrice)-(aSupply X taPrice)) / bSupply)
         // where: cDai = How much cDai we hold in the protocol
@@ -265,14 +295,20 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
         //uint256 totProtSupplyDai = totASupplyDai.add(totBSupplyDai);
         uint256 totProtSupplyDai = getTokenBalance(trancheAddresses[_trancheNum].dividendCoinAddress);
 
-        uint256 totProtValue = totProtSupplyDai.mul(compPriceDai).div(10 ** uint256(trancheParameters[_trancheNum].cTokenDecimals));
+        uint256 totProtValue = totProtSupplyDai.mul(compPriceDai).div(10 ** uint256(trancheParameters[_trancheNum].underlyingDecimals));
         uint256 totTrAValue = totASupply.mul(getTrancheAExchangeRate(_trancheNum)).div(10 ** uint256(trancheParameters[_trancheNum].underlyingDecimals));
-        if (totBSupply > 0)
-            tbPrice = (totProtValue.sub(totTrAValue)).mul(10 ** uint256(trancheParameters[_trancheNum].underlyingDecimals)).div(totBSupply);
-        else if (totProtValue > (10 ** (uint256(trancheParameters[_trancheNum].underlyingDecimals).sub(uint256(trancheParameters[_trancheNum].cTokenDecimals)))))
-            tbPrice = totProtValue.sub(totTrAValue);
-        else
-            tbPrice = compPriceDai;
+        uint256 totTrBValue = totProtValue.sub(totTrAValue);
+        if (totBSupply.add(_newAmount) > 0) {
+            if (_adding && ) {
+                tbPrice = (totTrBValue).mul(10 ** uint256(trancheParameters[_trancheNum].underlyingDecimals)).div((totBSupply.add(_newAmount)));
+            } else {
+                tbPrice = (totTrBValue).mul(10 ** uint256(trancheParameters[_trancheNum].underlyingDecimals)).div((totBSupply.sub(_newAmount)));
+            }
+        } else
+            tbPrice = 10 ** uint256(trancheParameters[_trancheNum].underlyingDecimals);
+
+        //else if (totProtValue > (10 ** uint256(trancheParameters[_trancheNum].cTokenDecimals)))
+        //    tbPrice = (totTrBValue).mul(10 ** uint256(trancheParameters[_trancheNum].underlyingDecimals)).div(compPriceDai);
 
         return tbPrice;
     }
@@ -302,6 +338,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
 
         //Mint trancheA tokens and send them to msg.sender;
         IJTrancheTokens(trancheAddresses[_trancheNum].ATrancheAddress).mint(msg.sender, taAmount);
+        lastActivity[msg.sender] = block.number;
         emit TrancheATokenMinted(_trancheNum, msg.sender, _amount, taAmount);
     }
 
@@ -311,6 +348,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
      * @param _amount amount of stable coins sent by buyer
      */
     function redeemTrancheAToken(uint256 _trancheNum, uint256 _amount) external locked {
+        require((block.number).sub(lastActivity[msg.sender]) >= redeemTimeout, "JCompound: redeem timeout not expired on tranche B");
         // check approve
         require(IERC20(trancheAddresses[_trancheNum].ATrancheAddress).allowance(msg.sender, address(this)) >= _amount, "JCompound: allowance failed redeeming tranche A");
         //Transfer DAI from msg.sender to protocol;
@@ -349,6 +387,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
         }
         
         IJTrancheTokens(trancheAddresses[_trancheNum].ATrancheAddress).burn(_amount);
+        lastActivity[msg.sender] = block.number;
         emit TrancheATokenBurned(_trancheNum, msg.sender, _amount, taAmount);
     }
 
@@ -358,7 +397,6 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
      * @param _amount amount of stable coins sent by buyer
      */
     function buyTrancheBToken(uint256 _trancheNum, uint256 _amount) external payable locked {
-        uint256 tbAmount;
         if (trancheAddresses[_trancheNum].buyerCoinAddress == address(0)) {
             _amount = msg.value;
             TransferETHHelper.safeTransferETH(address(this), _amount);
@@ -373,10 +411,11 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
             sendErc20ToCompound(trancheAddresses[_trancheNum].buyerCoinAddress, _amount);
         }
         // get cToken exchange rate from compound
-        tbAmount = _amount.mul(10 ** uint256(trancheParameters[_trancheNum].underlyingDecimals)).div(getTrancheAExchangeRate(_trancheNum));
+        uint256 tbAmount = _amount.mul(10 ** uint256(trancheParameters[_trancheNum].underlyingDecimals)).div(getTrancheBExchangeRate(_trancheNum, _amount, true));
 
         //Mint trancheB tokens and send them to msg.sender;
         IJTrancheTokens(trancheAddresses[_trancheNum].BTrancheAddress).mint(msg.sender, tbAmount);
+        lastActivity[msg.sender] = block.number;
         emit TrancheBTokenMinted(_trancheNum, msg.sender, _amount, tbAmount);
     }
 
@@ -386,6 +425,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
      * @param _amount amount of stable coins sent by buyer
      */
     function redeemTrancheBToken(uint256 _trancheNum, uint256 _amount) external locked {
+        require((block.number).sub(lastActivity[msg.sender]) >= redeemTimeout, "JCompound: redeem timeout not expired on tranche B");
         // check approve
         require(IERC20(trancheAddresses[_trancheNum].BTrancheAddress).allowance(msg.sender, address(this)) >= _amount, "JCompound: allowance failed redeeming tranche B");
         //Transfer DAI from msg.sender to protocol;
@@ -395,7 +435,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
         uint256 diffBal;
         uint256 userAmount;
         uint256 feesAmount;
-        uint256 tbAmount = _amount.mul(getTrancheBExchangeRate(_trancheNum)).div(10 ** uint256(trancheParameters[_trancheNum].underlyingDecimals));
+        uint256 tbAmount = _amount.mul(getTrancheBExchangeRate(_trancheNum, 0, true)).div(10 ** uint256(trancheParameters[_trancheNum].underlyingDecimals));
         if (trancheAddresses[_trancheNum].buyerCoinAddress == address(0)){
             // calculate tbETH amount via cETH price
             oldBal = getEthBalance();
@@ -423,6 +463,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
         }
         
         IJTrancheTokens(trancheAddresses[_trancheNum].BTrancheAddress).burn(_amount);
+        lastActivity[msg.sender] = block.number;
         emit TrancheBTokenBurned(_trancheNum, msg.sender, _amount, tbAmount);
     }
 

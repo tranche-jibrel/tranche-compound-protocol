@@ -48,11 +48,11 @@ contract CErc20 is OwnableUpgradeSafe, ERC20UpgradeSafe {
     function supplyRatePerBlock() external view returns (uint256) {
         return supplyRate;
     }
-*/
+
     function setRedeemPercentage(uint256 _redeemPercentage) external {
         redeemPercentage = _redeemPercentage;
     }
-
+*/
     function redeem(uint redeemAmount) external returns (uint) {
         uint256 amount = redeemAmount.mul(exchangeRateStoredVal).div(10**18);
 
