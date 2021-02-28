@@ -24,11 +24,11 @@ Limit is 24 KiB for single contract
     <tbody>
         <tr>
             <td>JCompound</td>
-            <td><code>14.57 KiB</code></td>
+            <td><code>17.77 KiB</code></td>
         </tr>
         <tr>
             <td>JCompoundStorage</td>
-            <td><code>1.41 KiB</code></td>
+            <td><code>1.55 KiB</code></td>
         </tr>
         <tr>
             <td>JTrancheAToken</td>

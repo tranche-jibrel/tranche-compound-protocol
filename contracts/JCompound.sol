@@ -522,7 +522,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
     }
 
     /**
-     * @dev get every token balance in this contract
+     * @dev redeem every cToken amount and send values to fees collector
      * @param _trancheNum tranche number
      * @param _cTokenAmount cToken amount to send to compound protocol
      */
