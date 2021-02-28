@@ -11,8 +11,6 @@ import "./ICEth.sol";
 
 contract JCompoundStorage is OwnableUpgradeSafe {
 /* WARNING: NEVER RE-ORDER VARIABLES! Always double-check that new variables are added APPEND-ONLY. Re-ordering variables can permanently BREAK the deployed proxy contract.*/
-    uint256 public constant totalBlockYears = 2372500;
-
     struct TrancheAddresses {
         address buyerCoinAddress;       // ETH or DAI
         address dividendCoinAddress;    // cETH or cDAI
@@ -22,8 +20,9 @@ contract JCompoundStorage is OwnableUpgradeSafe {
 
     struct TrancheParameters {
         uint256 trancheAFixedRPB;
-        uint256 genesisBlock;
-        uint256 initialCompoundPrice;
+        uint256 startingABlock;
+        uint256 startingAPrice;
+        uint256 currentTrancheAPrice;
         uint16 redemptionPercentage;    // percentage with 2 decimals (divided by 10000, i.e. 95% is 9500)
         uint8 cTokenDecimals;
         uint8 underlyingDecimals;
@@ -34,6 +33,7 @@ contract JCompoundStorage is OwnableUpgradeSafe {
     address public tranchesDeployerAddress;
 
     uint256 public trancheCounter;
+    uint256 public totalBlockYears; 
     uint32 public redeemTimeout;
 
     address payable public cEtherContract;

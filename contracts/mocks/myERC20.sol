@@ -11,7 +11,7 @@ contract myERC20 is OwnableUpgradeSafe, ERC20UpgradeSafe {
     function initialize(uint256 _initialSupply) public initializer {
         OwnableUpgradeSafe.__Ownable_init();
         ERC20UpgradeSafe.__ERC20_init_unchained("NewJNT", "NJNT");
-        _mint(msg.sender, _initialSupply.mul(10 ** 18));
+        _mint(msg.sender, _initialSupply.mul(uint(1e18)));
     }
 
 }

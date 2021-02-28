@@ -24,7 +24,7 @@ contract CEther is OwnableUpgradeSafe, ERC20UpgradeSafe {
     }
 
     function mint() external payable returns (uint256) {
-        //_mint(msg.sender, msg.value.mul(10**18).div(exchangeRateStoredVal));
+        //_mint(msg.sender, msg.value.mul(uint(1e18)).div(exchangeRateStoredVal));
         mintFresh(msg.sender, msg.value);
         return msg.value;
     }
@@ -45,7 +45,7 @@ contract CEther is OwnableUpgradeSafe, ERC20UpgradeSafe {
     }
 */
     function redeem(uint redeemAmount) external returns (uint) {
-        uint256 amount = redeemAmount.mul(exchangeRateStoredVal).div(10**18);
+        uint256 amount = redeemAmount.mul(exchangeRateStoredVal).div(uint(1e18));
 
         TransferETHHelper.safeTransferETH(msg.sender, amount);
 
@@ -78,7 +78,7 @@ contract CEther is OwnableUpgradeSafe, ERC20UpgradeSafe {
          * We get the current exchange rate and calculate the number of cTokens to be minted:
          *  mintTokens = actualMintAmount / exchangeRate
          */
-        uint256 mintTokens = mintAmount.mul(10**18).div(exchangeRateMantissa);
+        uint256 mintTokens = mintAmount.mul(uint(1e18)).div(exchangeRateMantissa);
 
         super._mint(minter, mintTokens);
     }
@@ -111,7 +111,7 @@ contract CEther is OwnableUpgradeSafe, ERC20UpgradeSafe {
              *  redeemAmount = redeemTokensIn x exchangeRateCurrent
              */
             redeemTokens = redeemTokensIn;
-            redeemAmount = exchangeRateMantissa.mul(redeemTokensIn).div(10**28);
+            redeemAmount = exchangeRateMantissa.mul(redeemTokensIn).div(uint(1e28));
         } else {
             /*
              * We get the current exchange rate and calculate the amount to be redeemed:
@@ -119,7 +119,7 @@ contract CEther is OwnableUpgradeSafe, ERC20UpgradeSafe {
              *  redeemAmount = redeemAmountIn
              */
 
-            redeemTokens = redeemAmountIn.mul(10**18).div(exchangeRateMantissa);
+            redeemTokens = redeemAmountIn.mul(uint(1e18)).div(exchangeRateMantissa);
             redeemAmount = redeemAmountIn;
         }
 
