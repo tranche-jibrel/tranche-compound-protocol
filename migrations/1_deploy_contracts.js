@@ -86,16 +86,29 @@ module.exports = async (deployer, network, accounts) => {
       // DAIAddress for Kovan: 0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa 
       // CDAIAddress for Kovan: 0xF0d0EB522cfa50B716B3b1604C4F0fA6f04376AD
       // Source: https://github.com/compound-finance/compound-config/blob/master/networks/kovan.json
+      const JPOinstance = await deployProxy(JPriceOracle, [], { from: factoryOwner });
+      console.log('JPriceOracle Deployed: ', JPOinstance.address);
 
-      const JCompoundInstance = await deployProxy(JCompound, [PRICE_ORACLE_ADDRESS, FEE_COLLECTOR_ADDRESS, compoundDeployer.address],
+      const JCompoundInstance = await deployProxy(JCompound, [JPOinstance.address, FEE_COLLECTOR_ADDRESS, compoundDeployer.address],
         { from: factoryOwner });
+
       console.log(`COMPOUND_TRANCHE_ADDRESS=${JCompoundInstance.address}`);
       compoundDeployer.setJCompoundAddress(JCompoundInstance.address);
+
+      console.log('compound deployer 1');
       // TODO: dai address need to make it dynamic 
       await JCompoundInstance.setCTokenContract(DAI_ADDRESS, CDAI_ADDRESS, { from: factoryOwner });
+
+      console.log('compound deployer 2');
       await JCompoundInstance.setCTokenContract(ZERO_ADDRESS, CETH_ADDRESS, { from: factoryOwner });
+
+      console.log('compound deployer 3');
       await JCompoundInstance.addTrancheToProtocol(DAI_ADDRESS, "JCD tranche A", "JCDA", "JCD tranche A", "JCDB", 1859852476, 8, 18, { from: factoryOwner });
+
+      console.log('compound deployer 4');
       await JCompoundInstance.addTrancheToProtocol(ZERO_ADDRESS, "JCE tranche A", "JCEA", "JCE tranche A", "JCEB", 1859852476, 8, 18, { from: factoryOwner });
+
+      console.log('compound deployer 5');
       console.log(`JCompound deployed at: ${JCompoundInstance.address}`);
     }
   }
