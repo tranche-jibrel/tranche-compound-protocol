@@ -1,0 +1,455 @@
+{
+  "manifestVersion": "3.1",
+  "impls": {
+    "5bd60e6cc41dad882695893a251595c94b446263890330535cfed07941b18898": {
+      "address": "0x933872f21C17F0CcbB02c21a7A7b8B4eE7f7BA68",
+      "txHash": "0xbe60e2299fc39fc24f56673aa6c916c9b5155963c9eb576b91a571e96387efa4",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "initialized",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol:21"
+          },
+          {
+            "contract": "Initializable",
+            "label": "initializing",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol:26"
+          },
+          {
+            "contract": "Initializable",
+            "label": "______gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol:61"
+          },
+          {
+            "contract": "ContextUpgradeSafe",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/GSN/Context.sol:37"
+          },
+          {
+            "contract": "OwnableUpgradeSafe",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol:18"
+          },
+          {
+            "contract": "OwnableUpgradeSafe",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol:78"
+          },
+          {
+            "contract": "JTranchesDeployer",
+            "label": "jCompoundAddress",
+            "type": "t_address",
+            "src": "JTranchesDeployer.sol:20"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          },
+          "t_bool": {
+            "label": "bool"
+          }
+        }
+      }
+    },
+    "38c08bb4f70a9627610694410f09a5f20dc409afbf55245a068ff85d56cb063a": {
+      "address": "0x49ABcc45874bc167A584aC1BFC828d57157F3555",
+      "txHash": "0x5537a7884bbeade5058d8ef259ef84eecb778442ffeb9d26d2407cb2f371d4b9",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "initialized",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol:21"
+          },
+          {
+            "contract": "Initializable",
+            "label": "initializing",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol:26"
+          },
+          {
+            "contract": "Initializable",
+            "label": "______gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol:61"
+          },
+          {
+            "contract": "ContextUpgradeSafe",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/GSN/Context.sol:37"
+          },
+          {
+            "contract": "OwnableUpgradeSafe",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol:18"
+          },
+          {
+            "contract": "OwnableUpgradeSafe",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol:78"
+          },
+          {
+            "contract": "JPriceOracleStorage",
+            "label": "pairCounter",
+            "type": "t_uint256",
+            "src": "mocks/JPriceOracleStorage.sol:15"
+          },
+          {
+            "contract": "JPriceOracleStorage",
+            "label": "contractVersion",
+            "type": "t_uint256",
+            "src": "mocks/JPriceOracleStorage.sol:16"
+          },
+          {
+            "contract": "JPriceOracleStorage",
+            "label": "adminCounter",
+            "type": "t_uint256",
+            "src": "mocks/JPriceOracleStorage.sol:17"
+          },
+          {
+            "contract": "JPriceOracleStorage",
+            "label": "pairs",
+            "type": "t_mapping(t_uint256,t_struct(Pair)4096_storage)",
+            "src": "mocks/JPriceOracleStorage.sol:34"
+          },
+          {
+            "contract": "JPriceOracleStorage",
+            "label": "_Admins",
+            "type": "t_mapping(t_address,t_bool)",
+            "src": "mocks/JPriceOracleStorage.sol:36"
+          }
+        ],
+        "types": {
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_mapping(t_uint256,t_struct(Pair)4096_storage)": {
+            "label": "mapping(uint256 => struct JPriceOracleStorage.Pair)"
+          },
+          "t_struct(Pair)4096_storage": {
+            "label": "struct JPriceOracleStorage.Pair",
+            "members": [
+              {
+                "label": "basePairName",
+                "type": "t_string_storage"
+              },
+              {
+                "label": "quotePairName",
+                "type": "t_string_storage"
+              },
+              {
+                "label": "pairValue",
+                "type": "t_uint256"
+              },
+              {
+                "label": "baseAddress",
+                "type": "t_address"
+              },
+              {
+                "label": "quoteAddress",
+                "type": "t_address"
+              },
+              {
+                "label": "externalProviderAddress",
+                "type": "t_address"
+              },
+              {
+                "label": "pairDecimals",
+                "type": "t_uint8"
+              },
+              {
+                "label": "baseDecimals",
+                "type": "t_uint8"
+              },
+              {
+                "label": "quoteDecimals",
+                "type": "t_uint8"
+              },
+              {
+                "label": "priceOrigin",
+                "type": "t_uint8"
+              },
+              {
+                "label": "reciprocalPrice",
+                "type": "t_bool"
+              },
+              {
+                "label": "orFeedVenue",
+                "type": "t_bytes32"
+              }
+            ]
+          },
+          "t_string_storage": {
+            "label": "string"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_uint8": {
+            "label": "uint8"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_bytes32": {
+            "label": "bytes32"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    },
+    "24b2d1d496944a736c4f7459c066ca19ab4670ed1a8c312992761fac1239bd18": {
+      "address": "0x8aA6618C53c8410474865142F66E3B31084e1C7C",
+      "txHash": "0x2070e35dffb9c5614cf2850a6f070f57ff2f5bab471ab7d03690d8eff161a881",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "initialized",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol:21"
+          },
+          {
+            "contract": "Initializable",
+            "label": "initializing",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol:26"
+          },
+          {
+            "contract": "Initializable",
+            "label": "______gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol:61"
+          },
+          {
+            "contract": "ContextUpgradeSafe",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/GSN/Context.sol:37"
+          },
+          {
+            "contract": "OwnableUpgradeSafe",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol:18"
+          },
+          {
+            "contract": "OwnableUpgradeSafe",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol:78"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "priceOracleAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:31"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "feesCollectorAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:32"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "tranchesDeployerAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:33"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "trancheCounter",
+            "type": "t_uint256",
+            "src": "JCompoundStorage.sol:35"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "totalBlockYears",
+            "type": "t_uint256",
+            "src": "JCompoundStorage.sol:36"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "redeemTimeout",
+            "type": "t_uint32",
+            "src": "JCompoundStorage.sol:37"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "cEtherContract",
+            "type": "t_address_payable",
+            "src": "JCompoundStorage.sol:39"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "fLock",
+            "type": "t_bool",
+            "src": "JCompoundStorage.sol:41"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "cTokenContracts",
+            "type": "t_mapping(t_address,t_address)",
+            "src": "JCompoundStorage.sol:43"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "trancheAddresses",
+            "type": "t_mapping(t_uint256,t_struct(TrancheAddresses)2493_storage)",
+            "src": "JCompoundStorage.sol:44"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "trancheParameters",
+            "type": "t_mapping(t_uint256,t_struct(TrancheParameters)2508_storage)",
+            "src": "JCompoundStorage.sol:45"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "lastActivity",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "JCompoundStorage.sol:47"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "cEthToken",
+            "type": "t_contract(ICEth)83",
+            "src": "JCompoundStorage.sol:49"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_uint32": {
+            "label": "uint32"
+          },
+          "t_address_payable": {
+            "label": "address payable"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_mapping(t_address,t_address)": {
+            "label": "mapping(address => address)"
+          },
+          "t_mapping(t_uint256,t_struct(TrancheAddresses)2493_storage)": {
+            "label": "mapping(uint256 => struct JCompoundStorage.TrancheAddresses)"
+          },
+          "t_struct(TrancheAddresses)2493_storage": {
+            "label": "struct JCompoundStorage.TrancheAddresses",
+            "members": [
+              {
+                "label": "buyerCoinAddress",
+                "type": "t_address"
+              },
+              {
+                "label": "dividendCoinAddress",
+                "type": "t_address"
+              },
+              {
+                "label": "ATrancheAddress",
+                "type": "t_address"
+              },
+              {
+                "label": "BTrancheAddress",
+                "type": "t_address"
+              }
+            ]
+          },
+          "t_mapping(t_uint256,t_struct(TrancheParameters)2508_storage)": {
+            "label": "mapping(uint256 => struct JCompoundStorage.TrancheParameters)"
+          },
+          "t_struct(TrancheParameters)2508_storage": {
+            "label": "struct JCompoundStorage.TrancheParameters",
+            "members": [
+              {
+                "label": "trancheAFixedRPB",
+                "type": "t_uint256"
+              },
+              {
+                "label": "startingABlock",
+                "type": "t_uint256"
+              },
+              {
+                "label": "startingAPrice",
+                "type": "t_uint256"
+              },
+              {
+                "label": "currentTrancheAPrice",
+                "type": "t_uint256"
+              },
+              {
+                "label": "redemptionPercentage",
+                "type": "t_uint16"
+              },
+              {
+                "label": "cTokenDecimals",
+                "type": "t_uint8"
+              },
+              {
+                "label": "underlyingDecimals",
+                "type": "t_uint8"
+              }
+            ]
+          },
+          "t_uint16": {
+            "label": "uint16"
+          },
+          "t_uint8": {
+            "label": "uint8"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_contract(ICEth)83": {
+            "label": "contract ICEth"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    }
+  },
+  "admin": {
+    "address": "0x6cAb326287d50A4f8F3C05424aee4389A9f7832A",
+    "txHash": "0x24bc58b3a76fd618687377358e375ada152ff4ae199156be58fd644556236582"
+  }
+}
