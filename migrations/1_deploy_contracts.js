@@ -100,7 +100,7 @@ module.exports = async (deployer, network, accounts) => {
       await JCompoundInstance.setCTokenContract(DAI_ADDRESS, CDAI_ADDRESS, { from: factoryOwner });
 
       console.log('compound deployer 2');
-      await JCompoundInstance.setCEtherContract(ZERO_ADDRESS, CETH_ADDRESS, { from: factoryOwner });
+      await JCompoundInstance.setCEtherContract(CETH_ADDRESS, { from: factoryOwner });
 
       console.log('compound deployer 3');
       await JCompoundInstance.addTrancheToProtocol(DAI_ADDRESS, "JCD tranche A", "JCDA", "JCD tranche A", "JCDB", 1859852476, 8, 18, { from: factoryOwner });
