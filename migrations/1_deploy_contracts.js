@@ -52,7 +52,7 @@ module.exports = async (deployer, network, accounts) => {
     await JCinstance.setCEtherContract(mycEthinstance.address, { from: factoryOwner });
     await JCinstance.setCTokenContract(myDAIinstance.address, mycDaiinstance.address, { from: factoryOwner });
 
-    await JCinstance.addTrancheToProtocol(ZERO_ADDRESS, "jEthTrancheAToken", "JEA", "jEthTrancheBToken", "JEB", 400, 8, 18, 1, { from: factoryOwner });
+    await JCinstance.addTrancheToProtocol(ZERO_ADDRESS, "jEthTrancheAToken", "JEA", "jEthTrancheBToken", "JEB", 400, 8, 18, { from: factoryOwner });
     trParams = await JCinstance.trancheAddresses(0);
     let EthTrA = await JTrancheAToken.at(trParams.ATrancheAddress);
     console.log("Eth Tranche A Token Address: " + EthTrA.address);
@@ -61,7 +61,7 @@ module.exports = async (deployer, network, accounts) => {
     console.log("Eth Tranche A Total supply: " + await EthTrA.totalSupply());
     console.log("Eth Tranche B Total supply: " + await EthTrB.totalSupply());
 
-    await JCinstance.addTrancheToProtocol(myDAIinstance.address, "jDaiTrancheAToken", "JDA", "jDaiTrancheBToken", "JDB", 400, 8, 18, 1, { from: factoryOwner });
+    await JCinstance.addTrancheToProtocol(myDAIinstance.address, "jDaiTrancheAToken", "JDA", "jDaiTrancheBToken", "JDB", 400, 8, 18, { from: factoryOwner });
     trParams = await JCinstance.trancheAddresses(1);
     let DaiTrA = await JTrancheAToken.at(trParams.ATrancheAddress);
     console.log("Eth Tranche A Token Address: " + DaiTrA.address);
@@ -100,7 +100,7 @@ module.exports = async (deployer, network, accounts) => {
       await JCompoundInstance.setCTokenContract(DAI_ADDRESS, CDAI_ADDRESS, { from: factoryOwner });
 
       console.log('compound deployer 2');
-      await JCompoundInstance.setCTokenContract(ZERO_ADDRESS, CETH_ADDRESS, { from: factoryOwner });
+      await JCompoundInstance.setCEthContract(ZERO_ADDRESS, CETH_ADDRESS, { from: factoryOwner });
 
       console.log('compound deployer 3');
       await JCompoundInstance.addTrancheToProtocol(DAI_ADDRESS, "JCD tranche A", "JCDA", "JCD tranche A", "JCDB", 1859852476, 8, 18, { from: factoryOwner });
