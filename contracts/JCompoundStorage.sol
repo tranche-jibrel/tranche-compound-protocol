@@ -19,10 +19,10 @@ contract JCompoundStorage is OwnableUpgradeSafe {
     }
 
     struct TrancheParameters {
-        uint256 trancheAFixedRPB;
-        uint256 startingABlock;
-        uint256 startingAPrice;
-        uint256 currentTrancheAPrice;
+        uint256 trancheAFixedPercentage;  // fixed percentage (i.e. 4% = 40000000000000000)
+        uint256 lastABlockAction;
+        uint256 storedTrancheAPrice;
+        uint256 trancheACurrentRPB;
         uint16 redemptionPercentage;    // percentage with 2 decimals (divided by 10000, i.e. 95% is 9500)
         uint8 cTokenDecimals;
         uint8 underlyingDecimals;
@@ -33,7 +33,7 @@ contract JCompoundStorage is OwnableUpgradeSafe {
     address public tranchesDeployerAddress;
 
     uint256 public trancheCounter;
-    uint256 public totalBlockYears; 
+    uint256 public totalBlockPerYears; 
     uint32 public redeemTimeout;
 
     address payable public cEtherContract;

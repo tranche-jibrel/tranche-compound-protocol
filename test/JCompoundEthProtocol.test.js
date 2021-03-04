@@ -121,6 +121,8 @@ describe('JProtocol', function () {
     console.log("Actual Block: " + block.number);
     newBlock = block.number + 100;
     await time.advanceBlockTo(newBlock);
+    await this.CErc20.setExchangeRateStored(new BN("22595357673700721")); //22595347673700721
+    console.log("Compound New price: " + await this.CErc20.exchangeRateStored());
   });
 
   it("user1 redeems token EthTrA", async function () {
@@ -176,7 +178,7 @@ describe('JProtocol', function () {
     console.log("Actual Block: " + block.number);
     newBlock = block.number + 100;
     await time.advanceBlockTo(newBlock);
-    await this.CErc20.setExchangeRateStored(new BN("20034498998444131")); //20034497998444131
+    await this.CErc20.setExchangeRateStored(new BN("22595357773700721")); //22595347673700721
     console.log("Compound New price: " + await this.CErc20.exchangeRateStored());
   });
 
@@ -219,6 +221,8 @@ describe('JProtocol', function () {
     console.log("Actual Block: " + block.number);
     newBlock = block.number + 10;
     await time.advanceBlockTo(newBlock);
+    await this.CErc20.setExchangeRateStored(new BN("22595358673700721")); //22595347673700721
+    console.log("Compound New price: " + await this.CErc20.exchangeRateStored());
   });
 
   it("user3 redeeem tokens from EthTrB", async function () {
@@ -273,6 +277,8 @@ describe('JProtocol', function () {
     console.log("Actual Block: " + block.number);
     newBlock = block.number + 10;
     await time.advanceBlockTo(newBlock);
+    await this.CErc20.setExchangeRateStored(new BN("22595358673800721")); //22595347673700721
+    console.log("Compound New price: " + await this.CErc20.exchangeRateStored());
   });
 
   it("user3 redeeem tokens from EthTrB", async function () {

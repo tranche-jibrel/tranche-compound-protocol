@@ -60,6 +60,16 @@ describe('JProtocol', function () {
 
   it("user1 buys some token EthTrA", async function () {
     console.log("User1 Eth balance: "+ web3.utils.fromWei(await web3.eth.getBalance(user1), "ether") + " ETH");
+    console.log((await this.JCompound.getCompoundPrice(0)).toString());
+    trPar = await this.JCompound.trancheParameters(0);
+    console.log("param tranche A: " + JSON.stringify(trPar));
+    console.log("rpb tranche A: " +  await this.JCompound.getTrancheARPB(0));
+    tx = await this.JCompound.calcRPBFromPercentage(0, {from: user1});
+    console.log("rpb tranche A: " +  await this.JCompound.getTrancheARPB(0));
+    trAPrice = await this.JCompound.getTrancheAExchangeRate(0, {from: user1});
+    console.log("price tranche A: " + trAPrice);
+    trPar = await this.JCompound.trancheParameters(0);
+    console.log("param tranche A: " + JSON.stringify(trPar));
     tx = await this.JCompound.buyTrancheAToken(0, 10, {from: user1, value: web3.utils.toWei("1", "ether")});
     console.log("User1 New Eth balance: "+ web3.utils.fromWei(await web3.eth.getBalance(user1), "ether") + " ETH");
     console.log("User1 trA tokens: "+ web3.utils.fromWei(await this.EthTrA.balanceOf(user1), "ether") + " ETA");
@@ -107,7 +117,7 @@ describe('JProtocol', function () {
     console.log("Actual Block: " + block.number);
     newBlock = block.number + 100;
     await time.advanceBlockTo(newBlock);
-    await this.CErc20.setExchangeRateStored(new BN("20034498998444131")); //20034497998444131
+    await this.CErc20.setExchangeRateStored(new BN("22595357673700721")); //22595347673700721
     console.log("Compound New price: " + await this.CErc20.exchangeRateStored());
   });
 

@@ -18,7 +18,7 @@ contract CEther is OwnableUpgradeSafe, ERC20UpgradeSafe {
         OwnableUpgradeSafe.__Ownable_init();
         ERC20UpgradeSafe.__ERC20_init_unchained("cETH", "cETH");
         //_setupDecimals(8);
-        exchangeRateStoredVal = 20034497998444131;
+        exchangeRateStoredVal = 22595347673700721; 
         //supplyRate = 975104455;
         super._mint(msg.sender, uint(1000).mul(10 ** 8));
     }

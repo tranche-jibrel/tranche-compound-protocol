@@ -261,7 +261,7 @@ function deployMinimumFactory(tokenOwner, factoryOwner, factoryAdmin) {
       from: factoryOwner
     });
 
-    tx = await this.JCompound.addTrancheToProtocol(ZERO_ADDRESS, "jEthTrancheAToken", "JEA", "jEthTrancheBToken", "JEB", 400, 18, 18, {
+    tx = await this.JCompound.addTrancheToProtocol(ZERO_ADDRESS, "jEthTrancheAToken", "JEA", "jEthTrancheBToken", "JEB", web3.utils.toWei("0.04", "ether"), 18, 18, {
       from: factoryOwner
     });
     trParams = await this.JCompound.trancheAddresses(0);
@@ -270,7 +270,7 @@ function deployMinimumFactory(tokenOwner, factoryOwner, factoryAdmin) {
     this.EthTrB = await JTrancheBToken.at(trParams.BTrancheAddress);
     console.log("Eth Tranche B Token Address: " + this.EthTrB.address);
 
-    tx = await this.JCompound.addTrancheToProtocol(this.DAI.address, "jDaiTrancheAToken", "JDA", "jDaiTrancheBToken", "JDB", 400, 18, 18, {
+    tx = await this.JCompound.addTrancheToProtocol(this.DAI.address, "jDaiTrancheAToken", "JDA", "jDaiTrancheBToken", "JDB", web3.utils.toWei("0.03", "ether"), 18, 18, {
       from: factoryOwner
     });
     trParams = await this.JCompound.trancheAddresses(1);

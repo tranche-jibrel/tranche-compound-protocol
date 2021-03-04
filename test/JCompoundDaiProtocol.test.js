@@ -174,6 +174,8 @@ describe('JProtocol', function () {
     console.log("Actual Block: " + block.number);
     newBlock = block.number + 10;
     await time.advanceBlockTo(newBlock);
+    await this.CErc20.setExchangeRateStored(new BN("21116902931884312"));
+    console.log("Compound New price: " + await this.CErc20.exchangeRateStored());
   });
 
   it("user1 redeems token EthTrB", async function () {
@@ -217,6 +219,8 @@ describe('JProtocol', function () {
     console.log("Actual Block: " + block.number);
     newBlock = block.number + 10;
     await time.advanceBlockTo(newBlock);
+    await this.CErc20.setExchangeRateStored(new BN("21116902932084312"));
+    console.log("Compound New price: " + await this.CErc20.exchangeRateStored());
   });
 
   it("user2 redeems token EthTrB", async function () {
@@ -261,6 +265,8 @@ describe('JProtocol', function () {
     console.log("Actual Block: " + block.number);
     newBlock = block.number + 10;
     await time.advanceBlockTo(newBlock);
+    await this.CErc20.setExchangeRateStored(new BN("21116902932284312"));
+    console.log("Compound New price: " + await this.CErc20.exchangeRateStored());
   });
 
   it("user3 redeems token EthTrB", async function () {

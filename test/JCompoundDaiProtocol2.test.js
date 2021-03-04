@@ -62,6 +62,16 @@ describe('JProtocol', function () {
 
   it("user1 buys some token EthTrA", async function () {
     console.log("is Dai allowed in JCompound: "+ await this.JCompound.isCTokenAllowed(this.DAI.address));
+    console.log((await this.JCompound.getCompoundPrice(1)).toString());
+    trPar = await this.JCompound.trancheParameters(1);
+    console.log("param tranche A: " + JSON.stringify(trPar));
+    console.log("rpb tranche A: " +  await this.JCompound.getTrancheARPB(1));
+    tx = await this.JCompound.calcRPBFromPercentage(1, {from: user1});
+    console.log("rpb tranche A: " +  await this.JCompound.getTrancheARPB(1));
+    trAPrice = await this.JCompound.getTrancheAExchangeRate(1, {from: user1});
+    console.log("price tranche A: " + trAPrice);
+    trPar = await this.JCompound.trancheParameters(1);
+    console.log("param tranche A: " + JSON.stringify(trPar));
     trParams = await this.JCompound.trancheAddresses(1);
     expect(trParams.buyerCoinAddress).to.be.equal(this.DAI.address);
     expect(trParams.dividendCoinAddress).to.be.equal(this.CErc20.address);
@@ -122,7 +132,7 @@ describe('JProtocol', function () {
     console.log("Actual Block: " + block.number);
     newBlock = block.number + 100;
     await time.advanceBlockTo(newBlock);
-    await this.CErc20.setExchangeRateStored(new BN("21116902931684312"));
+    await this.CErc20.setExchangeRateStored(new BN("21116912930684312"));
     console.log("Compound New price: " + await this.CErc20.exchangeRateStored());
   });
 
@@ -151,6 +161,8 @@ describe('JProtocol', function () {
     console.log("Actual Block: " + block.number);
     newBlock = block.number + 10;
     await time.advanceBlockTo(newBlock);
+    await this.CErc20.setExchangeRateStored(new BN("21116922930684312"));
+    console.log("Compound New price: " + await this.CErc20.exchangeRateStored());
   });
 
   it("user1 redeems token EthTrB", async function () {
