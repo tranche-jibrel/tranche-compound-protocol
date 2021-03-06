@@ -147,6 +147,17 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
         redeemTimeout = _blockNum;
     }
 
+    /**
+     * @dev add tranche in protocol
+     * @param _erc20Contract token contract address (0x0000000000000000000000000000000000000000 if eth)
+     * @param _nameA tranche A token name
+     * @param _symbolA tranche A token symbol
+     * @param _nameB tranche B token name
+     * @param _symbolB tranche B token symbol
+     * @param _fixedRpb tranche A percentage fixed compounded interest per year
+     * @param _cTokenDec cToken decimals
+     * @param _underlyingDec underlying token decimals
+     */
     function addTrancheToProtocol(address _erc20Contract, string memory _nameA, string memory _symbolA, string memory _nameB, 
                 string memory _symbolB, uint256 _fixedRpb, uint8 _cTokenDec, uint8 _underlyingDec) external onlyAdmins locked {
         require(tranchesDeployerAddress != address(0), "CProtocol: set tranche eth deployer");
