@@ -288,7 +288,7 @@
           },
           {
             "contract": "JCompoundStorage",
-            "label": "trancheCounter",
+            "label": "tranchePairsCounter",
             "type": "t_uint256",
             "src": "JCompoundStorage.sol:35"
           },
@@ -377,7 +377,7 @@
                 "type": "t_address"
               },
               {
-                "label": "dividendCoinAddress",
+                "label": "cTokenAddress",
                 "type": "t_address"
               },
               {
