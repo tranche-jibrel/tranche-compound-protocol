@@ -405,6 +405,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
      * @param _amount amount of stable coins sent by buyer
      */
     function buyTrancheAToken(uint256 _trancheNum, uint256 _amount) external payable locked {
+        uint256 prevCompTokenBalance = getTokenBalance(trancheAddresses[_trancheNum].cTokenAddress);
         if (trancheAddresses[_trancheNum].buyerCoinAddress == address(0)){
             _amount = msg.value;
             //Transfer ETH from msg.sender to protocol;
@@ -419,12 +420,15 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
             // transfer DAI to Coompound receiving cDai
             sendErc20ToCompound(trancheAddresses[_trancheNum].buyerCoinAddress, _amount);
         }
+        uint256 newCompTokenBalance = getTokenBalance(trancheAddresses[_trancheNum].cTokenAddress);
         // set amount of tokens to be minted calculate taToken amount via taToken price
         setTrancheAExchangeRate(_trancheNum);
-        uint256 taAmount = _amount.mul(10 ** uint256(trancheParameters[_trancheNum].underlyingDecimals)).div(trancheParameters[_trancheNum].storedTrancheAPrice);
-
-        //Mint trancheA tokens and send them to msg.sender;
-        IJTrancheTokens(trancheAddresses[_trancheNum].ATrancheAddress).mint(msg.sender, taAmount);
+        uint256 taAmount;
+        if (newCompTokenBalance > prevCompTokenBalance) {
+            taAmount = _amount.mul(10 ** uint256(trancheParameters[_trancheNum].underlyingDecimals)).div(trancheParameters[_trancheNum].storedTrancheAPrice);
+            //Mint trancheA tokens and send them to msg.sender;
+            IJTrancheTokens(trancheAddresses[_trancheNum].ATrancheAddress).mint(msg.sender, taAmount);
+        }
         lastActivity[msg.sender] = block.number;
         trancheParameters[_trancheNum].trancheALastActionBlock = block.number;
         emit TrancheATokenMinted(_trancheNum, msg.sender, _amount, taAmount);
@@ -486,11 +490,11 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
      * @param _amount amount of stable coins sent by buyer
      */
     function buyTrancheBToken(uint256 _trancheNum, uint256 _amount) external payable locked {
+        uint256 prevCompTokenBalance = getTokenBalance(trancheAddresses[_trancheNum].cTokenAddress);
         // refresh value for tranche A
         setTrancheAExchangeRate(_trancheNum);
         // get tranche B exchange rate
         uint256 tbAmount = _amount.mul(10 ** uint256(trancheParameters[_trancheNum].underlyingDecimals)).div(getTrancheBExchangeRate(_trancheNum, _amount));
-
         if (trancheAddresses[_trancheNum].buyerCoinAddress == address(0)) {
             _amount = msg.value;
             TransferETHHelper.safeTransferETH(address(this), _amount);
@@ -504,9 +508,12 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
             // transfer DAI to Couompound receiving cDai
             sendErc20ToCompound(trancheAddresses[_trancheNum].buyerCoinAddress, _amount);
         }
-        
-        //Mint trancheB tokens and send them to msg.sender;
-        IJTrancheTokens(trancheAddresses[_trancheNum].BTrancheAddress).mint(msg.sender, tbAmount);
+        uint256 newCompTokenBalance = getTokenBalance(trancheAddresses[_trancheNum].cTokenAddress);
+        if (newCompTokenBalance > prevCompTokenBalance) {
+            //Mint trancheB tokens and send them to msg.sender;
+            IJTrancheTokens(trancheAddresses[_trancheNum].BTrancheAddress).mint(msg.sender, tbAmount);
+        } else 
+            tbAmount = 0;
         lastActivity[msg.sender] = block.number;
         emit TrancheBTokenMinted(_trancheNum, msg.sender, _amount, tbAmount);
     }
