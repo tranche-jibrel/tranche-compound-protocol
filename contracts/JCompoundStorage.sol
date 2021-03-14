@@ -29,7 +29,7 @@ contract JCompoundStorage is OwnableUpgradeSafe {
     }
 
     address public priceOracleAddress;
-    address payable public feesCollectorAddress;
+    address public feesCollectorAddress;
     address public tranchesDeployerAddress;
 
     uint256 public tranchePairsCounter;

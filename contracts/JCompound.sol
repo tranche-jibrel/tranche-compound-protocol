@@ -27,7 +27,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
      * @param _tranchesDepl tranches deployer contract address
      */
     function initialize(address _priceOracle, 
-            address payable _feesCollector, 
+            address _feesCollector, 
             address _tranchesDepl) public initializer() {
         OwnableUpgradeSafe.__Ownable_init();
         priceOracleAddress = _priceOracle;
@@ -620,7 +620,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
      * @param _amount ethers amount to be transferred 
      */
     function withdrawEthToOwner(uint256 _amount) external onlyAdmins {
-        feesCollectorAddress.transfer(_amount);
+        payable(address(feesCollectorAddress)).transfer(_amount);
     }
 
 }
