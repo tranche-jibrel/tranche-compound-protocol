@@ -15,10 +15,12 @@ Users can now call buy and redeem functions for tranche A & B tokens
 ## latest Kovan environment
 
 PriceOracle: 0x603c7FaFf64321Ed9C9517640Be06FEB52D561C5 initialized (reduced size and functions)
+
 FeesCollector: 0x041158667FdECeFF3098c329ef007f8B22836176 initialized
 
 TranchesDeployer: 0x15cd54282F838d67938748b578a87d76279b0006 initialized
-JCompound: 0xaa4b8A9720c5C02aFA23e29dA6121BD7Dba4d0F6 initialized
+
+JCompound: 0xF36340ADc978D4DF2b980466a16c3849AAb6eFFA initialized
 
 set jcompound in TranchesDeployer: ok
 
@@ -45,7 +47,7 @@ Limit is 24 KiB for single contract
     <tbody>
         <tr>
             <td>JCompound</td>
-            <td><code>18.08 KiB</code></td>
+            <td><code>18.25 KiB</code></td>
         </tr>
         <tr>
             <td>JCompoundStorage</td>

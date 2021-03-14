@@ -620,7 +620,8 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
      * @param _amount ethers amount to be transferred 
      */
     function withdrawEthToOwner(uint256 _amount) external onlyAdmins {
-        payable(address(feesCollectorAddress)).transfer(_amount);
+        TransferETHHelper.safeTransferETH(feesCollectorAddress, _amount);
+        //payable(address(feesCollectorAddress)).transfer(_amount);
     }
 
 }
