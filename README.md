@@ -47,7 +47,7 @@ Limit is 24 KiB for single contract
     <tbody>
         <tr>
             <td>JCompound</td>
-            <td><code>18.25 KiB</code></td>
+            <td><code>18.26 KiB</code></td>
         </tr>
         <tr>
             <td>JCompoundStorage</td>
@@ -64,10 +64,6 @@ Limit is 24 KiB for single contract
         <tr>
             <td>JTranchesDeployer</td>
             <td><code>18.08 KiB</code></td>
-        </tr>
-		<tr>
-            <td>TransferETHHelper</td>
-            <td><code>0.08 KiB</code></td>
         </tr>
     </tbody>
   </table>
