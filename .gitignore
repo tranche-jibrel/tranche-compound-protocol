@@ -1,9 +1,9 @@
 .gitmodules
-node_modules/*
+node_modules/
 .env
 build/
 unused/
-dist/*
+dist/
 Flatters.bat
 package-lock.json
 *.txt

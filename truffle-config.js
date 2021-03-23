@@ -87,7 +87,6 @@ module.exports = {
     // }
   },
 
-  plugins: ["solidity-coverage"], 
   plugins: ["truffle-contract-size"],
 
   // Set default mocha options here, use special reporters etc.

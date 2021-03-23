@@ -33,7 +33,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
         priceOracleAddress = _priceOracle;
         feesCollectorAddress = _feesCollector;
         tranchesDeployerAddress = _tranchesDepl;
-        redeemTimeout = 10; //default
+        redeemTimeout = 3; //default
         totalBlocksPerYear = 2392387;
     }
 
@@ -41,7 +41,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
      * @dev admins modifiers
      */
     modifier onlyAdmins() {
-        require(IJPriceOracle(priceOracleAddress).isAdmin(msg.sender), "Protocol: not an Admin");
+        require(IJPriceOracle(priceOracleAddress).isAdmin(msg.sender), "JCompound: not an Admin");
         _;
     }
 
@@ -161,8 +161,8 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
      */
     function addTrancheToProtocol(address _erc20Contract, string memory _nameA, string memory _symbolA, string memory _nameB, 
                 string memory _symbolB, uint256 _fixedRpb, uint8 _cTokenDec, uint8 _underlyingDec) external onlyAdmins locked {
-        require(tranchesDeployerAddress != address(0), "CProtocol: set tranche eth deployer");
-        require(isCTokenAllowed(_erc20Contract), "CProtocol: cToken not allowed");
+        require(tranchesDeployerAddress != address(0), "JCompound: set tranche eth deployer");
+        require(isCTokenAllowed(_erc20Contract), "JCompound: cToken not allowed");
 
         trancheAddresses[tranchePairsCounter].buyerCoinAddress = _erc20Contract;
         trancheAddresses[tranchePairsCounter].cTokenAddress = cTokenContracts[_erc20Contract];
@@ -192,7 +192,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
      * @return mint result
      */
     function sendErc20ToCompound(address _erc20Contract, uint256 _numTokensToSupply) internal returns(uint256) {
-        require(cTokenContracts[_erc20Contract] != address(0), "token not accepted");
+        require(cTokenContracts[_erc20Contract] != address(0), "JCompound: token not accepted");
         // i.e. DAI contract, on Kovan: 0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa
         IERC20 underlying = IERC20(_erc20Contract);
 
@@ -440,7 +440,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
      * @param _amount amount of stable coins sent by buyer
      */
     function redeemTrancheAToken(uint256 _trancheNum, uint256 _amount) external locked {
-        require((block.number).sub(lastActivity[msg.sender]) >= redeemTimeout, "JCompound: redeem timeout not expired on tranche B");
+        require((block.number).sub(lastActivity[msg.sender]) >= redeemTimeout, "JCompound: redeem timeout not expired on tranche A");
         // check approve
         require(IERC20(trancheAddresses[_trancheNum].ATrancheAddress).allowance(msg.sender, address(this)) >= _amount, "JCompound: allowance failed redeeming tranche A");
         //Transfer DAI from msg.sender to protocol;
