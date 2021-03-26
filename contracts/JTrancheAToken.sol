@@ -27,21 +27,21 @@ contract JTrancheAToken is OwnableUpgradeSafe, ERC20UpgradeSafe, AccessControlUp
 
     /**
 	 * @dev Internal function that mints tokens to an account.
-	 * Update pointsCorrection to keep funds unchanged.
 	 * @param account The account that will receive the created tokens.
 	 * @param value The amount that will be created.
 	 */
 	function mint(address account, uint256 value) external override {
-		require(hasRole(MINTER_ROLE, msg.sender), "Caller is not a minter");
+		require(hasRole(MINTER_ROLE, msg.sender), "JTrancheA: Caller is not a minter");
+		require(value > 0, "JTrancheA: value is zero");
         super._mint(account, value);
     }
 
     /** 
 	 * @dev Internal function that burns an amount of the token of a given account.
-	 * Update pointsCorrection to keep funds unchanged.
 	 * @param value The amount that will be burnt.
 	 */
 	function burn(uint256 value) external override {
+		require(value > 0, "JTrancheA: value is zero");
 		super._burn(msg.sender, value);
 	}
 }

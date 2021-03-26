@@ -7,12 +7,10 @@
 pragma solidity 0.6.12;
 
 import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import "./JTrancheAToken.sol";
 import "./JTrancheBToken.sol";
 import "./IJTranchesDeployer.sol";
-import "./IJCompound.sol";
 
 contract JTranchesDeployer is OwnableUpgradeSafe, IJTranchesDeployer {
     using SafeMath for uint256;

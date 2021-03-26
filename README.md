@@ -47,23 +47,23 @@ Limit is 24 KiB for single contract
     <tbody>
         <tr>
             <td>JCompound</td>
-            <td><code>18.26 KiB</code></td>
+            <td><code>19.10 KiB</code></td>
         </tr>
         <tr>
             <td>JCompoundStorage</td>
-            <td><code>1.55 KiB</code></td>
+            <td><code>1.70 KiB</code></td>
         </tr>
         <tr>
             <td>JTrancheAToken</td>
-            <td><code>7.46 KiB</code></td>
+            <td><code>7.63 KiB</code></td>
         </tr>
         <tr>
             <td>JTrancheBToken</td>
-            <td><code>7.46 KiB</code></td>
+            <td><code>7.63 KiB</code></td>
         </tr>
         <tr>
             <td>JTranchesDeployer</td>
-            <td><code>18.08 KiB</code></td>
+            <td><code>18.43 KiB</code></td>
         </tr>
     </tbody>
   </table>

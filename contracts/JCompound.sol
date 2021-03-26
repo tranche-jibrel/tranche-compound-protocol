@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 /**
  * Created on 2021-02-11
- * @summary: Jibrel Compound Tranche Deployer
+ * @summary: Jibrel Compound Tranche Protocol
  * @author: Jibrel Team
  */
 pragma solidity ^0.6.12;
@@ -49,7 +49,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
      * @dev locked modifiers
      */
     modifier locked() {
-        require(!fLock);
+        require(!fLock, "JCompound: locked function");
         fLock = true;
         _;
         fLock = false;
@@ -58,6 +58,21 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
     // This is needed to receive ETH when calling redeemCEth function
     fallback() external payable {}
     receive() external payable {}
+
+    /**
+     * @dev set new addresses for price oracle, fees collector and tranche deployer 
+     * @param _priceOracle price oracle address
+     * @param _feesCollector fees collector contract address
+     * @param _tranchesDepl tranches deployer contract address
+     */
+    function setNewEnvironment(address _priceOracle, 
+            address _feesCollector, 
+            address _tranchesDepl) external onlyOwner{
+        require((_priceOracle != address(0)) && (_feesCollector != address(0)) && (_tranchesDepl != address(0)), "JCompound: check addresses");
+        priceOracleAddress = _priceOracle;
+        feesCollectorAddress = _feesCollector;
+        tranchesDeployerAddress = _tranchesDepl;
+    }
 
     /**
      * @dev set how many blocks will be produced per year on the blockchain 
@@ -72,8 +87,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
      * @param _cEtherContract compound token contract address (cETH contract, on Kovan: 0x41b5844f4680a8c38fbb695b7f9cfd1f64474a72)
      */
     function setCEtherContract(address payable _cEtherContract) external onlyAdmins {
-        cEtherContract = _cEtherContract;
-        cEthToken = ICEth(cEtherContract);
+        cEthToken = ICEth(_cEtherContract);
         cTokenContracts[0x0000000000000000000000000000000000000000] = _cEtherContract;
     }
 
@@ -116,6 +130,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
      * @param _underlyingDec underlying token decimals
      */
     function setDecimals(uint256 _trancheNum, uint8 _cTokenDec, uint8 _underlyingDec) external onlyAdmins {
+        require((_cTokenDec <= 18) && (_underlyingDec <= 18), "JCompound: too many decimals");
         trancheParameters[_trancheNum].cTokenDecimals = _cTokenDec;
         trancheParameters[_trancheNum].underlyingDecimals = _underlyingDec;
     }
@@ -261,13 +276,13 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
     function getCTokenExchangeRate(address _tokenContract) public view returns (uint256 exchRateMantissa) {
         ICErc20 cToken = ICErc20(cTokenContracts[_tokenContract]);
         // Amount of current exchange rate from cToken to underlying
-        return exchRateMantissa = cToken.exchangeRateStored(); // it returns something like 210615675702828777787378059 (cDAI contract)
+        return exchRateMantissa = cToken.exchangeRateStored(); // it returns something like 210615675702828777787378059 (cDAI contract) or 209424757650257 (cUSDT contract)
     }
 
     /**
      * @dev get tranche mantissa
      * @param _trancheNum tranche number
-     * @return mantissa tranche mantissa
+     * @return mantissa tranche mantissa (from 16 to 28 decimals)
      */
     function getMantissa(uint256 _trancheNum) public view returns (uint256 mantissa) {
         return mantissa = (uint256(trancheParameters[_trancheNum].underlyingDecimals)).add(18).sub(uint256(trancheParameters[_trancheNum].cTokenDecimals));
@@ -457,7 +472,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
             oldBal = getEthBalance();
             require(redeemCEth(taAmount, false) == 0, "JCompound: incorrect answer from cEth");
             diffBal = getEthBalance().sub(oldBal);
-            userAmount = diffBal.mul(trancheParameters[_trancheNum].redemptionPercentage).div(10000);
+            userAmount = diffBal.mul(trancheParameters[_trancheNum].redemptionPercentage).div(PERCENT_DIVIDER);
             TransferETHHelper.safeTransferETH(msg.sender, userAmount);
             if (diffBal != userAmount) {
                 // transfer fees to JFeesCollector
@@ -469,7 +484,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
             oldBal = getTokenBalance(trancheAddresses[_trancheNum].buyerCoinAddress);
             require(redeemCErc20Tokens(trancheAddresses[_trancheNum].buyerCoinAddress, taAmount, false) == 0, "JCompound: incorrect answer from cToken");
             diffBal = getTokenBalance(trancheAddresses[_trancheNum].buyerCoinAddress).sub(oldBal);
-            userAmount = diffBal.mul(trancheParameters[_trancheNum].redemptionPercentage).div(10000);
+            userAmount = diffBal.mul(trancheParameters[_trancheNum].redemptionPercentage).div(PERCENT_DIVIDER);
             SafeERC20.safeTransfer(IERC20(trancheAddresses[_trancheNum].buyerCoinAddress), msg.sender, userAmount);
             if (diffBal != userAmount) {
                 // transfer fees to JFeesCollector
@@ -491,12 +506,14 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
      */
     function buyTrancheBToken(uint256 _trancheNum, uint256 _amount) external payable locked {
         uint256 prevCompTokenBalance = getTokenBalance(trancheAddresses[_trancheNum].cTokenAddress);
+        // if eth, ignore _amount parameter and set it to msg.value
+        if (trancheAddresses[_trancheNum].buyerCoinAddress == address(0))
+            _amount = msg.value;
         // refresh value for tranche A
         setTrancheAExchangeRate(_trancheNum);
         // get tranche B exchange rate
         uint256 tbAmount = _amount.mul(10 ** uint256(trancheParameters[_trancheNum].underlyingDecimals)).div(getTrancheBExchangeRate(_trancheNum, _amount));
         if (trancheAddresses[_trancheNum].buyerCoinAddress == address(0)) {
-            _amount = msg.value;
             TransferETHHelper.safeTransferETH(address(this), _amount);
             // transfer ETH to Coompound receiving cETH
             cEthToken.mint{value: _amount}();
@@ -543,7 +560,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
             oldBal = getEthBalance();
             require(redeemCEth(tbAmount, false) == 0, "JCompound: incorrect answer from cEth");
             diffBal = getEthBalance().sub(oldBal);
-            userAmount = diffBal.mul(trancheParameters[_trancheNum].redemptionPercentage).div(10000);
+            userAmount = diffBal.mul(trancheParameters[_trancheNum].redemptionPercentage).div(PERCENT_DIVIDER);
             TransferETHHelper.safeTransferETH(msg.sender, userAmount);
             if (diffBal != userAmount) {
                 // transfer fees to JFeesCollector
@@ -555,7 +572,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
             oldBal = getTokenBalance(trancheAddresses[_trancheNum].buyerCoinAddress);
             require(redeemCErc20Tokens(trancheAddresses[_trancheNum].buyerCoinAddress, tbAmount, false) == 0, "JCompound: incorrect answer from cToken");
             diffBal = getTokenBalance(trancheAddresses[_trancheNum].buyerCoinAddress);
-            userAmount = diffBal.mul(trancheParameters[_trancheNum].redemptionPercentage).div(10000);
+            userAmount = diffBal.mul(trancheParameters[_trancheNum].redemptionPercentage).div(PERCENT_DIVIDER);
             SafeERC20.safeTransfer(IERC20(trancheAddresses[_trancheNum].buyerCoinAddress), msg.sender, userAmount);
             if (diffBal != userAmount) {
                 // transfer fees to JFeesCollector
@@ -607,7 +624,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
     }
 
     /**
-     * @dev transfer tokens in this contract to owner address
+     * @dev transfer tokens in this contract to fees collector contract
      * @param _tokenContract token contract address
      * @param _amount token amount to be transferred 
      */
@@ -616,12 +633,11 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
     }
 
     /**
-     * @dev transfer ethers in this contract to owner address
+     * @dev transfer ethers in this contract to fees collector contract
      * @param _amount ethers amount to be transferred 
      */
     function withdrawEthToOwner(uint256 _amount) external onlyAdmins {
         TransferETHHelper.safeTransferETH(feesCollectorAddress, _amount);
-        //payable(address(feesCollectorAddress)).transfer(_amount);
     }
 
 }
