@@ -294,11 +294,18 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
      * @return compPrice compound current price
      */
     function getCompoundPrice(uint256 _trancheNum) public view returns (uint256 compPrice) {
+        uint256 mantissa = getMantissa(_trancheNum);
+        uint256 underlyingDec = uint256(trancheParameters[_trancheNum].underlyingDecimals);
         if (trancheAddresses[_trancheNum].buyerCoinAddress == address(0)) {
-            compPrice = getCEthExchangeRate().mul(10 ** uint256(trancheParameters[_trancheNum].underlyingDecimals)).div(10 ** getMantissa(_trancheNum));
+            compPrice = getCEthExchangeRate();
         } else {
-            compPrice = getCTokenExchangeRate(trancheAddresses[_trancheNum].buyerCoinAddress)
-                        .mul(10 ** uint256(trancheParameters[_trancheNum].underlyingDecimals)).div(10 ** getMantissa(_trancheNum));
+            compPrice = getCTokenExchangeRate(trancheAddresses[_trancheNum].buyerCoinAddress);
+        }
+
+        if (underlyingDec >= mantissa) {
+            compPrice = compPrice.mul(10 ** (underlyingDec.sub(mantissa)));
+        } else {
+            compPrice = compPrice.mul(10 ** (mantissa.sub(underlyingDec)));
         }
         return compPrice;
     }
