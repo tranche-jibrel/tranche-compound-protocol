@@ -305,7 +305,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
         if (underlyingDec >= mantissa) {
             compPrice = compPrice.mul(10 ** (underlyingDec.sub(mantissa)));
         } else {
-            compPrice = compPrice.mul(10 ** (mantissa.sub(underlyingDec)));
+            compPrice = compPrice.div(10 ** (mantissa.sub(underlyingDec)));
         }
         return compPrice;
     }
