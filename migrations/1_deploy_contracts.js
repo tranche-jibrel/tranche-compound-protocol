@@ -100,10 +100,10 @@ module.exports = async (deployer, network, accounts) => {
         await JCompoundInstance.setCEtherContract(CETH_ADDRESS, { from: factoryOwner });
 
         console.log('compound deployer 3');
-        await JCompoundInstance.addTrancheToProtocol(DAI_ADDRESS, "cDAI tranche A", "CDAIA", "cDAI tranche B", "CDAIB", web3.utils.toWei("0.04", "ether"), 8, 18, { from: factoryOwner });
+        await JCompoundInstance.addTrancheToProtocol(DAI_ADDRESS, "Tranche A - Compound DAI", "ACDAI", "Tranche B - Compound DAI", "BCDAI", web3.utils.toWei("0.04", "ether"), 8, 18, { from: factoryOwner });
 
         console.log('compound deployer 4');
-        await JCompoundInstance.addTrancheToProtocol(ZERO_ADDRESS, "cETH tranche A", "CETHA", "cETH tranche B", "CETHB", web3.utils.toWei("0.04", "ether"), 8, 18, { from: factoryOwner });
+        await JCompoundInstance.addTrancheToProtocol(ZERO_ADDRESS, "Tranche A - Compound ETH", "ACETH", "Tranche B - Compound ETH", "BCETH", web3.utils.toWei("0.04", "ether"), 8, 18, { from: factoryOwner });
 
         console.log('compound deployer 5');
         console.log(`JCompound deployed at: ${JCompoundInstance.address}`);
