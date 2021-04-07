@@ -1,20 +1,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.12;
 
-import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
 import "./IJTrancheTokens.sol";
 
-contract JTrancheAToken is OwnableUpgradeSafe, ERC20UpgradeSafe, AccessControlUpgradeSafe, IJTrancheTokens {
-	using SafeMath for uint256;
+contract JTrancheAToken is OwnableUpgradeable, ERC20Upgradeable, AccessControlUpgradeable, IJTrancheTokens {
+	using SafeMathUpgradeable for uint256;
 
     // Create a new role identifier for the minter role
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
 	function initialize(string memory name, string memory symbol) public initializer() {
-		OwnableUpgradeSafe.__Ownable_init();
+		OwnableUpgradeable.__Ownable_init();
         __ERC20_init(name, symbol);
 		// Grant the minter role to a specified account
         _setupRole(MINTER_ROLE, msg.sender);

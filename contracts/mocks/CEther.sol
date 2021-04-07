@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.6.12;
 
-import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "../TransferETHHelper.sol";
 
 
-contract CEther is OwnableUpgradeSafe, ERC20UpgradeSafe {
-    using SafeMath for uint256;
+contract CEther is OwnableUpgradeable, ERC20Upgradeable {
+    using SafeMathUpgradeable for uint256;
 
     //uint256 internal exchangeRate;
     uint256 internal exchangeRateStoredVal;
@@ -15,8 +15,8 @@ contract CEther is OwnableUpgradeSafe, ERC20UpgradeSafe {
     uint256 public redeemPercentage;
 
     function initialize() public initializer {
-        OwnableUpgradeSafe.__Ownable_init();
-        ERC20UpgradeSafe.__ERC20_init_unchained("cETH", "cETH");
+        OwnableUpgradeable.__Ownable_init();
+        ERC20Upgradeable.__ERC20_init_unchained("cETH", "cETH");
         //_setupDecimals(8);
         exchangeRateStoredVal = 22595347673700721; 
         //supplyRate = 975104455;

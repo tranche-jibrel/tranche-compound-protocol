@@ -6,8 +6,8 @@
  */
 pragma solidity ^0.6.12;
 
-import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/SafeERC20.sol";
+import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/SafeERC20Upgradeable.sol";
 import "./TransferETHHelper.sol";
 import "./IJPriceOracle.sol";
 import "./IJTrancheTokens.sol";
@@ -17,8 +17,8 @@ import "./IJCompound.sol";
 import "./ICErc20.sol";
 
 
-contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
-    using SafeMath for uint256;
+contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
+    using SafeMathUpgradeable for uint256;
 
     /**
      * @dev contract initializer
@@ -29,12 +29,12 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
     function initialize(address _priceOracle, 
             address _feesCollector, 
             address _tranchesDepl) public initializer() {
-        OwnableUpgradeSafe.__Ownable_init();
+        OwnableUpgradeable.__Ownable_init();
         priceOracleAddress = _priceOracle;
         feesCollectorAddress = _feesCollector;
         tranchesDeployerAddress = _tranchesDepl;
         redeemTimeout = 3; //default
-        totalBlocksPerYear = 2392387;
+        totalBlocksPerYear = 2102400; // same number like in Compound protocol
     }
 
     /**
@@ -114,7 +114,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
      * @param _trancheNum tranche number
      * @return cToken percentage per year
      */
-    function getCompoundPercentagePerTranche(uint256 _trancheNum) external view returns (uint256) {
+    function getCompoundSupplyRPB(uint256 _trancheNum) external view returns (uint256) {
         if (trancheAddresses[_trancheNum].buyerCoinAddress == address(0)) {
             return cEthToken.supplyRatePerBlock();
         } else {
@@ -209,7 +209,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
     function sendErc20ToCompound(address _erc20Contract, uint256 _numTokensToSupply) internal returns(uint256) {
         require(cTokenContracts[_erc20Contract] != address(0), "JCompound: token not accepted");
         // i.e. DAI contract, on Kovan: 0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa
-        IERC20 underlying = IERC20(_erc20Contract);
+        IERC20Upgradeable underlying = IERC20Upgradeable(_erc20Contract);
 
         // i.e. cDAI contract, on Kovan: 0xf0d0eb522cfa50b716b3b1604c4f0fa6f04376ad
         ICErc20 cToken = ICErc20(cTokenContracts[_erc20Contract]);
@@ -358,7 +358,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
      * @return tranche A value
      */
     function getTrAValue(uint256 _trancheNum) public view returns (uint256) {
-        uint256 totASupply = IERC20(trancheAddresses[_trancheNum].ATrancheAddress).totalSupply();
+        uint256 totASupply = IERC20Upgradeable(trancheAddresses[_trancheNum].ATrancheAddress).totalSupply();
         return totASupply.mul(getTrancheAExchangeRate(_trancheNum)).div(10 ** uint256(trancheParameters[_trancheNum].underlyingDecimals));
     }
 
@@ -403,7 +403,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
         // bSupply = Total number of tbDai in protocol
         uint256 totTrBValue;
 
-        uint256 totBSupply = IERC20(trancheAddresses[_trancheNum].BTrancheAddress).totalSupply();
+        uint256 totBSupply = IERC20Upgradeable(trancheAddresses[_trancheNum].BTrancheAddress).totalSupply();
         uint256 newBSupply = totBSupply.add(_newAmount);
 
         uint256 totProtValue = getTotalValue(_trancheNum).add(_newAmount);
@@ -436,9 +436,9 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
             cEthToken.mint{value: _amount}();
         } else {
             // check approve
-            require(IERC20(trancheAddresses[_trancheNum].buyerCoinAddress).allowance(msg.sender, address(this)) >= _amount, "JCompound: allowance failed buying tranche A");
+            require(IERC20Upgradeable(trancheAddresses[_trancheNum].buyerCoinAddress).allowance(msg.sender, address(this)) >= _amount, "JCompound: allowance failed buying tranche A");
             //Transfer DAI from msg.sender to protocol;
-            SafeERC20.safeTransferFrom(IERC20(trancheAddresses[_trancheNum].buyerCoinAddress), msg.sender, address(this), _amount);
+            SafeERC20Upgradeable.safeTransferFrom(IERC20Upgradeable(trancheAddresses[_trancheNum].buyerCoinAddress), msg.sender, address(this), _amount);
             // transfer DAI to Coompound receiving cDai
             sendErc20ToCompound(trancheAddresses[_trancheNum].buyerCoinAddress, _amount);
         }
@@ -464,9 +464,9 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
     function redeemTrancheAToken(uint256 _trancheNum, uint256 _amount) external locked {
         require((block.number).sub(lastActivity[msg.sender]) >= redeemTimeout, "JCompound: redeem timeout not expired on tranche A");
         // check approve
-        require(IERC20(trancheAddresses[_trancheNum].ATrancheAddress).allowance(msg.sender, address(this)) >= _amount, "JCompound: allowance failed redeeming tranche A");
+        require(IERC20Upgradeable(trancheAddresses[_trancheNum].ATrancheAddress).allowance(msg.sender, address(this)) >= _amount, "JCompound: allowance failed redeeming tranche A");
         //Transfer DAI from msg.sender to protocol;
-        SafeERC20.safeTransferFrom(IERC20(trancheAddresses[_trancheNum].ATrancheAddress), msg.sender, address(this), _amount);
+        SafeERC20Upgradeable.safeTransferFrom(IERC20Upgradeable(trancheAddresses[_trancheNum].ATrancheAddress), msg.sender, address(this), _amount);
 
         uint256 oldBal;
         uint256 diffBal;
@@ -492,11 +492,11 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
             require(redeemCErc20Tokens(trancheAddresses[_trancheNum].buyerCoinAddress, taAmount, false) == 0, "JCompound: incorrect answer from cToken");
             diffBal = getTokenBalance(trancheAddresses[_trancheNum].buyerCoinAddress).sub(oldBal);
             userAmount = diffBal.mul(trancheParameters[_trancheNum].redemptionPercentage).div(PERCENT_DIVIDER);
-            SafeERC20.safeTransfer(IERC20(trancheAddresses[_trancheNum].buyerCoinAddress), msg.sender, userAmount);
+            SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(trancheAddresses[_trancheNum].buyerCoinAddress), msg.sender, userAmount);
             if (diffBal != userAmount) {
                 // transfer fees to JFeesCollector
                 feesAmount = diffBal.sub(userAmount);
-                SafeERC20.safeTransfer(IERC20(trancheAddresses[_trancheNum].buyerCoinAddress), feesCollectorAddress, feesAmount);
+                SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(trancheAddresses[_trancheNum].buyerCoinAddress), feesCollectorAddress, feesAmount);
             }
         }
         
@@ -526,9 +526,9 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
             cEthToken.mint{value: _amount}();
         } else {
             // check approve
-            require(IERC20(trancheAddresses[_trancheNum].buyerCoinAddress).allowance(msg.sender, address(this)) >= _amount, "JCompound: allowance failed buying tranche B");
+            require(IERC20Upgradeable(trancheAddresses[_trancheNum].buyerCoinAddress).allowance(msg.sender, address(this)) >= _amount, "JCompound: allowance failed buying tranche B");
             //Transfer DAI from msg.sender to protocol;
-            SafeERC20.safeTransferFrom(IERC20(trancheAddresses[_trancheNum].buyerCoinAddress), msg.sender, address(this), _amount);
+            SafeERC20Upgradeable.safeTransferFrom(IERC20Upgradeable(trancheAddresses[_trancheNum].buyerCoinAddress), msg.sender, address(this), _amount);
             // transfer DAI to Couompound receiving cDai
             sendErc20ToCompound(trancheAddresses[_trancheNum].buyerCoinAddress, _amount);
         }
@@ -550,9 +550,9 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
     function redeemTrancheBToken(uint256 _trancheNum, uint256 _amount) external locked {
         require((block.number).sub(lastActivity[msg.sender]) >= redeemTimeout, "JCompound: redeem timeout not expired on tranche B");
         // check approve
-        require(IERC20(trancheAddresses[_trancheNum].BTrancheAddress).allowance(msg.sender, address(this)) >= _amount, "JCompound: allowance failed redeeming tranche B");
+        require(IERC20Upgradeable(trancheAddresses[_trancheNum].BTrancheAddress).allowance(msg.sender, address(this)) >= _amount, "JCompound: allowance failed redeeming tranche B");
         //Transfer DAI from msg.sender to protocol;
-        SafeERC20.safeTransferFrom(IERC20(trancheAddresses[_trancheNum].BTrancheAddress), msg.sender, address(this), _amount);
+        SafeERC20Upgradeable.safeTransferFrom(IERC20Upgradeable(trancheAddresses[_trancheNum].BTrancheAddress), msg.sender, address(this), _amount);
 
         uint256 oldBal;
         uint256 diffBal;
@@ -580,11 +580,11 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
             require(redeemCErc20Tokens(trancheAddresses[_trancheNum].buyerCoinAddress, tbAmount, false) == 0, "JCompound: incorrect answer from cToken");
             diffBal = getTokenBalance(trancheAddresses[_trancheNum].buyerCoinAddress);
             userAmount = diffBal.mul(trancheParameters[_trancheNum].redemptionPercentage).div(PERCENT_DIVIDER);
-            SafeERC20.safeTransfer(IERC20(trancheAddresses[_trancheNum].buyerCoinAddress), msg.sender, userAmount);
+            SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(trancheAddresses[_trancheNum].buyerCoinAddress), msg.sender, userAmount);
             if (diffBal != userAmount) {
                 // transfer fees to JFeesCollector
                 feesAmount = diffBal.sub(userAmount);
-                SafeERC20.safeTransfer(IERC20(trancheAddresses[_trancheNum].buyerCoinAddress), feesCollectorAddress, feesAmount);
+                SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(trancheAddresses[_trancheNum].buyerCoinAddress), feesCollectorAddress, feesAmount);
             }   
         }
         
@@ -611,7 +611,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
             oldBal = getTokenBalance(trancheAddresses[_trancheNum].buyerCoinAddress);
             require(redeemCErc20Tokens(trancheAddresses[_trancheNum].buyerCoinAddress, _cTokenAmount, true) == 0, "JCompound: incorrect answer from cToken");
             diffBal = getTokenBalance(trancheAddresses[_trancheNum].buyerCoinAddress);
-            SafeERC20.safeTransfer(IERC20(trancheAddresses[_trancheNum].buyerCoinAddress), feesCollectorAddress, diffBal);
+            SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(trancheAddresses[_trancheNum].buyerCoinAddress), feesCollectorAddress, diffBal);
         }
     }
 
@@ -620,7 +620,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
      * @param _tokenContract token contract address
      */
     function getTokenBalance(address _tokenContract) public view returns (uint256) {
-        return IERC20(_tokenContract).balanceOf(address(this));
+        return IERC20Upgradeable(_tokenContract).balanceOf(address(this));
     }
 
     /**
@@ -636,7 +636,7 @@ contract JCompound is OwnableUpgradeSafe, JCompoundStorage, IJCompound {
      * @param _amount token amount to be transferred 
      */
     function transferTokenToOwner(address _tokenContract, uint256 _amount) external onlyAdmins {
-        SafeERC20.safeTransfer(IERC20(_tokenContract), feesCollectorAddress, _amount);
+        SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(_tokenContract), feesCollectorAddress, _amount);
     }
 
     /**

@@ -7,9 +7,9 @@
 pragma solidity 0.6.12;
 
 
-import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-contract JFeesCollectorStorage is OwnableUpgradeSafe {
+contract JFeesCollectorStorage is OwnableUpgradeable {
 /* WARNING: NEVER RE-ORDER VARIABLES! Always double-check that new variables are added APPEND-ONLY. Re-ordering variables can permanently BREAK the deployed proxy contract.*/
     bool public fLock;
     uint256 public contractVersion;

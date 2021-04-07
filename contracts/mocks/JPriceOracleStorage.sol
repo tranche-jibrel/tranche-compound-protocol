@@ -6,9 +6,9 @@
  */
 pragma solidity 0.6.12;
 
-import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-contract JPriceOracleStorage is OwnableUpgradeSafe {
+contract JPriceOracleStorage is OwnableUpgradeable {
 /* WARNING: NEVER RE-ORDER VARIABLES! Always double-check that new variables are added APPEND-ONLY. Re-ordering variables can permanently BREAK the deployed proxy contract.*/
     uint256 public constant fixed_1 = 1000000000000000000000000;
     

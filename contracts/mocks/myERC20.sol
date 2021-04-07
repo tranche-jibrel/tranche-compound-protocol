@@ -2,15 +2,15 @@
 
 pragma solidity 0.6.12;
 
-import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-contract myERC20 is OwnableUpgradeSafe, ERC20UpgradeSafe {
-    using SafeMath for uint256;
+contract myERC20 is OwnableUpgradeable, ERC20Upgradeable {
+    using SafeMathUpgradeable for uint256;
 
     function initialize(uint256 _initialSupply) public initializer {
-        OwnableUpgradeSafe.__Ownable_init();
-        ERC20UpgradeSafe.__ERC20_init_unchained("NewJNT", "NJNT");
+        OwnableUpgradeable.__Ownable_init();
+        ERC20Upgradeable.__ERC20_init_unchained("NewJNT", "NJNT");
         _mint(msg.sender, _initialSupply.mul(uint(1e18)));
     }
 

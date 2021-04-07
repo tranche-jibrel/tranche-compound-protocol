@@ -6,19 +6,19 @@
  */
 pragma solidity 0.6.12;
 
-import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
 import "./JTrancheAToken.sol";
 import "./JTrancheBToken.sol";
 import "./IJTranchesDeployer.sol";
 
-contract JTranchesDeployer is OwnableUpgradeSafe, IJTranchesDeployer {
-    using SafeMath for uint256;
+contract JTranchesDeployer is OwnableUpgradeable, IJTranchesDeployer {
+    using SafeMathUpgradeable for uint256;
 
     address public jCompoundAddress;
 
     function initialize() public initializer() {
-        OwnableUpgradeSafe.__Ownable_init();
+        OwnableUpgradeable.__Ownable_init();
     }
 
     function setJCompoundAddress(address _jCompound) public onlyOwner {

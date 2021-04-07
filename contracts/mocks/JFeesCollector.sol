@@ -6,19 +6,18 @@
  */
 pragma solidity 0.6.12;
 
-import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/SafeERC20.sol";
+import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/SafeERC20Upgradeable.sol";
 import "../TransferETHHelper.sol";
 import "./JFeesCollectorStorage.sol";
 import "./IJFeesCollector.sol";
 
-contract JFeesCollector is OwnableUpgradeSafe, JFeesCollectorStorage, IJFeesCollector {
-    using SafeMath for uint256;
+contract JFeesCollector is OwnableUpgradeable, JFeesCollectorStorage, IJFeesCollector {
+    using SafeMathUpgradeable for uint256;
 
     function initialize() public initializer {
-        OwnableUpgradeSafe.__Ownable_init();
+        OwnableUpgradeable.__Ownable_init();
         contractVersion = 1;
     }
 
@@ -86,7 +85,7 @@ contract JFeesCollector is OwnableUpgradeSafe, JFeesCollectorStorage, IJFeesColl
     * @return uint256 token contract balance
     */
     function getTokenBalance(address _tok) external view returns (uint256) {
-        return IERC20(_tok).balanceOf(address(this));
+        return IERC20Upgradeable(_tok).balanceOf(address(this));
     }
 
     /**
@@ -105,7 +104,7 @@ contract JFeesCollector is OwnableUpgradeSafe, JFeesCollectorStorage, IJFeesColl
     */
     function withdrawTokens(address _tok, uint256 _amount) external onlyOwner locked {
         require(isTokenAllowed(_tok), "Token not allowed");
-        SafeERC20.safeTransfer(IERC20(_tok), msg.sender, _amount);
+        SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(_tok), msg.sender, _amount);
         emit TokenWithdrawed(_tok, _amount, block.number);
     }
 

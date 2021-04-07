@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.6.12;
 
-import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/ERC20.sol";
-//import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/SafeERC20.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-contract CErc20 is OwnableUpgradeSafe, ERC20UpgradeSafe {
-    using SafeMath for uint256;
+contract CErc20 is OwnableUpgradeable, ERC20Upgradeable {
+    using SafeMathUpgradeable for uint256;
 
     //uint256 internal exchangeRate;
     uint256 internal exchangeRateStoredVal;
@@ -14,11 +13,11 @@ contract CErc20 is OwnableUpgradeSafe, ERC20UpgradeSafe {
     uint256 public redeemPercentage;
 
     address public allowedToken;
-    IERC20 public token;
+    IERC20Upgradeable public token;
 
     function initialize() public initializer {
-        OwnableUpgradeSafe.__Ownable_init();
-        ERC20UpgradeSafe.__ERC20_init_unchained("cToken", "cToken");
+        OwnableUpgradeable.__Ownable_init();
+        ERC20Upgradeable.__ERC20_init_unchained("cToken", "cToken");
         //_setupDecimals(8);
         exchangeRateStoredVal = 21116902930684312;
         //supplyRate = 30368789660;
@@ -34,7 +33,7 @@ contract CErc20 is OwnableUpgradeSafe, ERC20UpgradeSafe {
 
     function setToken(address _token) external {
         allowedToken = _token;
-        token = IERC20(allowedToken);
+        token = IERC20Upgradeable(allowedToken);
     }
 
     function getAllowedToken() external view returns (address) {
