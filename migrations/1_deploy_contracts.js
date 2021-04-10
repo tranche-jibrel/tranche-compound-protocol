@@ -67,7 +67,9 @@ module.exports = async (deployer, network, accounts) => {
     console.log("Eth Tranche B Token Address: " + DaiTrB.address);
 
   } else if (network == "kovan") {
-    let { FEE_COLLECTOR_ADDRESS, PRICE_ORACLE_ADDRESS, IS_UPGRADE, CDAI_ADDRESS, DAI_ADDRESS, CETH_ADDRESS } = process.env;
+    let { FEE_COLLECTOR_ADDRESS, PRICE_ORACLE_ADDRESS, IS_UPGRADE,
+      TRANCHE_ONE_TOKEN_ADDRESS, TRANCHE_ONE_CTOKEN_ADDRESS, TRANCHE_TWO_TOKEN_ADDRESS, TRANCHE_TWO_CTOKEN_ADDRESS
+    } = process.env;
     const accounts = await web3.eth.getAccounts();
     const factoryOwner = accounts[0];
     if (IS_UPGRADE == 'true') {
@@ -79,31 +81,26 @@ module.exports = async (deployer, network, accounts) => {
         const compoundDeployer = await deployProxy(JTranchesDeployer, [], { from: factoryOwner, unsafeAllowCustomTypes: true });
         console.log(`COMPOUND_DEPLOYER=${compoundDeployer.address}`);
 
-        // CETHAddress for Kovan: 0x41B5844f4680a8C38fBb695b7F9CFd1F64474a72
-        // DAIAddress for Kovan: 0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa 
-        // CDAIAddress for Kovan: 0xF0d0EB522cfa50B716B3b1604C4F0fA6f04376AD
         // Source: https://github.com/compound-finance/compound-config/blob/master/networks/kovan.json
-        const JPOinstance = await deployProxy(JPriceOracle, [], { from: factoryOwner });
-        console.log('JPriceOracle Deployed: ', JPOinstance.address);
-
-        const JCompoundInstance = await deployProxy(JCompound, [JPOinstance.address, FEE_COLLECTOR_ADDRESS, compoundDeployer.address],
+        const JCompoundInstance = await deployProxy(JCompound, [PRICE_ORACLE_ADDRESS, FEE_COLLECTOR_ADDRESS, compoundDeployer.address],
           { from: factoryOwner });
 
         console.log(`COMPOUND_TRANCHE_ADDRESS=${JCompoundInstance.address}`);
         compoundDeployer.setJCompoundAddress(JCompoundInstance.address);
-
         console.log('compound deployer 1');
-        // TODO: dai address need to make it dynamic 
-        await JCompoundInstance.setCTokenContract(DAI_ADDRESS, CDAI_ADDRESS, { from: factoryOwner });
 
+        await JCompoundInstance.setCTokenContract(TRANCHE_ONE_TOKEN_ADDRESS, TRANCHE_ONE_CTOKEN_ADDRESS, { from: factoryOwner });
         console.log('compound deployer 2');
-        await JCompoundInstance.setCEtherContract(CETH_ADDRESS, { from: factoryOwner });
+
+        await JCompoundInstance.setCTokenContract(TRANCHE_TWO_TOKEN_ADDRESS, TRANCHE_TWO_CTOKEN_ADDRESS, { from: factoryOwner });
 
         console.log('compound deployer 3');
-        await JCompoundInstance.addTrancheToProtocol(DAI_ADDRESS, "Tranche A - Compound DAI", "ACDAI", "Tranche B - Compound DAI", "BCDAI", web3.utils.toWei("0.04", "ether"), 8, 18, { from: factoryOwner });
+        await JCompoundInstance.addTrancheToProtocol(TRANCHE_ONE_TOKEN_ADDRESS, "Tranche A - Compound DAI", "ACDAI", "Tranche B - Compound DAI", "BCDAI", web3.utils.toWei("0.04", "ether"), 8, 18, { from: factoryOwner });
 
         console.log('compound deployer 4');
-        await JCompoundInstance.addTrancheToProtocol(ZERO_ADDRESS, "Tranche A - Compound ETH", "ACETH", "Tranche B - Compound ETH", "BCETH", web3.utils.toWei("0.04", "ether"), 8, 18, { from: factoryOwner });
+        //await JCompoundInstance.addTrancheToProtocol(ZERO_ADDRESS, "Tranche A - Compound ETH", "ACETH", "Tranche B - Compound ETH", "BCETH", web3.utils.toWei("0.04", "ether"), 8, 18, { from: factoryOwner });
+        // await JCompoundInstance.addTrancheToProtocol("0xb7a4f3e9097c08da09517b5ab877f7a917224ede", "Tranche A - Compound USDC", "ACUSDC", "Tranche B - Compound USDC", "BCUSDC", web3.utils.toWei("0.02", "ether"), 8, 6, { from: factoryOwner });
+        await JCompoundInstance.addTrancheToProtocol(TRANCHE_TWO_TOKEN_ADDRESS, "Tranche A - Compound USDT", "ACUSDT", "Tranche B - Compound USDT", "BCUSDT", web3.utils.toWei("0.02", "ether"), 8, 6, { from: factoryOwner });
 
         console.log('compound deployer 5');
         console.log(`JCompound deployed at: ${JCompoundInstance.address}`);
