@@ -152,7 +152,7 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
     function setTrancheAFixedPercentage(uint256 _trancheNum, uint256 _newTrAPercentage) external onlyAdmins {
         trancheParameters[_trancheNum].trancheALastActionBlock = block.number;
         trancheParameters[_trancheNum].trancheAFixedPercentage = _newTrAPercentage;
-        trancheParameters[_trancheNum].storedTrancheAPrice = setTrancheAExchangeRate(_trancheNum);
+        trancheParameters[_trancheNum].storedTrancheAPrice = setTrancheANormalizedExchangeRate(_trancheNum);
     }
 
     /**
@@ -181,19 +181,22 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
 
         trancheAddresses[tranchePairsCounter].buyerCoinAddress = _erc20Contract;
         trancheAddresses[tranchePairsCounter].cTokenAddress = cTokenContracts[_erc20Contract];
+        // our tokens always with 18 decimals
         trancheAddresses[tranchePairsCounter].ATrancheAddress = 
                 IJTranchesDeployer(tranchesDeployerAddress).deployNewTrancheATokens(_nameA, _symbolA, msg.sender);
         trancheAddresses[tranchePairsCounter].BTrancheAddress = 
-                IJTranchesDeployer(tranchesDeployerAddress).deployNewTrancheBTokens(_nameB, _symbolB, msg.sender); //, _initBSupply);
+                IJTranchesDeployer(tranchesDeployerAddress).deployNewTrancheBTokens(_nameB, _symbolB, msg.sender);
         
-
         trancheParameters[tranchePairsCounter].cTokenDecimals = _cTokenDec;
         trancheParameters[tranchePairsCounter].underlyingDecimals = _underlyingDec;
         trancheParameters[tranchePairsCounter].trancheAFixedPercentage = _fixedRpb;
         trancheParameters[tranchePairsCounter].trancheALastActionBlock = block.number;
-        trancheParameters[tranchePairsCounter].storedTrancheAPrice = getCompoundPrice(tranchePairsCounter);
+        // if we would like to have always 18 decimals
+        trancheParameters[tranchePairsCounter].storedTrancheAPrice = getCompoundNormalizedPrice(tranchePairsCounter);
 
         trancheParameters[tranchePairsCounter].redemptionPercentage = 9950;  //default value 99.5%
+
+        calcNormalizedRPBFromPercentage(tranchePairsCounter); // initialize tranche A RPB
 
         emit TrancheAddedToProtocol(tranchePairsCounter, trancheAddresses[tranchePairsCounter].ATrancheAddress, trancheAddresses[tranchePairsCounter].BTrancheAddress);
 
@@ -214,7 +217,7 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         // i.e. cDAI contract, on Kovan: 0xf0d0eb522cfa50b716b3b1604c4f0fa6f04376ad
         ICErc20 cToken = ICErc20(cTokenContracts[_erc20Contract]);
 
-        underlying.approve(cTokenContracts[_erc20Contract], _numTokensToSupply);
+        SafeERC20Upgradeable.safeApprove(underlying, cTokenContracts[_erc20Contract], _numTokensToSupply);
         require(underlying.allowance(address(this), cTokenContracts[_erc20Contract]) >= _numTokensToSupply, "JCompound: cannot send to compound contract");
 
         uint256 mintResult = cToken.mint(_numTokensToSupply);
@@ -285,29 +288,30 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
      * @return mantissa tranche mantissa (from 16 to 28 decimals)
      */
     function getMantissa(uint256 _trancheNum) public view returns (uint256 mantissa) {
-        return mantissa = (uint256(trancheParameters[_trancheNum].underlyingDecimals)).add(18).sub(uint256(trancheParameters[_trancheNum].cTokenDecimals));
+        mantissa = (uint256(trancheParameters[_trancheNum].underlyingDecimals)).add(18).sub(uint256(trancheParameters[_trancheNum].cTokenDecimals));
+        return mantissa;
     }
 
     /**
      * @dev get compound price for a single tranche
      * @param _trancheNum tranche number
-     * @return compPrice compound current price
+     * @return compNormPrice compound current normalized price
      */
-    function getCompoundPrice(uint256 _trancheNum) public view returns (uint256 compPrice) {
-        uint256 mantissa = getMantissa(_trancheNum);
-        uint256 underlyingDec = uint256(trancheParameters[_trancheNum].underlyingDecimals);
+    function getCompoundNormalizedPrice(uint256 _trancheNum) public view returns (uint256 compNormPrice) {
         if (trancheAddresses[_trancheNum].buyerCoinAddress == address(0)) {
-            compPrice = getCEthExchangeRate();
+            compNormPrice = getCEthExchangeRate();
         } else {
-            compPrice = getCTokenExchangeRate(trancheAddresses[_trancheNum].buyerCoinAddress);
+            compNormPrice = getCTokenExchangeRate(trancheAddresses[_trancheNum].buyerCoinAddress);
         }
-
-        if (underlyingDec >= mantissa) {
-            compPrice = compPrice.mul(10 ** (underlyingDec.sub(mantissa)));
+        //uint256 underlyingDec = uint256(trancheParameters[_trancheNum].underlyingDecimals);
+        uint256 mantissa = getMantissa(_trancheNum);
+        //uint256 mantissaNorm18 = mantissa.add(uint256(trancheParameters[_trancheNum].cTokenDecimals)).sub(underlyingDec);
+        if (mantissa < 18) {
+            compNormPrice = compNormPrice.mul(10 ** uint256(18).sub(mantissa));
         } else {
-            compPrice = compPrice.div(10 ** (mantissa.sub(underlyingDec)));
+            compNormPrice = compNormPrice.div(10 ** mantissa.sub(uint256(18)));
         }
-        return compPrice;
+        return compNormPrice;
     }
 
     /**
@@ -315,8 +319,8 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
      * @param _trancheNum tranche number
      * @return tranche A token stored price
      */
-    function setTrancheAExchangeRate(uint256 _trancheNum) public returns (uint256) {
-        calcRPBFromPercentage(_trancheNum);
+    function setTrancheANormalizedExchangeRate(uint256 _trancheNum) public returns (uint256) {
+        calcNormalizedRPBFromPercentage(_trancheNum);
         uint256 deltaBlocks = (block.number).sub(trancheParameters[_trancheNum].trancheALastActionBlock);
         uint256 deltaPrice = (trancheParameters[_trancheNum].trancheACurrentRPB).mul(deltaBlocks);
         trancheParameters[_trancheNum].storedTrancheAPrice = (trancheParameters[_trancheNum].storedTrancheAPrice).add(deltaPrice);
@@ -342,34 +346,40 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
     }
 
     /**
-     * @dev get Tranche A exchange rate
+     * @dev get Tranche A exchange rate (tokens with 18 decimals)
      * @param _trancheNum tranche number
      * @return tranche A token current price
      */
-    function calcRPBFromPercentage(uint256 _trancheNum) public returns (uint256) {
+    function calcNormalizedRPBFromPercentage(uint256 _trancheNum) public returns (uint256) {
+        // if normalized price in tranche A price, everything should be scaled to 1e18 
         trancheParameters[_trancheNum].trancheACurrentRPB = trancheParameters[_trancheNum].storedTrancheAPrice
-                        .mul(trancheParameters[_trancheNum].trancheAFixedPercentage).div(totalBlocksPerYear).div(1e18);
+            .mul(trancheParameters[_trancheNum].trancheAFixedPercentage).div(totalBlocksPerYear).div(1e18);
         return trancheParameters[_trancheNum].trancheACurrentRPB;
     }
 
     /**
-     * @dev get Tranche A value
+     * @dev get Tranche A value in underlying tokens
      * @param _trancheNum tranche number
-     * @return tranche A value
+     * @return trANormValue tranche A value in underlying tokens
      */
-    function getTrAValue(uint256 _trancheNum) public view returns (uint256) {
+    function getTrANormalizedValue(uint256 _trancheNum) public view returns (uint256 trANormValue) {
         uint256 totASupply = IERC20Upgradeable(trancheAddresses[_trancheNum].ATrancheAddress).totalSupply();
-        return totASupply.mul(getTrancheAExchangeRate(_trancheNum)).div(10 ** uint256(trancheParameters[_trancheNum].underlyingDecimals));
+        uint256 diffDec = uint256(18).sub(uint256(trancheParameters[_trancheNum].underlyingDecimals));
+        if (diffDec > 0)
+            trANormValue = totASupply.mul(getTrancheAExchangeRate(_trancheNum)).div(1e18).div(10 ** diffDec);
+        else    
+            trANormValue = totASupply.mul(getTrancheAExchangeRate(_trancheNum)).div(1e18);
+        return trANormValue;
     }
 
     /**
-     * @dev get Tranche B value
+     * @dev get Tranche B value in underlying tokens
      * @param _trancheNum tranche number
-     * @return tranche B value
+     * @return tranche B valuein underlying tokens
      */
-    function getTrBValue(uint256 _trancheNum) external view returns (uint256) {
-        uint256 totProtValue = getTotalValue(_trancheNum);
-        uint256 totTrAValue = getTrAValue(_trancheNum);
+    function getTrBNormalizedValue(uint256 _trancheNum) external view returns (uint256) {
+        uint256 totProtValue = getTotalNormalizedValue(_trancheNum);
+        uint256 totTrAValue = getTrANormalizedValue(_trancheNum);
         if (totProtValue > totTrAValue) {
             return totProtValue.sub(totTrAValue);
         } else
@@ -381,10 +391,18 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
      * @param _trancheNum tranche number
      * @return tranche total value
      */
-    function getTotalValue(uint256 _trancheNum) public view returns (uint256) {
-        uint256 compPrice = getCompoundPrice(_trancheNum);
+    function getTotalNormalizedValue(uint256 _trancheNum) public view returns (uint256) {
+        uint256 compNormPrice = getCompoundNormalizedPrice(_trancheNum);
+        //uint256 underlyingDec = uint256(trancheParameters[_trancheNum].underlyingDecimals);
+        uint256 mantissa = getMantissa(_trancheNum);
+        //uint256 mantissaNorm18 = mantissa.add(uint256(trancheParameters[_trancheNum].cTokenDecimals)).sub(underlyingDec);
+        if (mantissa < 18) {
+            compNormPrice = compNormPrice.div(10 ** uint256(18).sub(mantissa));
+        } /*else {
+            compNormPrice = compNormPrice.mul(10 ** mantissa.sub(mantissaNorm18));
+        }*/
         uint256 totProtSupply = getTokenBalance(trancheAddresses[_trancheNum].cTokenAddress);
-        return totProtSupply.mul(compPrice).div(10 ** uint256(trancheParameters[_trancheNum].cTokenDecimals));
+        return totProtSupply.mul(compNormPrice).div(1e18);
     }
 
     /**
@@ -393,7 +411,7 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
      * @param _newAmount new amount entering tranche B
      * @return tbPrice tranche B token current price
      */
-    function getTrancheBExchangeRate(uint256 _trancheNum, uint256 _newAmount) public view returns (uint256 tbPrice) {
+    function getTrancheBNormalizedExchangeRate(uint256 _trancheNum, uint256 _newAmount) public view returns (uint256 tbPrice) {
         // set amount of tokens to be minted via taToken price
         // Current tbDai price = (((cDai X cPrice)-(aSupply X taPrice)) / bSupply)
         // where: cDai = How much cDai we hold in the protocol
@@ -406,17 +424,23 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         uint256 totBSupply = IERC20Upgradeable(trancheAddresses[_trancheNum].BTrancheAddress).totalSupply();
         uint256 newBSupply = totBSupply.add(_newAmount);
 
-        uint256 totProtValue = getTotalValue(_trancheNum).add(_newAmount);
-        uint256 totTrAValue = getTrAValue(_trancheNum);
+        uint256 totProtValue = getTotalNormalizedValue(_trancheNum).add(_newAmount); //underlying token decimals
+        uint256 totTrAValue = getTrANormalizedValue(_trancheNum); //underlying token decimals
         if (totProtValue >= totTrAValue)
-            totTrBValue = totProtValue.sub(totTrAValue);
+            totTrBValue = totProtValue.sub(totTrAValue); //underlying token decimals
         else
             totTrBValue = 0;
-
+        // if normalized price in tranche A price, everything should be scaled to 1e18 
+        uint256 underlyingDec = uint256(trancheParameters[_trancheNum].underlyingDecimals);
+        if (underlyingDec < 18 && totTrBValue > 0) {
+            totTrBValue = totTrBValue.mul(10 ** (uint256(18).sub(underlyingDec)));
+        }
         if (totTrBValue > 0 && newBSupply > 0) {
-            tbPrice = totTrBValue.mul(10 ** uint256(trancheParameters[_trancheNum].underlyingDecimals)).div(newBSupply);
+            // if normalized price in tranche A price, everything should be scaled to 1e18 
+            tbPrice = totTrBValue.mul(1e18).div(newBSupply);
         } else
-            tbPrice = 10 ** uint256(trancheParameters[_trancheNum].underlyingDecimals);
+            // if normalized price in tranche A price, everything should be scaled to 1e18 
+            tbPrice = 1e18;
 
         return tbPrice;
     }
@@ -444,10 +468,14 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         }
         uint256 newCompTokenBalance = getTokenBalance(trancheAddresses[_trancheNum].cTokenAddress);
         // set amount of tokens to be minted calculate taToken amount via taToken price
-        setTrancheAExchangeRate(_trancheNum);
+        setTrancheANormalizedExchangeRate(_trancheNum);
         uint256 taAmount;
         if (newCompTokenBalance > prevCompTokenBalance) {
-            taAmount = _amount.mul(10 ** uint256(trancheParameters[_trancheNum].underlyingDecimals)).div(trancheParameters[_trancheNum].storedTrancheAPrice);
+            //taAmount = _amount.mul(10 ** uint256(trancheParameters[_trancheNum].underlyingDecimals)).div(trancheParameters[_trancheNum].storedTrancheAPrice);
+            // if normalized price in tranche A price, everything should be scaled to 1e18 
+            uint256 diffDec = uint256(18).sub(uint256(trancheParameters[_trancheNum].underlyingDecimals));
+            uint256 normAmount = _amount.mul(10 ** diffDec);
+            taAmount = normAmount.mul(1e18).div(trancheParameters[_trancheNum].storedTrancheAPrice);
             //Mint trancheA tokens and send them to msg.sender;
             IJTrancheTokens(trancheAddresses[_trancheNum].ATrancheAddress).mint(msg.sender, taAmount);
         }
@@ -472,12 +500,15 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         uint256 diffBal;
         uint256 userAmount;
         uint256 feesAmount;
-        setTrancheAExchangeRate(_trancheNum);
-        uint256 taAmount = _amount.mul(trancheParameters[_trancheNum].storedTrancheAPrice).div(10 ** uint256(trancheParameters[_trancheNum].underlyingDecimals));
+        setTrancheANormalizedExchangeRate(_trancheNum);
+        // if normalized price in tranche A price, everything should be scaled to 1e18 
+        uint256 taAmount = _amount.mul(trancheParameters[_trancheNum].storedTrancheAPrice).div(1e18);
+        uint256 diffDec = uint256(18).sub(uint256(trancheParameters[_trancheNum].underlyingDecimals));
+        uint256 normAmount = taAmount.div(10 ** diffDec);
         if (trancheAddresses[_trancheNum].buyerCoinAddress == address(0)) {
             // calculate taETH amount via cETH price
             oldBal = getEthBalance();
-            require(redeemCEth(taAmount, false) == 0, "JCompound: incorrect answer from cEth");
+            require(redeemCEth(normAmount, false) == 0, "JCompound: incorrect answer from cEth");
             diffBal = getEthBalance().sub(oldBal);
             userAmount = diffBal.mul(trancheParameters[_trancheNum].redemptionPercentage).div(PERCENT_DIVIDER);
             TransferETHHelper.safeTransferETH(msg.sender, userAmount);
@@ -489,7 +520,7 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         } else {
             // calculate taToken amount via cToken price
             oldBal = getTokenBalance(trancheAddresses[_trancheNum].buyerCoinAddress);
-            require(redeemCErc20Tokens(trancheAddresses[_trancheNum].buyerCoinAddress, taAmount, false) == 0, "JCompound: incorrect answer from cToken");
+            require(redeemCErc20Tokens(trancheAddresses[_trancheNum].buyerCoinAddress, normAmount, false) == 0, "JCompound: incorrect answer from cToken");
             diffBal = getTokenBalance(trancheAddresses[_trancheNum].buyerCoinAddress).sub(oldBal);
             userAmount = diffBal.mul(trancheParameters[_trancheNum].redemptionPercentage).div(PERCENT_DIVIDER);
             SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(trancheAddresses[_trancheNum].buyerCoinAddress), msg.sender, userAmount);
@@ -517,9 +548,9 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         if (trancheAddresses[_trancheNum].buyerCoinAddress == address(0))
             _amount = msg.value;
         // refresh value for tranche A
-        setTrancheAExchangeRate(_trancheNum);
+        setTrancheANormalizedExchangeRate(_trancheNum);
         // get tranche B exchange rate
-        uint256 tbAmount = _amount.mul(10 ** uint256(trancheParameters[_trancheNum].underlyingDecimals)).div(getTrancheBExchangeRate(_trancheNum, _amount));
+        uint256 tbAmount = _amount.mul(1e18).div(getTrancheBNormalizedExchangeRate(_trancheNum, _amount));
         if (trancheAddresses[_trancheNum].buyerCoinAddress == address(0)) {
             TransferETHHelper.safeTransferETH(address(this), _amount);
             // transfer ETH to Coompound receiving cETH
@@ -535,6 +566,10 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         uint256 newCompTokenBalance = getTokenBalance(trancheAddresses[_trancheNum].cTokenAddress);
         if (newCompTokenBalance > prevCompTokenBalance) {
             //Mint trancheB tokens and send them to msg.sender;
+            // if normalized price in tranche B price, everything should be scaled to 1e18 
+            uint256 diffDec = uint256(18).sub(uint256(trancheParameters[_trancheNum].underlyingDecimals));
+            uint256 normAmount = _amount.mul(10 ** diffDec);
+            tbAmount = normAmount.mul(1e18).div(trancheParameters[_trancheNum].storedTrancheAPrice);
             IJTrancheTokens(trancheAddresses[_trancheNum].BTrancheAddress).mint(msg.sender, tbAmount);
         } else 
             tbAmount = 0;
@@ -559,13 +594,16 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         uint256 userAmount;
         uint256 feesAmount;
         // refresh value for tranche A
-        setTrancheAExchangeRate(_trancheNum);
+        setTrancheANormalizedExchangeRate(_trancheNum);
         // get tranche B exchange rate
-        uint256 tbAmount = _amount.mul(getTrancheBExchangeRate(_trancheNum, 0)).div(10 ** uint256(trancheParameters[_trancheNum].underlyingDecimals));
+        // if normalized price in tranche B price, everything should be scaled to 1e18 
+        uint256 tbAmount = _amount.mul(getTrancheBNormalizedExchangeRate(_trancheNum, 0)).div(1e18);
+        uint256 diffDec = uint256(18).sub(uint256(trancheParameters[_trancheNum].underlyingDecimals));
+        uint256 normAmount = tbAmount.div(10 ** diffDec);
         if (trancheAddresses[_trancheNum].buyerCoinAddress == address(0)){
             // calculate tbETH amount via cETH price
             oldBal = getEthBalance();
-            require(redeemCEth(tbAmount, false) == 0, "JCompound: incorrect answer from cEth");
+            require(redeemCEth(normAmount, false) == 0, "JCompound: incorrect answer from cEth");
             diffBal = getEthBalance().sub(oldBal);
             userAmount = diffBal.mul(trancheParameters[_trancheNum].redemptionPercentage).div(PERCENT_DIVIDER);
             TransferETHHelper.safeTransferETH(msg.sender, userAmount);
@@ -577,7 +615,7 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         } else {
             // calculate taToken amount via cToken price
             oldBal = getTokenBalance(trancheAddresses[_trancheNum].buyerCoinAddress);
-            require(redeemCErc20Tokens(trancheAddresses[_trancheNum].buyerCoinAddress, tbAmount, false) == 0, "JCompound: incorrect answer from cToken");
+            require(redeemCErc20Tokens(trancheAddresses[_trancheNum].buyerCoinAddress, normAmount, false) == 0, "JCompound: incorrect answer from cToken");
             diffBal = getTokenBalance(trancheAddresses[_trancheNum].buyerCoinAddress);
             userAmount = diffBal.mul(trancheParameters[_trancheNum].redemptionPercentage).div(PERCENT_DIVIDER);
             SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(trancheAddresses[_trancheNum].buyerCoinAddress), msg.sender, userAmount);
@@ -635,7 +673,7 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
      * @param _tokenContract token contract address
      * @param _amount token amount to be transferred 
      */
-    function transferTokenToOwner(address _tokenContract, uint256 _amount) external onlyAdmins {
+    function transferTokenToFeesCollector(address _tokenContract, uint256 _amount) external onlyAdmins {
         SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(_tokenContract), feesCollectorAddress, _amount);
     }
 
@@ -643,7 +681,7 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
      * @dev transfer ethers in this contract to fees collector contract
      * @param _amount ethers amount to be transferred 
      */
-    function withdrawEthToOwner(uint256 _amount) external onlyAdmins {
+    function withdrawEthToFeesCollector(uint256 _amount) external onlyAdmins {
         TransferETHHelper.safeTransferETH(feesCollectorAddress, _amount);
     }
 
