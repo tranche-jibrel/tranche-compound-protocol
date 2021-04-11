@@ -19,7 +19,7 @@ contract CErc20 is OwnableUpgradeable, ERC20Upgradeable {
         OwnableUpgradeable.__Ownable_init();
         ERC20Upgradeable.__ERC20_init_unchained("cToken", "cToken");
         //_setupDecimals(8);
-        exchangeRateStoredVal = 21116902930684312;
+        exchangeRateStoredVal = 21061567570282878;
         //supplyRate = 30368789660;
         super._mint(msg.sender, uint(1000).mul(10 ** 8));
     }
