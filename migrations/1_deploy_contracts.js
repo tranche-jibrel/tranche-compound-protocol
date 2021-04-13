@@ -14,6 +14,7 @@ var JTranchesDeployer = artifacts.require('./JTranchesDeployer');
 var JTrancheAToken = artifacts.require('./JTrancheAToken');
 var JTrancheBToken = artifacts.require('./JTrancheBToken');
 
+var EthGateway = artifacts.require('./ETHGateway');
 
 module.exports = async (deployer, network, accounts) => {
   const MYERC20_TOKEN_SUPPLY = 5000000;
@@ -47,8 +48,14 @@ module.exports = async (deployer, network, accounts) => {
     const JCinstance = await deployProxy(JCompound, [JPOinstance.address, JFCinstance.address, JTDeployer.address], { from: factoryOwner });
     console.log('JCompound Deployed: ', JCinstance.address);
 
+    await deployer.deploy(EthGateway, mycEthinstance.address, JCinstance.address);
+    const JEGinstance = await EthGateway.deployed();
+    console.log('ETHGateway Deployed: ', JEGinstance.address);
+
     await JTDeployer.setJCompoundAddress(JCinstance.address, { from: factoryOwner });
 
+    await JCinstance.setETHGateway(JEGinstance.address, { from: factoryOwner });
+    
     await JCinstance.setCEtherContract(mycEthinstance.address, { from: factoryOwner });
     await JCinstance.setCTokenContract(myDAIinstance.address, mycDaiinstance.address, { from: factoryOwner });
 

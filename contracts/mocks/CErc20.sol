@@ -126,7 +126,7 @@ contract CErc20 is OwnableUpgradeable, ERC20Upgradeable {
              *  redeemAmount = redeemTokensIn x exchangeRateCurrent
              */
             redeemTokens = redeemTokensIn;
-            redeemAmount = exchangeRateMantissa.mul(redeemTokensIn).div(uint(1e28));
+            redeemAmount = exchangeRateMantissa.mul(redeemTokensIn).div(uint(1e18));
         } else {
             /*
              * We get the current exchange rate and calculate the amount to be redeemed:

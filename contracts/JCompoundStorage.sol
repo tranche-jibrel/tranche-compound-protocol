@@ -7,7 +7,8 @@
 pragma solidity 0.6.12;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "./ICEth.sol";
+import "./interfaces/ICEth.sol";
+import "./interfaces/IETHGateway.sol";
 
 contract JCompoundStorage is OwnableUpgradeable {
 /* WARNING: NEVER RE-ORDER VARIABLES! Always double-check that new variables are added APPEND-ONLY. Re-ordering variables can permanently BREAK the deployed proxy contract.*/
@@ -48,4 +49,5 @@ contract JCompoundStorage is OwnableUpgradeable {
     mapping(address => uint256) public lastActivity;
 
     ICEth public cEthToken;
+    IETHGateway public ethGateway;
 }

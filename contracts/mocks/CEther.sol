@@ -3,7 +3,7 @@ pragma solidity 0.6.12;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "../TransferETHHelper.sol";
+//import "../TransferETHHelper.sol";
 
 
 contract CEther is OwnableUpgradeable, ERC20Upgradeable {
@@ -16,9 +16,9 @@ contract CEther is OwnableUpgradeable, ERC20Upgradeable {
 
     function initialize() public initializer {
         OwnableUpgradeable.__Ownable_init();
-        ERC20Upgradeable.__ERC20_init_unchained("cETH", "cETH");
-        //_setupDecimals(8);
-        exchangeRateStoredVal = 22595347673700721; 
+        ERC20Upgradeable.__ERC20_init_unchained("cEther", "cETH");
+        //_setupDecimals(8);    232308292728678509080617657
+        exchangeRateStoredVal = 23230829272867851; 
         //supplyRate = 975104455;
         super._mint(msg.sender, uint(1000).mul(10 ** 8));
     }
@@ -47,14 +47,13 @@ contract CEther is OwnableUpgradeable, ERC20Upgradeable {
     function redeem(uint redeemAmount) external returns (uint) {
         uint256 amount = redeemAmount.mul(exchangeRateStoredVal).div(uint(1e18));
 
-        TransferETHHelper.safeTransferETH(msg.sender, amount);
+        msg.sender.transfer(amount);
 
         return amount;
     }
 
     function redeemUnderlying(uint redeemAmount) external returns (uint) {
         redeemFresh(msg.sender, 0, redeemAmount);
-        //TransferETHHelper.safeTransferETH(msg.sender, redeemAmount);
         return 0;
     }
 
@@ -111,7 +110,7 @@ contract CEther is OwnableUpgradeable, ERC20Upgradeable {
              *  redeemAmount = redeemTokensIn x exchangeRateCurrent
              */
             redeemTokens = redeemTokensIn;
-            redeemAmount = exchangeRateMantissa.mul(redeemTokensIn).div(uint(1e28));
+            redeemAmount = exchangeRateMantissa.mul(redeemTokensIn).div(uint(1e18));
         } else {
             /*
              * We get the current exchange rate and calculate the amount to be redeemed:

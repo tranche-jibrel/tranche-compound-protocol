@@ -8,13 +8,13 @@ pragma solidity ^0.6.12;
 
 import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/SafeERC20Upgradeable.sol";
-import "./TransferETHHelper.sol";
-import "./IJPriceOracle.sol";
-import "./IJTrancheTokens.sol";
-import "./IJTranchesDeployer.sol";
+import "./interfaces/IJPriceOracle.sol";
+import "./interfaces/IJTrancheTokens.sol";
+import "./interfaces/IJTranchesDeployer.sol";
+import "./interfaces/IJCompound.sol";
+import "./interfaces/ICErc20.sol";
 import "./JCompoundStorage.sol";
-import "./IJCompound.sol";
-import "./ICErc20.sol";
+import "./TransferETHHelper.sol";
 
 
 contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
@@ -55,7 +55,7 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         fLock = false;
     }
 
-    // This is needed to receive ETH when calling redeemCEth function
+    // This is needed to receive ETH
     fallback() external payable {}
     receive() external payable {}
 
@@ -80,6 +80,14 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
      */
     function setBlocksPerYear(uint256 _newValue) external onlyAdmins {
         totalBlocksPerYear = _newValue;
+    }
+
+    /**
+     * @dev set eth gateway 
+     * @param _ethGateway ethGateway address
+     */
+    function setETHGateway(address _ethGateway) external onlyAdmins {
+        ethGateway = IETHGateway(_ethGateway);
     }
 
     /**
@@ -246,23 +254,6 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
     }
 
     /**
-     * @dev redeem cETH from compound contract (ethers remains in this contract)
-     * @param _amount amount of cETH to redeem
-     * @param _redeemType true or false, normally true
-     */
-    function redeemCEth(uint256 _amount, bool _redeemType) internal returns (uint256 redeemResult) {
-        // _amount is scaled up by 1e18 to avoid decimals
-        if (_redeemType == true) {
-            // Retrieve your asset based on a cToken amount
-            redeemResult = cEthToken.redeem(_amount);
-        } else {
-            // Retrieve your asset based on an amount of the asset
-            redeemResult = cEthToken.redeemUnderlying(_amount);
-        }
-        return redeemResult;
-    }
-
-    /**
      * @dev get cETH exchange rate from compound contract
      * @return exchRateMantissa exchange rate cEth mantissa
      */
@@ -293,16 +284,26 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
     }
 
     /**
+     * @dev get compound pure price for a single tranche
+     * @param _trancheNum tranche number
+     * @return compoundPrice compound current pure price
+     */
+    function getCompoundPurePrice(uint256 _trancheNum) internal view returns (uint256 compoundPrice) {
+        if (trancheAddresses[_trancheNum].buyerCoinAddress == address(0)) {
+            compoundPrice = getCEthExchangeRate();
+        } else {
+            compoundPrice = getCTokenExchangeRate(trancheAddresses[_trancheNum].buyerCoinAddress);
+        }
+        return compoundPrice;
+    }
+
+    /**
      * @dev get compound price for a single tranche
      * @param _trancheNum tranche number
      * @return compNormPrice compound current normalized price
      */
     function getCompoundPrice(uint256 _trancheNum) public view returns (uint256 compNormPrice) {
-        if (trancheAddresses[_trancheNum].buyerCoinAddress == address(0)) {
-            compNormPrice = getCEthExchangeRate();
-        } else {
-            compNormPrice = getCTokenExchangeRate(trancheAddresses[_trancheNum].buyerCoinAddress);
-        }
+        compNormPrice = getCompoundPurePrice(_trancheNum);
 
         uint256 mantissa = getMantissa(_trancheNum);
         if (mantissa < 18) {
@@ -395,7 +396,9 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         uint256 mantissa = getMantissa(_trancheNum);
         if (mantissa < 18) {
             compNormPrice = compNormPrice.div(10 ** uint256(18).sub(mantissa));
-        } 
+        } else {
+            compNormPrice = getCompoundPurePrice(_trancheNum);
+        }
         uint256 totProtSupply = getTokenBalance(trancheAddresses[_trancheNum].cTokenAddress);
         return totProtSupply.mul(compNormPrice).div(1e18);
     }
@@ -507,9 +510,11 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         uint256 diffDec = uint256(18).sub(uint256(trancheParameters[_trancheNum].underlyingDecimals));
         uint256 normAmount = taAmount.div(10 ** diffDec);
         if (trancheAddresses[_trancheNum].buyerCoinAddress == address(0)) {
-            // calculate taETH amount via cETH price
+            uint256 cEthBal = getTokenBalance(trancheAddresses[_trancheNum].cTokenAddress);
+            SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(trancheAddresses[_trancheNum].cTokenAddress), address(ethGateway), cEthBal);
+            // calculate taAmount via cETH price
             oldBal = getEthBalance();
-            require(redeemCEth(normAmount, false) == 0, "JCompound: incorrect answer from cEth");
+            ethGateway.withdrawETH(normAmount, address(this), false);
             diffBal = getEthBalance().sub(oldBal);
             userAmount = diffBal.mul(trancheParameters[_trancheNum].redemptionPercentage).div(PERCENT_DIVIDER);
             TransferETHHelper.safeTransferETH(msg.sender, userAmount);
@@ -519,7 +524,7 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
                 TransferETHHelper.safeTransferETH(feesCollectorAddress, feesAmount);
             }   
         } else {
-            // calculate taToken amount via cToken price
+            // calculate taAmount via cToken price
             oldBal = getTokenBalance(trancheAddresses[_trancheNum].buyerCoinAddress);
             require(redeemCErc20Tokens(trancheAddresses[_trancheNum].buyerCoinAddress, normAmount, false) == 0, "JCompound: incorrect answer from cToken");
             diffBal = getTokenBalance(trancheAddresses[_trancheNum].buyerCoinAddress).sub(oldBal);
@@ -531,7 +536,7 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
                 SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(trancheAddresses[_trancheNum].buyerCoinAddress), feesCollectorAddress, feesAmount);
             }
         }
-        
+     
         IJTrancheTokens(trancheAddresses[_trancheNum].ATrancheAddress).burn(_amount);
         lastActivity[msg.sender] = block.number;
         trancheParameters[_trancheNum].trancheALastActionBlock = block.number;
@@ -603,9 +608,11 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         uint256 diffDec = uint256(18).sub(uint256(trancheParameters[_trancheNum].underlyingDecimals));
         uint256 normAmount = tbAmount.div(10 ** diffDec);
         if (trancheAddresses[_trancheNum].buyerCoinAddress == address(0)){
+            uint256 cethBal = getTokenBalance(trancheAddresses[_trancheNum].cTokenAddress);
+            SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(trancheAddresses[_trancheNum].cTokenAddress), address(ethGateway), cethBal);
             // calculate tbETH amount via cETH price
             oldBal = getEthBalance();
-            require(redeemCEth(normAmount, false) == 0, "JCompound: incorrect answer from cEth");
+            ethGateway.withdrawETH(normAmount, address(this), false);
             diffBal = getEthBalance().sub(oldBal);
             userAmount = diffBal.mul(trancheParameters[_trancheNum].redemptionPercentage).div(PERCENT_DIVIDER);
             TransferETHHelper.safeTransferETH(msg.sender, userAmount);
@@ -643,7 +650,7 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         uint256 diffBal;
         if (trancheAddresses[_trancheNum].buyerCoinAddress == address(0)) {
             oldBal = getEthBalance();
-            require(redeemCEth(_cTokenAmount, true) == 0, "JCompound: incorrect answer from cEth");
+            ethGateway.withdrawETH(_cTokenAmount, address(this), true);
             diffBal = getEthBalance().sub(oldBal);
             TransferETHHelper.safeTransferETH(feesCollectorAddress, diffBal);
         } else {

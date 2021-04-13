@@ -5,7 +5,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
-import "./IJTrancheTokens.sol";
+import "./interfaces/IJTrancheTokens.sol";
 
 contract JTrancheAToken is OwnableUpgradeable, ERC20Upgradeable, AccessControlUpgradeable, IJTrancheTokens {
 	using SafeMathUpgradeable for uint256;

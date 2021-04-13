@@ -10,7 +10,7 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
 import "./JTrancheAToken.sol";
 import "./JTrancheBToken.sol";
-import "./IJTranchesDeployer.sol";
+import "./interfaces/IJTranchesDeployer.sol";
 
 contract JTranchesDeployer is OwnableUpgradeable, IJTranchesDeployer {
     using SafeMathUpgradeable for uint256;
