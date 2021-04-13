@@ -17,7 +17,7 @@ c) set jCompound address in jTranchesDeployer contract
 c) call addTrancheToProtocol(address _erc20Contract, string memory _nameA, string memory _symbolA, 
             string memory _nameB, string memory _symbolB, uint256 _fixedRpb, uint8 _cTokenDec, uint8 _underlyingDec) to set a new tranche set
 
-    add eth tranche "0x0000000000000000000000000000000000000000","eta","ETA","etb","ETB","40000000000000000","8","18"
+    add eth tranche "0x0000000000000000000000000000000000000000","eta","ETA","etb","ETB","40000000000000000","8","18" ---> Please read note here below
 
     add DAI tranche "0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa","dta","DTA","dtb","DTB","30000000000000000","8","18"
 
@@ -26,6 +26,8 @@ c) call addTrancheToProtocol(address _erc20Contract, string memory _nameA, strin
     add USDC tranche "0xb7a4F3E9097C08dA09517b5aB877F7a917224ede","ucta","UCTA","uctb","UCTB","30000000000000","8","6"
 
 Users can now call buy and redeem functions for tranche A & B tokens
+
+Note: if ETH tranche is deployed, please deploy ETHGateway contract without a proxy, then set its address in JCompound with setETHGateway function.
 
 
 ## Contracts Size (main contracts, no interfaces, no test contracts)
@@ -39,12 +41,16 @@ Limit is 24 KiB for single contract
     </thead>
     <tbody>
         <tr>
+            <td>ETHGateway</td>
+            <td><code>3.13 KiB</code></td>
+        </tr>
+        <tr>
             <td>JCompound</td>
-            <td><code>19.95 KiB</code></td>
+            <td><code>20.34 KiB</code></td>
         </tr>
         <tr>
             <td>JCompoundStorage</td>
-            <td><code>1.55 KiB</code></td>
+            <td><code>1.59 KiB</code></td>
         </tr>
         <tr>
             <td>JTrancheAToken</td>
