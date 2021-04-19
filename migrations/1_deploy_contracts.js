@@ -55,7 +55,7 @@ module.exports = async (deployer, network, accounts) => {
     await JTDeployer.setJCompoundAddress(JCinstance.address, { from: factoryOwner });
 
     await JCinstance.setETHGateway(JEGinstance.address, { from: factoryOwner });
-    
+
     await JCinstance.setCEtherContract(mycEthinstance.address, { from: factoryOwner });
     await JCinstance.setCTokenContract(myDAIinstance.address, mycDaiinstance.address, { from: factoryOwner });
 
@@ -115,5 +115,38 @@ module.exports = async (deployer, network, accounts) => {
         console.log(error);
       }
     }
+  } else if (network == "mainnet") {
+    let { FEE_COLLECTOR_ADDRESS, PRICE_ORACLE_ADDRESS,
+      TRANCHE_ONE_TOKEN_ADDRESS, TRANCHE_ONE_CTOKEN_ADDRESS, TRANCHE_TWO_TOKEN_ADDRESS, TRANCHE_TWO_CTOKEN_ADDRESS
+    } = process.env;
+    const accounts = await web3.eth.getAccounts();
+    const factoryOwner = accounts[0];
+    try {
+      const compoundDeployer = await deployProxy(JTranchesDeployer, [], { from: factoryOwner, unsafeAllowCustomTypes: true });
+      console.log(`COMPOUND_DEPLOYER=${compoundDeployer.address}`);
+
+      const JCompoundInstance = await deployProxy(JCompound, [PRICE_ORACLE_ADDRESS, FEE_COLLECTOR_ADDRESS, compoundDeployer.address],
+        { from: factoryOwner });
+
+      console.log(`COMPOUND_TRANCHE_ADDRESS=${JCompoundInstance.address}`);
+      compoundDeployer.setJCompoundAddress(JCompoundInstance.address);
+      console.log('compound deployer 1');
+
+      await JCompoundInstance.setCTokenContract(TRANCHE_ONE_TOKEN_ADDRESS, TRANCHE_ONE_CTOKEN_ADDRESS, { from: factoryOwner });
+      console.log('compound deployer 2');
+
+      await JCompoundInstance.setCTokenContract(TRANCHE_TWO_TOKEN_ADDRESS, TRANCHE_TWO_CTOKEN_ADDRESS, { from: factoryOwner });
+
+      console.log('compound deployer 3');
+      await JCompoundInstance.addTrancheToProtocol(TRANCHE_ONE_TOKEN_ADDRESS, "Tranche A - Compound DAI", "ACDAI", "Tranche B - Compound DAI", "BCDAI", web3.utils.toWei("0.04", "ether"), 8, 18, { from: factoryOwner });
+
+      console.log('compound deployer 4');
+      await JCompoundInstance.addTrancheToProtocol(TRANCHE_TWO_TOKEN_ADDRESS, "Tranche A - Compound USDT", "ACUSDT", "Tranche B - Compound USDT", "BCUSDT", web3.utils.toWei("0.02", "ether"), 8, 6, { from: factoryOwner });
+
+      console.log(`JCompound deployed at: ${JCompoundInstance.address}`);
+    } catch (error) {
+      console.log(error);
+    }
   }
+}
 }
