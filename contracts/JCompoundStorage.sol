@@ -35,6 +35,8 @@ contract JCompoundStorage is OwnableUpgradeable {
     address public priceOracleAddress;
     address public feesCollectorAddress;
     address public tranchesDeployerAddress;
+    address public compTokenAddress;
+    address public comptrollerAddress;
 
     uint256 public tranchePairsCounter;
     uint256 public totalBlocksPerYear; 

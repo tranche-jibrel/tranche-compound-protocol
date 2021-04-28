@@ -13,6 +13,7 @@ import "./interfaces/IJTrancheTokens.sol";
 import "./interfaces/IJTranchesDeployer.sol";
 import "./interfaces/IJCompound.sol";
 import "./interfaces/ICErc20.sol";
+import "./interfaces/IComptrollerLensInterface.sol";
 import "./JCompoundStorage.sol";
 import "./TransferETHHelper.sol";
 
@@ -28,11 +29,15 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
      */
     function initialize(address _priceOracle, 
             address _feesCollector, 
-            address _tranchesDepl) public initializer() {
+            address _tranchesDepl,
+            address _compTokenAddress,
+            address _comptrollAddress) public initializer() {
         OwnableUpgradeable.__Ownable_init();
         priceOracleAddress = _priceOracle;
         feesCollectorAddress = _feesCollector;
         tranchesDeployerAddress = _tranchesDepl;
+        compTokenAddress = _compTokenAddress;
+        comptrollerAddress = _comptrollAddress;
         redeemTimeout = 3; //default
         totalBlocksPerYear = 2102400; // same number like in Compound protocol
     }
@@ -67,11 +72,16 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
      */
     function setNewEnvironment(address _priceOracle, 
             address _feesCollector, 
-            address _tranchesDepl) external onlyOwner{
-        require((_priceOracle != address(0)) && (_feesCollector != address(0)) && (_tranchesDepl != address(0)), "JCompound: check addresses");
+            address _tranchesDepl,
+            address _compTokenAddress,
+            address _comptrollAddress) external onlyOwner {
+        require((_priceOracle != address(0)) && (_feesCollector != address(0)) && 
+            (_tranchesDepl != address(0)) && (_comptrollAddress != address(0)) && (_compTokenAddress != address(0)), "JCompound: check addresses");
         priceOracleAddress = _priceOracle;
         feesCollectorAddress = _feesCollector;
         tranchesDeployerAddress = _tranchesDepl;
+        compTokenAddress = _compTokenAddress;
+        comptrollerAddress = _comptrollAddress;
     }
 
     /**
@@ -692,6 +702,19 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
      */
     function withdrawEthToFeesCollector(uint256 _amount) external onlyAdmins {
         TransferETHHelper.safeTransferETH(feesCollectorAddress, _amount);
+    }
+
+    function getTotalCompAccrued() public view onlyAdmins returns (uint256) {
+        return IComptrollerLensInterface(comptrollerAddress).compAccrued(address(this));
+    }
+
+    function claimTotalCompAccrued() external onlyAdmins{
+        uint256 totAccruedAmount = getTotalCompAccrued();
+        if (totAccruedAmount > 0) {
+            IComptrollerLensInterface(comptrollerAddress).claimComp(address(this));
+            uint256 amount = IERC20Upgradeable(compTokenAddress).balanceOf(address(this));
+            SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(compTokenAddress), feesCollectorAddress, amount);
+        }
     }
 
 }
