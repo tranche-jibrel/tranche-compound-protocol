@@ -704,10 +704,17 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         TransferETHHelper.safeTransferETH(feesCollectorAddress, _amount);
     }
 
+    /**
+     * @dev get total accrued Comp token from all market in comptroller
+     * @return comp amount accrued
+     */
     function getTotalCompAccrued() public view onlyAdmins returns (uint256) {
         return IComptrollerLensInterface(comptrollerAddress).compAccrued(address(this));
     }
 
+    /**
+     * @dev claim total accrued Comp token from all market in comptroller and transfer the amount in fees collector
+     */
     function claimTotalCompAccrued() external onlyAdmins{
         uint256 totAccruedAmount = getTotalCompAccrued();
         if (totAccruedAmount > 0) {
