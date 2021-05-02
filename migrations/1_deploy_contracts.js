@@ -117,7 +117,7 @@ module.exports = async (deployer, network, accounts) => {
     }
   } else if (network == "mainnet") {
     let { FEE_COLLECTOR_ADDRESS, PRICE_ORACLE_ADDRESS,
-      TRANCHE_ONE_TOKEN_ADDRESS, TRANCHE_ONE_CTOKEN_ADDRESS, TRANCHE_TWO_TOKEN_ADDRESS, TRANCHE_TWO_CTOKEN_ADDRESS
+      TRANCHE_ONE_TOKEN_ADDRESS, TRANCHE_ONE_CTOKEN_ADDRESS, TRANCHE_TWO_TOKEN_ADDRESS, TRANCHE_TWO_CTOKEN_ADDRESS, COMP_ADDRESS, COMP_CONTROLLER
     } = process.env;
     const accounts = await web3.eth.getAccounts();
     const factoryOwner = accounts[0];
@@ -125,7 +125,7 @@ module.exports = async (deployer, network, accounts) => {
       const compoundDeployer = await deployProxy(JTranchesDeployer, [], { from: factoryOwner, unsafeAllowCustomTypes: true });
       console.log(`COMPOUND_DEPLOYER=${compoundDeployer.address}`);
 
-      const JCompoundInstance = await deployProxy(JCompound, [PRICE_ORACLE_ADDRESS, FEE_COLLECTOR_ADDRESS, compoundDeployer.address],
+      const JCompoundInstance = await deployProxy(JCompound, [PRICE_ORACLE_ADDRESS, FEE_COLLECTOR_ADDRESS, compoundDeployer.address, COMP_ADDRESS, COMP_CONTROLLER],
         { from: factoryOwner });
 
       console.log(`COMPOUND_TRANCHE_ADDRESS=${JCompoundInstance.address}`);
@@ -148,5 +148,4 @@ module.exports = async (deployer, network, accounts) => {
       console.log(error);
     }
   }
-}
 }
