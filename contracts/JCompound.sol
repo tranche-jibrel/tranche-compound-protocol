@@ -329,7 +329,7 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
      * @param _trancheNum tranche number
      * @return tranche A token stored price
      */
-    function setTrancheAExchangeRate(uint256 _trancheNum) public returns (uint256) {
+    function setTrancheAExchangeRate(uint256 _trancheNum) internal returns (uint256) {
         calcRPBFromPercentage(_trancheNum);
         uint256 deltaBlocks = (block.number).sub(trancheParameters[_trancheNum].trancheALastActionBlock);
         uint256 deltaPrice = (trancheParameters[_trancheNum].trancheACurrentRPB).mul(deltaBlocks);
@@ -591,6 +591,7 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         } else 
             tbAmount = 0;
         lastActivity[msg.sender] = block.number;
+        trancheParameters[_trancheNum].trancheALastActionBlock = block.number;
         emit TrancheBTokenMinted(_trancheNum, msg.sender, _amount, tbAmount);
     }
 
@@ -647,6 +648,7 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         
         IJTrancheTokens(trancheAddresses[_trancheNum].BTrancheAddress).burn(_amount);
         lastActivity[msg.sender] = block.number;
+        trancheParameters[_trancheNum].trancheALastActionBlock = block.number;
         emit TrancheBTokenRedemption(_trancheNum, msg.sender, _amount,  userAmount, feesAmount);
     }
 
@@ -715,7 +717,7 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
     /**
      * @dev claim total accrued Comp token from all market in comptroller and transfer the amount in fees collector
      */
-    function claimTotalCompAccrued() external onlyAdmins{
+    function claimTotalCompAccrued() external onlyAdmins locked {
         uint256 totAccruedAmount = getTotalCompAccrued();
         if (totAccruedAmount > 0) {
             IComptrollerLensInterface(comptrollerAddress).claimComp(address(this));
