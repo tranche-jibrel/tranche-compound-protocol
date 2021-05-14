@@ -70,6 +70,38 @@ function deployMinimumFactory(tokenOwner, factoryOwner, factoryAdmin) {
     console.log(`tokenOwner Balance: ${web3.utils.fromWei(borrBal, "ether")} DAI`);
   });
 
+  it('deploys SLICE mockup', async function () {
+    //gasPrice = await web3.eth.getGasPrice();
+    //console.log("Gas price: " + gasPrice);
+    console.log("TokenOwner address: " + tokenOwner);
+    this.SLICE = await myERC20.new({
+      from: tokenOwner
+    });
+    expect(this.SLICE.address).to.be.not.equal(ZERO_ADDRESS);
+    expect(this.SLICE.address).to.match(/0x[0-9a-fA-F]{40}/);
+    console.log(`SLICE Address: ${this.SLICE.address}`);
+    result = await this.SLICE.totalSupply();
+    expect(result.toString()).to.be.equal(new BN(0).toString());
+    console.log("SLICE total supply: " + result);
+    tx = await web3.eth.getTransactionReceipt(this.SLICE.transactionHash);
+    console.log("SLICE contract deploy Gas: " + tx.gasUsed);
+    //totcost = tx.gasUsed * GAS_PRICE;
+    //console.log("ERC20 Coll1 deploy costs: " + web3.utils.fromWei(totcost.toString(), 'ether') + " ETH");
+    result = await this.SLICE.owner();
+    expect(result).to.be.equal(ZERO_ADDRESS);
+    tx = await this.SLICE.initialize(MYERC20_TOKEN_SUPPLY, {
+      from: tokenOwner
+    });
+    console.log("SLICE contract Initialize Gas: " + tx.receipt.gasUsed);
+    // totcost = tx.receipt.gasUsed * GAS_PRICE;
+    // console.log("ERC20 Coll1 Initialize costs: " + web3.utils.fromWei(totcost.toString(), 'ether') + " ETH");
+    result = await this.SLICE.owner();
+    expect(result).to.be.equal(tokenOwner);
+    console.log("SLICE owner address: " + result);
+    borrBal = await this.SLICE.balanceOf(tokenOwner);
+    console.log(`tokenOwner Balance: ${web3.utils.fromWei(borrBal, "ether")} SLICE`);
+  });
+
   it('deploys cEth mockup', async function () {
     //gasPrice = await web3.eth.getGasPrice();
     //console.log("Gas price: " + gasPrice);
@@ -235,7 +267,8 @@ function deployMinimumFactory(tokenOwner, factoryOwner, factoryAdmin) {
     //console.log("ETH Tranche B deploy costs: " + web3.utils.fromWei(totcost.toString(), 'ether') + " ETH");
     result = await this.JCompound.owner();
     expect(result).to.be.equal(ZERO_ADDRESS);
-    tx = await this.JCompound.initialize(this.JPriceOracle.address, this.JFeesCollector.address, this.JTranchesDeployer.address, {
+    tx = await this.JCompound.initialize(this.JPriceOracle.address, this.JFeesCollector.address, this.JTranchesDeployer.address, 
+      ZERO_ADDRESS, ZERO_ADDRESS, this.SLICE.address, {
       from: factoryOwner
     });
     console.log("JCompound Initialize Gas: " + tx.receipt.gasUsed);
@@ -292,7 +325,7 @@ function sendcETHtoProtocol(tokenOwner) {
     // totcost = tx.receipt.gasUsed * GAS_PRICE;
     // console.log("transfer token costs: " + web3.utils.fromWei(totcost.toString(), 'ether') + " ETH");
     protBal = await this.CEther.balanceOf(this.JCompound.address);
-    console.log(`protocol DAI Balance: ${web3.utils.fromWei(protBal, "ether")} DAI`)
+    console.log(`protocol ETH Balance: ${web3.utils.fromWei(protBal, "ether")} DAI`)
     expect(web3.utils.fromWei(protBal, "ether")).to.be.equal(new BN(1).toString());
   });
 }
@@ -301,7 +334,7 @@ function sendcETHtoProtocol(tokenOwner) {
 function sendcDAItoProtocol(tokenOwner) {
 
   it('send some DAI to JCompound', async function () {
-    tx = await this.CErc20.transfer(this.JCompound.address, web3.utils.toWei('10', 'ether'), {
+    tx = await this.CErc20.transfer(this.JCompound.address, web3.utils.toWei('100', 'ether'), {
       from: tokenOwner
     });
     console.log("Gas to transfer DAI to JCompound: " + tx.receipt.gasUsed);
@@ -309,7 +342,7 @@ function sendcDAItoProtocol(tokenOwner) {
     // console.log("transfer token costs: " + web3.utils.fromWei(totcost.toString(), 'ether') + " ETH");
     protBal = await this.CErc20.balanceOf(this.JCompound.address);
     console.log(`protocol DAI Balance: ${web3.utils.fromWei(protBal, "ether")} DAI`)
-    expect(web3.utils.fromWei(protBal, "ether")).to.be.equal(new BN(10).toString());
+    expect(web3.utils.fromWei(protBal, "ether")).to.be.equal(new BN(100).toString());
   });
 }
 

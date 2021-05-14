@@ -4,6 +4,7 @@ node_modules/
 build/
 unused/
 dist/
+FDT/
 Flatters.bat
 package-lock.json
 *.txt

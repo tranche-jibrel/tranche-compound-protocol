@@ -183,7 +183,7 @@ contract("JCompound", function (accounts) {
     block = await web3.eth.getBlock("latest");
     console.log("New Actual Block: " + block.number);
 
-    //await cEtherContract.setExchangeRateStored(new BN("22597347673700721")); //22595347673700721
+    await cEtherContract.setExchangeRateStored(new BN("23230929272867851")); //23230829272867851
     console.log("Compound New price: " + await cEtherContract.exchangeRateStored());
   });
 
@@ -225,7 +225,7 @@ contract("JCompound", function (accounts) {
     await time.advanceBlockTo(newBlock);
     block = await web3.eth.getBlock("latest");
     console.log("New Actual Block: " + block.number);
-    await cEtherContract.setExchangeRateStored(new BN("22598347673700721")); //22597347673700721
+    await cEtherContract.setExchangeRateStored(new BN("23231029272867851")); //23230929272867851
     console.log("Compound New price: " + await cEtherContract.exchangeRateStored());
   });
 
@@ -235,7 +235,14 @@ contract("JCompound", function (accounts) {
     bal = await ethTrBContract.balanceOf(user1);
     console.log("User1 trB tokens: " + web3.utils.fromWei(bal, "ether") + " ETB");
     console.log("JCompound cEth balance: " + web3.utils.fromWei(await jCompContract.getTokenBalance(cEtherContract.address), "ether") + " cEth");
-    console.log("TrB price: " + web3.utils.fromWei(await jCompContract.getTrancheBExchangeRate(0, 0), "ether"));
+    trbPrice = web3.utils.fromWei(await jCompContract.getTrancheBExchangeRate(0, 0), "ether")
+    console.log("TrB price: " + trbPrice);
+    console.log("CEther eth bal:" + web3.utils.fromWei(await web3.eth.getBalance(cEtherContract.address)), "ether");
+    //console.log(stPrice.toString());
+    tempAmnt = bal * Math.pow(10, -18);
+    //console.log(tempAmnt.toString())
+    taAmount = tempAmnt * trbPrice;
+    console.log(taAmount);
     tx = await ethTrBContract.approve(jCompContract.address, bal, {
       from: user1
     });
