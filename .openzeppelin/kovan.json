@@ -446,6 +446,293 @@
           }
         }
       }
+    },
+    "5a1a171e8a8b248bab35162a8202cf56bcf3a9e3fcdc81bcdbeeb986dd2b4230": {
+      "address": "0x7088dc9d521153505088c7D6a89F819920ddD2C6",
+      "txHash": "0x4e5e01136402a503692529741c51c52cae93506f19fdbdd37dfcb4be9f0bae7c",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "..\\@openzeppelin\\contracts-upgradeable\\proxy\\Initializable.sol:25"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "..\\@openzeppelin\\contracts-upgradeable\\proxy\\Initializable.sol:30"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "..\\@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "..\\@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:20"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "..\\@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:74"
+          },
+          {
+            "contract": "JTranchesDeployer",
+            "label": "jCompoundAddress",
+            "type": "t_address",
+            "src": "..\\..\\..\\..\\..\\..\\C\\Users\\saurabh\\code\\Jibrel\\tranche-compound-protocol\\contracts\\JTranchesDeployer.sol:18"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          },
+          "t_bool": {
+            "label": "bool"
+          }
+        }
+      }
+    },
+    "fc87c00add3cf694764dde1a6db25689879f1b690f4f440946ded1ae6f859aca": {
+      "address": "0xd4ce4E53Ea028e0C710DF5BE533cF60fC6595B16",
+      "txHash": "0x6da6826038f1fdc546b2d432ec27eed8444b0abb5e1f84fefaea140ed285a263",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "..\\@openzeppelin\\contracts-upgradeable\\proxy\\Initializable.sol:25"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "..\\@openzeppelin\\contracts-upgradeable\\proxy\\Initializable.sol:30"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "..\\@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "..\\@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:20"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "..\\@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:74"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "priceOracleAddress",
+            "type": "t_address",
+            "src": "..\\..\\..\\..\\..\\..\\C\\Users\\saurabh\\code\\Jibrel\\tranche-compound-protocol\\contracts\\JCompoundStorage.sol:35"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "feesCollectorAddress",
+            "type": "t_address",
+            "src": "..\\..\\..\\..\\..\\..\\C\\Users\\saurabh\\code\\Jibrel\\tranche-compound-protocol\\contracts\\JCompoundStorage.sol:36"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "tranchesDeployerAddress",
+            "type": "t_address",
+            "src": "..\\..\\..\\..\\..\\..\\C\\Users\\saurabh\\code\\Jibrel\\tranche-compound-protocol\\contracts\\JCompoundStorage.sol:37"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "compTokenAddress",
+            "type": "t_address",
+            "src": "..\\..\\..\\..\\..\\..\\C\\Users\\saurabh\\code\\Jibrel\\tranche-compound-protocol\\contracts\\JCompoundStorage.sol:38"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "comptrollerAddress",
+            "type": "t_address",
+            "src": "..\\..\\..\\..\\..\\..\\C\\Users\\saurabh\\code\\Jibrel\\tranche-compound-protocol\\contracts\\JCompoundStorage.sol:39"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "tranchePairsCounter",
+            "type": "t_uint256",
+            "src": "..\\..\\..\\..\\..\\..\\C\\Users\\saurabh\\code\\Jibrel\\tranche-compound-protocol\\contracts\\JCompoundStorage.sol:41"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "totalBlocksPerYear",
+            "type": "t_uint256",
+            "src": "..\\..\\..\\..\\..\\..\\C\\Users\\saurabh\\code\\Jibrel\\tranche-compound-protocol\\contracts\\JCompoundStorage.sol:42"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "redeemTimeout",
+            "type": "t_uint32",
+            "src": "..\\..\\..\\..\\..\\..\\C\\Users\\saurabh\\code\\Jibrel\\tranche-compound-protocol\\contracts\\JCompoundStorage.sol:43"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "fLock",
+            "type": "t_bool",
+            "src": "..\\..\\..\\..\\..\\..\\C\\Users\\saurabh\\code\\Jibrel\\tranche-compound-protocol\\contracts\\JCompoundStorage.sol:45"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "cTokenContracts",
+            "type": "t_mapping(t_address,t_address)",
+            "src": "..\\..\\..\\..\\..\\..\\C\\Users\\saurabh\\code\\Jibrel\\tranche-compound-protocol\\contracts\\JCompoundStorage.sol:47"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "trancheAddresses",
+            "type": "t_mapping(t_uint256,t_struct(TrancheAddresses)2894_storage)",
+            "src": "..\\..\\..\\..\\..\\..\\C\\Users\\saurabh\\code\\Jibrel\\tranche-compound-protocol\\contracts\\JCompoundStorage.sol:48"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "trancheParameters",
+            "type": "t_mapping(t_uint256,t_struct(TrancheParameters)2909_storage)",
+            "src": "..\\..\\..\\..\\..\\..\\C\\Users\\saurabh\\code\\Jibrel\\tranche-compound-protocol\\contracts\\JCompoundStorage.sol:49"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "lastActivity",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "..\\..\\..\\..\\..\\..\\C\\Users\\saurabh\\code\\Jibrel\\tranche-compound-protocol\\contracts\\JCompoundStorage.sol:51"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "cEthToken",
+            "type": "t_contract(ICEth)3442",
+            "src": "..\\..\\..\\..\\..\\..\\C\\Users\\saurabh\\code\\Jibrel\\tranche-compound-protocol\\contracts\\JCompoundStorage.sol:53"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "ethGateway",
+            "type": "t_contract(IETHGateway)3469",
+            "src": "..\\..\\..\\..\\..\\..\\C\\Users\\saurabh\\code\\Jibrel\\tranche-compound-protocol\\contracts\\JCompoundStorage.sol:54"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_uint32": {
+            "label": "uint32"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_mapping(t_address,t_address)": {
+            "label": "mapping(address => address)"
+          },
+          "t_mapping(t_uint256,t_struct(TrancheAddresses)2894_storage)": {
+            "label": "mapping(uint256 => struct JCompoundStorage.TrancheAddresses)"
+          },
+          "t_struct(TrancheAddresses)2894_storage": {
+            "label": "struct JCompoundStorage.TrancheAddresses",
+            "members": [
+              {
+                "label": "buyerCoinAddress",
+                "type": "t_address"
+              },
+              {
+                "label": "cTokenAddress",
+                "type": "t_address"
+              },
+              {
+                "label": "ATrancheAddress",
+                "type": "t_address"
+              },
+              {
+                "label": "BTrancheAddress",
+                "type": "t_address"
+              }
+            ]
+          },
+          "t_mapping(t_uint256,t_struct(TrancheParameters)2909_storage)": {
+            "label": "mapping(uint256 => struct JCompoundStorage.TrancheParameters)"
+          },
+          "t_struct(TrancheParameters)2909_storage": {
+            "label": "struct JCompoundStorage.TrancheParameters",
+            "members": [
+              {
+                "label": "trancheAFixedPercentage",
+                "type": "t_uint256"
+              },
+              {
+                "label": "trancheALastActionBlock",
+                "type": "t_uint256"
+              },
+              {
+                "label": "storedTrancheAPrice",
+                "type": "t_uint256"
+              },
+              {
+                "label": "trancheACurrentRPB",
+                "type": "t_uint256"
+              },
+              {
+                "label": "redemptionPercentage",
+                "type": "t_uint16"
+              },
+              {
+                "label": "cTokenDecimals",
+                "type": "t_uint8"
+              },
+              {
+                "label": "underlyingDecimals",
+                "type": "t_uint8"
+              }
+            ]
+          },
+          "t_uint16": {
+            "label": "uint16"
+          },
+          "t_uint8": {
+            "label": "uint8"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_contract(ICEth)3442": {
+            "label": "contract ICEth"
+          },
+          "t_contract(IETHGateway)3469": {
+            "label": "contract IETHGateway"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
     }
   },
   "admin": {
