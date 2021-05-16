@@ -336,4 +336,19 @@ describe('JProtocol', function () {
     console.log("JCompound new DAI balance: "+ web3.utils.fromWei(await this.JCompound.getTokenBalance(this.CErc20.address), "ether") + " cDai");
   }); 
 
+  it("send other tokens to tranche A and emergency withdraw", async function () {
+    tx = await this.SLICE.transfer(this.DaiTrA.address, web3.utils.toWei('1000', 'ether'), {
+      from: tokenOwner
+    });
+    bal = await this.SLICE.balanceOf(user1);
+    console.log("user1 SLICE balance: "+ web3.utils.fromWei(bal, "ether") + " SLICE");
+    bal = await this.SLICE.balanceOf(this.DaiTrA.address);
+    console.log("trA SLICE balance: "+ web3.utils.fromWei(bal, "ether") + " SLICE");
+    tx = await this.JCompound.emergencyRemoveTokensFromTranche(this.DaiTrA.address, this.SLICE.address, user1, bal, {from: factoryAdmin});
+    bal = await this.SLICE.balanceOf(this.DaiTrA.address);
+    console.log("trA SLICE balance after emergency withdraw: "+ web3.utils.fromWei(bal, "ether") + " SLICE");
+    bal = await this.SLICE.balanceOf(user1);
+    console.log("user1 SLICE balance after emergency withdraw: "+ web3.utils.fromWei(bal, "ether") + " SLICE");
+  });
+
 });

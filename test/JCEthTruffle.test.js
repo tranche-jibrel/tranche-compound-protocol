@@ -21,7 +21,7 @@ const {
 const myERC20 = artifacts.require("myERC20");
 const CEther = artifacts.require("CEther");
 const CErc20 = artifacts.require("CErc20");
-const JPriceOracle = artifacts.require('JPriceOracle');
+const JAdminTools = artifacts.require('JAdminTools');
 const JFeesCollector = artifacts.require('JFeesCollector');
 
 const JCompound = artifacts.require('JCompound');
@@ -35,7 +35,7 @@ const EthGateway = artifacts.require('./ETHGateway');
 const MYERC20_TOKEN_SUPPLY = 5000000;
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
-let daiContract, cEtherContract, cERC20Contract, jFCContract, jPOContract, jTrDeplContract, jCompContract;
+let daiContract, cEtherContract, cERC20Contract, jFCContract, jATContract, jTrDeplContract, jCompContract;
 let ethTrAContract, ethTrBContract, daiTrAContract, daiTrBContract;
 let tokenOwner, user1;
 
@@ -73,10 +73,10 @@ contract("JCompound", function (accounts) {
     expect(jFCContract.address).to.match(/0x[0-9a-fA-F]{40}/);
     console.log(jFCContract.address);
 
-    jPOContract = await JPriceOracle.deployed();
-    expect(jPOContract.address).to.be.not.equal(ZERO_ADDRESS);
-    expect(jPOContract.address).to.match(/0x[0-9a-fA-F]{40}/);
-    console.log(jPOContract.address);
+    jATContract = await JAdminTools.deployed();
+    expect(jATContract.address).to.be.not.equal(ZERO_ADDRESS);
+    expect(jATContract.address).to.match(/0x[0-9a-fA-F]{40}/);
+    console.log(jATContract.address);
 
     jTrDeplContract = await JTranchesDeployer.deployed();
     expect(jTrDeplContract.address).to.be.not.equal(ZERO_ADDRESS);

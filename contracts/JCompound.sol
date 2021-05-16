@@ -8,7 +8,7 @@ pragma solidity ^0.6.12;
 
 import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/SafeERC20Upgradeable.sol";
-import "./interfaces/IJPriceOracle.sol";
+import "./interfaces/IJAdminTools.sol";
 import "./interfaces/IJTrancheTokens.sol";
 import "./interfaces/IJTranchesDeployer.sol";
 import "./interfaces/IJCompound.sol";
@@ -23,21 +23,21 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
 
     /**
      * @dev contract initializer
-     * @param _priceOracle price oracle address
+     * @param _adminTools price oracle address
      * @param _feesCollector fees collector contract address
      * @param _tranchesDepl tranches deployer contract address
      * @param _compTokenAddress COMP token contract address
      * @param _comptrollAddress comptroller contract address
      * @param _rewardsToken rewards token address (slice token address)
      */
-    function initialize(address _priceOracle, 
+    function initialize(address _adminTools, 
             address _feesCollector, 
             address _tranchesDepl,
             address _compTokenAddress,
             address _comptrollAddress,
             address _rewardsToken) public initializer() {
         OwnableUpgradeable.__Ownable_init();
-        priceOracleAddress = _priceOracle;
+        adminToolsAddress = _adminTools;
         feesCollectorAddress = _feesCollector;
         tranchesDeployerAddress = _tranchesDepl;
         compTokenAddress = _compTokenAddress;
@@ -51,7 +51,7 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
      * @dev admins modifiers
      */
     modifier onlyAdmins() {
-        require(IJPriceOracle(priceOracleAddress).isAdmin(msg.sender), "JCompound: not an Admin");
+        require(IJAdminTools(adminToolsAddress).isAdmin(msg.sender), "JCompound: not an Admin");
         _;
     }
 
@@ -71,19 +71,22 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
 
     /**
      * @dev set new addresses for price oracle, fees collector and tranche deployer 
-     * @param _priceOracle price oracle address
+     * @param _adminTools price oracle address
      * @param _feesCollector fees collector contract address
      * @param _tranchesDepl tranches deployer contract address
+     * @param _compTokenAddress COMP token contract address
+     * @param _comptrollAddress comptroller contract address
+     * @param _rewardsToken rewards token address (slice token address)
      */
-    function setNewEnvironment(address _priceOracle, 
+    function setNewEnvironment(address _adminTools, 
             address _feesCollector, 
             address _tranchesDepl,
             address _compTokenAddress,
             address _comptrollAddress,
             address _rewardsToken) external onlyOwner {
-        require((_priceOracle != address(0)) && (_feesCollector != address(0)) && 
+        require((_adminTools != address(0)) && (_feesCollector != address(0)) && 
             (_tranchesDepl != address(0)) && (_comptrollAddress != address(0)) && (_compTokenAddress != address(0)), "JCompound: check addresses");
-        priceOracleAddress = _priceOracle;
+        adminToolsAddress = _adminTools;
         feesCollectorAddress = _feesCollector;
         tranchesDeployerAddress = _tranchesDepl;
         compTokenAddress = _compTokenAddress;
@@ -725,11 +728,11 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
     function getTotalCompAccrued() public view onlyAdmins returns (uint256) {
         return IComptrollerLensInterface(comptrollerAddress).compAccrued(address(this));
     }
-
+/*
     /**
      * @dev claim total accrued Comp token from all market in comptroller and transfer the amount in fees collector
      */
-    function claimTotalCompAccrued() external onlyAdmins locked {
+/*    function claimTotalCompAccrued() external onlyAdmins locked {
         uint256 totAccruedAmount = getTotalCompAccrued();
         if (totAccruedAmount > 0) {
             IComptrollerLensInterface(comptrollerAddress).claimComp(address(this));
@@ -737,5 +740,22 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
             SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(compTokenAddress), feesCollectorAddress, amount);
         }
     }
+*/
+    /**
+     * @dev claim total accrued Comp token from all market in comptroller and transfer the amount to a receiver address
+     * @param _receiver destination address
+     */
+    function claimTotalCompAccruedToReceiver(address _receiver) external onlyAdmins locked {
+        uint256 totAccruedAmount = getTotalCompAccrued();
+        if (totAccruedAmount > 0) {
+            IComptrollerLensInterface(comptrollerAddress).claimComp(address(this));
+            uint256 amount = IERC20Upgradeable(compTokenAddress).balanceOf(address(this));
+            SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(compTokenAddress), _receiver, amount);
+        }
+    }
+
+    function emergencyRemoveTokensFromTranche(address _trancheAddress, address _token, address _receiver, uint256 _amount) external onlyAdmins locked {
+        IJTrancheTokens(_trancheAddress).emergencyTokenTransfer(_token, _receiver, _amount);
+    } 
 
 }

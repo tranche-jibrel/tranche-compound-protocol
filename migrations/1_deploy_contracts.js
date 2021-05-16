@@ -2,11 +2,11 @@ require('dotenv').config();
 const { deployProxy, upgradeProxy } = require('@openzeppelin/truffle-upgrades');
 var { abi } = require('../build/contracts/myERC20.json');
 
-var JPriceOracle = artifacts.require("./mocks/JPriceOracle.sol");
 var myERC20 = artifacts.require("./mocks/myERC20.sol");
 var CErc20 = artifacts.require('./mocks/CErc20.sol');
 var CEther = artifacts.require('./mocks/CEther.sol');
 
+var JAdminTools = artifacts.require("./JAdminTools.sol");
 var JFeesCollector = artifacts.require("./JFeesCollector.sol");
 var JCompound = artifacts.require('./JCompound');
 var JTranchesDeployer = artifacts.require('./JTranchesDeployer');
@@ -42,16 +42,16 @@ module.exports = async (deployer, network, accounts) => {
     console.log('myCErc20 Deployed: ', mycDaiinstance.address);
 
     const factoryOwner = accounts[0];
-    const JFCinstance = await deployProxy(JFeesCollector, [], { from: factoryOwner });
-    console.log('JFeesCollector Deployed: ', JFCinstance.address);
+    const JATinstance = await deployProxy(JAdminTools, [], { from: factoryOwner });
+    console.log('JAdminTools Deployed: ', JATinstance.address);
 
-    const JPOinstance = await deployProxy(JPriceOracle, [], { from: factoryOwner });
-    console.log('JPriceOracle Deployed: ', JPOinstance.address);
+    const JFCinstance = await deployProxy(JFeesCollector, [JATinstance.address], { from: factoryOwner });
+    console.log('JFeesCollector Deployed: ', JFCinstance.address);
 
     const JTDeployer = await deployProxy(JTranchesDeployer, [], { from: factoryOwner });
     console.log("Tranches Deployer: " + JTDeployer.address);
 
-    const JCinstance = await deployProxy(JCompound, [JPOinstance.address, JFCinstance.address, JTDeployer.address, 
+    const JCinstance = await deployProxy(JCompound, [JATinstance.address, JFCinstance.address, JTDeployer.address, 
             COMP_ADDRESS, TROLLER_ADDRESS, mySLICEinstance.address], { from: factoryOwner });
     console.log('JCompound Deployed: ', JCinstance.address);
 

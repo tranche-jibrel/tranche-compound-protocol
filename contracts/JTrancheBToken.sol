@@ -169,13 +169,18 @@ contract JTrancheBToken is IFDTBasic, OwnableUpgradeable, ERC20Upgradeable, Acce
 	}
 
 	/**
-	 * @notice Emergency function to withdraw stuck tokens.
+	 * @notice Emergency function to withdraw stuck tokens. It should be callable only by protocol
 	 * @param _token token address
 	 * @param _to receiver address
 	 * @param _amount token amount
 	 */
-	function emergencyTokenTransfer(address _token, address _to, uint256 _amount) public override onlyOwner {
-        // SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(_token), _to, _amount);
-		IERC20Upgradeable(_token).transfer(_to, _amount);
+	function emergencyTokenTransfer(address _token, address _to, uint256 _amount) public override {
+		require(hasRole(MINTER_ROLE, msg.sender), "JTrancheB:  Caller is not protocol");
+        if(_token != address(0))
+			IERC20Upgradeable(_token).transfer(_to, _amount);
+		else {
+			bool sent = payable(_to).send(_amount);
+			require(sent, "Failed to send Ether");
+		}
     }
 }

@@ -73,8 +73,16 @@ Limit is 24 KiB for single contract
             <td><code>3.08 KiB</code></td>
         </tr>
         <tr>
+            <td>JAdminTools</td>
+            <td><code>2.73 KiB</code></td>
+        </tr>
+        <tr>
+            <td>JAdminToolsStorage</td>
+            <td><code>0.87 KiB</code></td>
+        </tr>
+        <tr>
             <td>JCompound</td>
-            <td><code>21.77 KiB</code></td>
+            <td><code>22.29 KiB</code></td>
         </tr>
         <tr>
             <td>JCompoundStorage</td>
@@ -82,15 +90,15 @@ Limit is 24 KiB for single contract
         </tr>
         <tr>
             <td>JFeesCollector</td>
-            <td><code>8.68 KiB</code></td>
+            <td><code>9.76 KiB</code></td>
         </tr>
         <tr>
             <td>JFeesCollectorStorage</td>
-            <td><code>0.95 KiB</code></td>
+            <td><code>0.99 KiB</code></td>
         </tr>
         <tr>
             <td>JTrancheAToken</td>
-            <td><code>10.03 KiB</code></td>
+            <td><code>10.28 KiB</code></td>
         </tr>
         <tr>
             <td>JTrancheATokenStorage</td>
@@ -98,7 +106,7 @@ Limit is 24 KiB for single contract
         </tr>
         <tr>
             <td>JTrancheBToken</td>
-            <td><code>10.03 KiB</code></td>
+            <td><code>10.18 KiB</code></td>
         </tr>
         <tr>
             <td>JTrancheBTokenStorage</td>
@@ -106,7 +114,7 @@ Limit is 24 KiB for single contract
         </tr>
         <tr>
             <td>JTranchesDeployer</td>
-            <td><code>23.40 KiB</code></td>
+            <td><code>23.70 KiB</code></td>
         </tr>
     </tbody>
   </table>

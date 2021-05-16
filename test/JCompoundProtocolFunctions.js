@@ -23,7 +23,7 @@ const {
 const myERC20 = contract.fromArtifact("myERC20");
 const CEther = contract.fromArtifact("CEther");
 const CErc20 = contract.fromArtifact("CErc20");
-const JPriceOracle = contract.fromArtifact('JPriceOracle');
+const JAdminTools = contract.fromArtifact('JAdminTools');
 const JFeesCollector = contract.fromArtifact('JFeesCollector');
 
 const JCompound = contract.fromArtifact('JCompound');
@@ -175,6 +175,28 @@ function deployMinimumFactory(tokenOwner, factoryOwner, factoryAdmin) {
     expect(tok).to.be.equal(this.DAI.address);
   });
 
+  it('deploys JAdminTools', async function () {
+    this.JAdminTools = await JAdminTools.new({
+      from: factoryOwner
+    });
+    tx = await web3.eth.getTransactionReceipt(this.JAdminTools.transactionHash);
+    console.log("JAdminTools deploy Gas: " + tx.gasUsed);
+    // totcost = tx.gasUsed * GAS_PRICE;
+    // console.log("JAdminTools deploy costs: " + web3.utils.fromWei(totcost.toString(), 'ether') + " ETH");
+    expect(this.JAdminTools.address).to.be.not.equal(ZERO_ADDRESS);
+    expect(this.JAdminTools.address).to.match(/0x[0-9a-fA-F]{40}/);
+    console.log("JAdminTools address: " + this.JAdminTools.address);
+    tx = await this.JAdminTools.initialize({
+      from: factoryOwner
+    });
+    console.log("JAdminTools Initialize Gas: " + tx.receipt.gasUsed);
+    // totcost = tx.receipt.gasUsed * GAS_PRICE;
+    // console.log("JAdminTools Initialize costs: " + web3.utils.fromWei(totcost.toString(), 'ether') + " ETH");
+    result = await this.JAdminTools.owner();
+    expect(result).to.be.equal(factoryOwner);
+    console.log("JAdminTools owner address: " + result);
+  });
+
   it('deploys JFeeCollector', async function () {
     console.log("factoryOwner address: " + factoryOwner);
     this.JFeesCollector = await JFeesCollector.new({
@@ -187,7 +209,7 @@ function deployMinimumFactory(tokenOwner, factoryOwner, factoryAdmin) {
     expect(this.JFeesCollector.address).to.be.not.equal(ZERO_ADDRESS);
     expect(this.JFeesCollector.address).to.match(/0x[0-9a-fA-F]{40}/);
     console.log("JFeesCollector address: " + this.JFeesCollector.address);
-    tx = await this.JFeesCollector.initialize({
+    tx = await this.JFeesCollector.initialize(this.JAdminTools.address, {
       from: factoryOwner
     });
     console.log("JFeesCollector Initialize Gas: " + tx.receipt.gasUsed);
@@ -198,36 +220,14 @@ function deployMinimumFactory(tokenOwner, factoryOwner, factoryAdmin) {
     console.log("JFeesCollector owner address: " + result);
   });
 
-  it('deploys JPriceOracle', async function () {
-    this.JPriceOracle = await JPriceOracle.new({
-      from: factoryOwner
-    });
-    tx = await web3.eth.getTransactionReceipt(this.JPriceOracle.transactionHash);
-    console.log("JPriceOracle deploy Gas: " + tx.gasUsed);
-    // totcost = tx.gasUsed * GAS_PRICE;
-    // console.log("JPriceOracle deploy costs: " + web3.utils.fromWei(totcost.toString(), 'ether') + " ETH");
-    expect(this.JPriceOracle.address).to.be.not.equal(ZERO_ADDRESS);
-    expect(this.JPriceOracle.address).to.match(/0x[0-9a-fA-F]{40}/);
-    console.log("JPriceOracle address: " + this.JPriceOracle.address);
-    tx = await this.JPriceOracle.initialize({
-      from: factoryOwner
-    });
-    console.log("JPriceOracle Initialize Gas: " + tx.receipt.gasUsed);
-    // totcost = tx.receipt.gasUsed * GAS_PRICE;
-    // console.log("JPriceOracle Initialize costs: " + web3.utils.fromWei(totcost.toString(), 'ether') + " ETH");
-    result = await this.JPriceOracle.owner();
-    expect(result).to.be.equal(factoryOwner);
-    console.log("JPriceOracle owner address: " + result);
-  });
-
-  it('set new admin in Price oracle contract', async function () {
-    tx = await this.JPriceOracle.addAdmin(factoryAdmin, {
+  it('set new admin in AdminTools contract', async function () {
+    tx = await this.JAdminTools.addAdmin(factoryAdmin, {
       from: factoryOwner
     });
     // console.log(tx.receipt.gasUsed);
     // totcost = tx.gasUsed * GAS_PRICE;
     // console.log("New admin costs: " + web3.utils.fromWei(totcost.toString(), 'ether') + " ETH");
-    expect(await this.JPriceOracle.isAdmin(factoryAdmin)).to.be.true;
+    expect(await this.JAdminTools.isAdmin(factoryAdmin)).to.be.true;
   });
 
   it('deploys Tranches Deployer', async function () {
@@ -267,7 +267,7 @@ function deployMinimumFactory(tokenOwner, factoryOwner, factoryAdmin) {
     //console.log("ETH Tranche B deploy costs: " + web3.utils.fromWei(totcost.toString(), 'ether') + " ETH");
     result = await this.JCompound.owner();
     expect(result).to.be.equal(ZERO_ADDRESS);
-    tx = await this.JCompound.initialize(this.JPriceOracle.address, this.JFeesCollector.address, this.JTranchesDeployer.address, 
+    tx = await this.JCompound.initialize(this.JAdminTools.address, this.JFeesCollector.address, this.JTranchesDeployer.address, 
       ZERO_ADDRESS, ZERO_ADDRESS, this.SLICE.address, {
       from: factoryOwner
     });

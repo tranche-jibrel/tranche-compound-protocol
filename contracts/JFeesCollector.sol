@@ -13,13 +13,15 @@ import './uniswap/UniswapV2Library.sol';
 import './uniswap/IUniswapV2Pair.sol';
 import "./TransferETHHelper.sol";
 import "./JFeesCollectorStorage.sol";
+import "./interfaces/IJAdminTools.sol";
 import "./interfaces/IJFeesCollector.sol";
 
 contract JFeesCollector is OwnableUpgradeable, JFeesCollectorStorage, IJFeesCollector {
     using SafeMathUpgradeable for uint256;
 
-    function initialize() external initializer {
+    function initialize(address _adminTools) external initializer {
         OwnableUpgradeable.__Ownable_init();
+        adminToolsAddress = _adminTools;
         contractVersion = 1;
     }
 
@@ -31,10 +33,18 @@ contract JFeesCollector is OwnableUpgradeable, JFeesCollectorStorage, IJFeesColl
     }
 
     /**
+     * @dev admins modifiers
+     */
+    modifier onlyAdmins() {
+        require(IJAdminTools(adminToolsAddress).isAdmin(msg.sender), "JCompound: not an Admin");
+        _;
+    }
+
+    /**
     * @dev update contract version
     * @param _ver new version
     */
-    function updateVersion(uint256 _ver) external onlyOwner {
+    function updateVersion(uint256 _ver) external onlyAdmins {
         require(_ver > contractVersion, "!NewVersion");
         contractVersion = _ver;
     }
@@ -47,7 +57,7 @@ contract JFeesCollector is OwnableUpgradeable, JFeesCollectorStorage, IJFeesColl
     * @dev withdraw eth amount
     * @param _amount amount of withdrawed eth
     */
-    function ethWithdraw(uint256 _amount) external onlyOwner locked {
+    function ethWithdraw(uint256 _amount) external onlyAdmins locked {
         require(_amount <= address(this).balance, "Not enough contract balance");
         TransferETHHelper.safeTransferETH(msg.sender, _amount);
         emit EthWithdrawn(_amount, block.number);
@@ -57,7 +67,7 @@ contract JFeesCollector is OwnableUpgradeable, JFeesCollectorStorage, IJFeesColl
     * @dev add allowed token address
     * @param _tok address of the token to add
     */
-    function allowToken(address _tok) external onlyOwner {
+    function allowToken(address _tok) external onlyAdmins {
         require(!isTokenAllowed(_tok), "Token already allowed");
         tokensAllowed[_tok] = true;
         emit TokenAdded(_tok, block.number);
@@ -67,7 +77,7 @@ contract JFeesCollector is OwnableUpgradeable, JFeesCollectorStorage, IJFeesColl
     * @dev remove allowed token address
     * @param _tok address of the token to add
     */
-    function disallowToken(address _tok) external onlyOwner {
+    function disallowToken(address _tok) external onlyAdmins {
         require(isTokenAllowed(_tok), "Token not allowed");
         tokensAllowed[_tok] = false;
         emit TokenRemoved(_tok, block.number);
@@ -104,9 +114,21 @@ contract JFeesCollector is OwnableUpgradeable, JFeesCollectorStorage, IJFeesColl
     * @param _tok address of the token
     * @param _amount token amount
     */
-    function withdrawTokens(address _tok, uint256 _amount) external onlyOwner locked {
+    function withdrawTokens(address _tok, uint256 _amount) external onlyAdmins locked {
         require(isTokenAllowed(_tok), "Token not allowed");
         SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(_tok), msg.sender, _amount);
+        emit TokenWithdrawn(_tok, _amount, block.number);
+    }
+
+    /**
+    * @dev withdraw tokens from the contract, checking if a token is already allowed
+    * @param _tok address of the token
+    * @param _receiver recipient address
+    * @param _amount token amount
+    */
+    function sendTokensToReceiver(address _tok, address _receiver, uint256 _amount) external onlyAdmins locked {
+        require(isTokenAllowed(_tok), "Token not allowed");
+        SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(_tok), _receiver, _amount);
         emit TokenWithdrawn(_tok, _amount, block.number);
     }
 
@@ -115,7 +137,7 @@ contract JFeesCollector is OwnableUpgradeable, JFeesCollectorStorage, IJFeesColl
     * @param _factory uniswap factory address
     * @param _routerV02 uniswap routerV02 address
     */
-    function setUniswapAddresses(address _factory, address _routerV02) external onlyOwner {
+    function setUniswapAddresses(address _factory, address _routerV02) external onlyAdmins {
         require(_factory != address(0), "JFC: Zero address for UNI factory");
         require(_routerV02 != address(0), "JFC: Zero address for UNI router02");
         factory = _factory; //Kovan factory: 0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f
