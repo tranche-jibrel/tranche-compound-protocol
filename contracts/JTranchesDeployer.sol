@@ -18,11 +18,11 @@ contract JTranchesDeployer is OwnableUpgradeable, IJTranchesDeployer {
 
     address public jCompoundAddress;
 
-    function initialize() public initializer() {
+    function initialize() external initializer() {
         OwnableUpgradeable.__Ownable_init();
     }
 
-    function setJCompoundAddress(address _jCompound) public onlyOwner {
+    function setJCompoundAddress(address _jCompound) external onlyOwner {
         jCompoundAddress = _jCompound;
     }
 
@@ -34,7 +34,7 @@ contract JTranchesDeployer is OwnableUpgradeable, IJTranchesDeployer {
     function deployNewTrancheATokens(string memory _nameA, 
             string memory _symbolA, 
             address _sender, 
-            address _rewardToken) public override onlyProtocol returns (address) {
+            address _rewardToken) external override onlyProtocol returns (address) {
         JTrancheAToken jTrancheA = new JTrancheAToken();
         jTrancheA.initialize(_nameA, _symbolA);
         jTrancheA.setJCompoundMinter(msg.sender); 
@@ -46,7 +46,7 @@ contract JTranchesDeployer is OwnableUpgradeable, IJTranchesDeployer {
     function deployNewTrancheBTokens(string memory _nameB, 
             string memory _symbolB, 
             address _sender, 
-            address _rewardToken) public override onlyProtocol returns (address) {
+            address _rewardToken) external override onlyProtocol returns (address) {
         JTrancheBToken jTrancheB = new JTrancheBToken();
         jTrancheB.initialize(_nameB, _symbolB);
         jTrancheB.setJCompoundMinter(msg.sender);

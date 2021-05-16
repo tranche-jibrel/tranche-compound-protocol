@@ -32,7 +32,7 @@ contract ETHGateway is IETHGateway, Ownable {
   */
   function redeemCEth(uint256 _amount, bool _redeemType) internal returns (uint256 redeemResult) {
       // _amount is scaled up by 1e18 to avoid decimals
-      if (_redeemType == true) {
+      if (_redeemType) {
           // Retrieve your asset based on a cToken amount
           redeemResult = cEthToken.redeem(_amount);
       } else {

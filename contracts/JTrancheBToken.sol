@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.6.12;
+pragma solidity 0.6.12;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
@@ -16,7 +16,7 @@ contract JTrancheBToken is IFDTBasic, OwnableUpgradeable, ERC20Upgradeable, Acce
 	using SafeMathUint for uint256;
 	using SafeMathInt for int256;
 
-	function initialize(string memory name, string memory symbol) public initializer() {
+	function initialize(string memory name, string memory symbol) external initializer() {
 		OwnableUpgradeable.__Ownable_init();
         __ERC20_init(name, symbol);
 		// Grant the minter role to a specified account

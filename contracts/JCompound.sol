@@ -4,7 +4,7 @@
  * @summary: Jibrel Compound Tranche Protocol
  * @author: Jibrel Team
  */
-pragma solidity ^0.6.12;
+pragma solidity 0.6.12;
 
 import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/SafeERC20Upgradeable.sol";
@@ -35,7 +35,7 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
             address _tranchesDepl,
             address _compTokenAddress,
             address _comptrollAddress,
-            address _rewardsToken) public initializer() {
+            address _rewardsToken) external initializer() {
         OwnableUpgradeable.__Ownable_init();
         adminToolsAddress = _adminTools;
         feesCollectorAddress = _feesCollector;
@@ -114,9 +114,9 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
      * @dev set relationship between ethers and the corresponding Compound cETH contract
      * @param _cEtherContract compound token contract address (cETH contract, on Kovan: 0x41b5844f4680a8c38fbb695b7f9cfd1f64474a72)
      */
-    function setCEtherContract(address payable _cEtherContract) external onlyAdmins {
+    function setCEtherContract(address _cEtherContract) external onlyAdmins {
         cEthToken = ICEth(_cEtherContract);
-        cTokenContracts[0x0000000000000000000000000000000000000000] = _cEtherContract;
+        cTokenContracts[address(0)] = _cEtherContract;
     }
 
     /**
@@ -138,9 +138,9 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
     }
 
     /**
-     * @dev get percentage from compound
+     * @dev get RPB from compound
      * @param _trancheNum tranche number
-     * @return cToken percentage per year
+     * @return cToken compound supply RPB
      */
     function getCompoundSupplyRPB(uint256 _trancheNum) external view returns (uint256) {
         if (trancheAddresses[_trancheNum].buyerCoinAddress == address(0)) {
@@ -263,7 +263,7 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         // i.e. cDAI contract, on Kovan: 0xf0d0eb522cfa50b716b3b1604c4f0fa6f04376ad
         ICErc20 cToken = ICErc20(cTokenContracts[_erc20Contract]);
 
-        if (_redeemType == true) {
+        if (_redeemType) {
             // Retrieve your asset based on a cToken amount
             redeemResult = cToken.redeem(_amount);
         } else {
@@ -344,6 +344,7 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         uint256 deltaBlocks = (block.number).sub(trancheParameters[_trancheNum].trancheALastActionBlock);
         uint256 deltaPrice = (trancheParameters[_trancheNum].trancheACurrentRPB).mul(deltaBlocks);
         trancheParameters[_trancheNum].storedTrancheAPrice = (trancheParameters[_trancheNum].storedTrancheAPrice).add(deltaPrice);
+        trancheParameters[_trancheNum].trancheALastActionBlock = block.number;
         return trancheParameters[_trancheNum].storedTrancheAPrice;
     }
 
@@ -476,7 +477,6 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         uint256 prevCompTokenBalance = getTokenBalance(trancheAddresses[_trancheNum].cTokenAddress);
         if (trancheAddresses[_trancheNum].buyerCoinAddress == address(0)){
             require(msg.value == _amount, "JCompound: msg.value not equal to amount");
-            //_amount = msg.value;
             //Transfer ETH from msg.sender to protocol;
             TransferETHHelper.safeTransferETH(address(this), _amount);
             // transfer ETH to Coompound receiving cETH
@@ -494,7 +494,6 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         setTrancheAExchangeRate(_trancheNum);
         uint256 taAmount;
         if (newCompTokenBalance > prevCompTokenBalance) {
-            //taAmount = _amount.mul(10 ** uint256(trancheParameters[_trancheNum].underlyingDecimals)).div(trancheParameters[_trancheNum].storedTrancheAPrice);
             // if normalized price in tranche A price, everything should be scaled to 1e18 
             uint256 diffDec = uint256(18).sub(uint256(trancheParameters[_trancheNum].underlyingDecimals));
             uint256 normAmount = _amount.mul(10 ** diffDec);
@@ -504,7 +503,6 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         }
         
         lastActivity[msg.sender] = block.number;
-        trancheParameters[_trancheNum].trancheALastActionBlock = block.number;
         emit TrancheATokenMinted(_trancheNum, msg.sender, _amount, taAmount);
     }
 
@@ -563,7 +561,6 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
      
         IJTrancheTokens(trancheAddresses[_trancheNum].ATrancheAddress).burn(_amount);
         lastActivity[msg.sender] = block.number;
-        trancheParameters[_trancheNum].trancheALastActionBlock = block.number;
         emit TrancheATokenRedemption(_trancheNum, msg.sender, _amount, userAmount, feesAmount);
     }
 
@@ -605,7 +602,6 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         } else 
             tbAmount = 0;
         lastActivity[msg.sender] = block.number;
-        trancheParameters[_trancheNum].trancheALastActionBlock = block.number;
         emit TrancheBTokenMinted(_trancheNum, msg.sender, _amount, tbAmount);
     }
 
@@ -662,7 +658,7 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         
         IJTrancheTokens(trancheAddresses[_trancheNum].BTrancheAddress).burn(_amount);
         lastActivity[msg.sender] = block.number;
-        trancheParameters[_trancheNum].trancheALastActionBlock = block.number;
+        
         emit TrancheBTokenRedemption(_trancheNum, msg.sender, _amount,  userAmount, feesAmount);
     }
 
