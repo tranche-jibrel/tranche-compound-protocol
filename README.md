@@ -90,7 +90,7 @@ Limit is 24 KiB for single contract
         </tr>
         <tr>
             <td>JFeesCollector</td>
-            <td><code>9.76 KiB</code></td>
+            <td><code>9.99 KiB</code></td>
         </tr>
         <tr>
             <td>JFeesCollectorStorage</td>

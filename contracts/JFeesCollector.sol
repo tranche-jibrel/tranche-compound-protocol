@@ -25,6 +25,10 @@ contract JFeesCollector is OwnableUpgradeable, JFeesCollectorStorage, IJFeesColl
         contractVersion = 1;
     }
 
+    function setAdminToolsAddress(address _adminTools) external onlyOwner {
+        adminToolsAddress = _adminTools;
+    }
+
     modifier locked() {
         require(!fLock);
         fLock = true;
