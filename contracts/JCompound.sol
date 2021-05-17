@@ -4,15 +4,16 @@
  * @summary: Jibrel Compound Tranche Protocol
  * @author: Jibrel Team
  */
-pragma solidity ^0.6.12;
+pragma solidity 0.6.12;
 
 import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/SafeERC20Upgradeable.sol";
-import "./interfaces/IJPriceOracle.sol";
+import "./interfaces/IJAdminTools.sol";
 import "./interfaces/IJTrancheTokens.sol";
 import "./interfaces/IJTranchesDeployer.sol";
 import "./interfaces/IJCompound.sol";
 import "./interfaces/ICErc20.sol";
+import "./interfaces/IComptrollerLensInterface.sol";
 import "./JCompoundStorage.sol";
 import "./TransferETHHelper.sol";
 
@@ -22,17 +23,26 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
 
     /**
      * @dev contract initializer
-     * @param _priceOracle price oracle address
+     * @param _adminTools price oracle address
      * @param _feesCollector fees collector contract address
      * @param _tranchesDepl tranches deployer contract address
+     * @param _compTokenAddress COMP token contract address
+     * @param _comptrollAddress comptroller contract address
+     * @param _rewardsToken rewards token address (slice token address)
      */
-    function initialize(address _priceOracle, 
+    function initialize(address _adminTools, 
             address _feesCollector, 
-            address _tranchesDepl) public initializer() {
+            address _tranchesDepl,
+            address _compTokenAddress,
+            address _comptrollAddress,
+            address _rewardsToken) external initializer() {
         OwnableUpgradeable.__Ownable_init();
-        priceOracleAddress = _priceOracle;
+        adminToolsAddress = _adminTools;
         feesCollectorAddress = _feesCollector;
         tranchesDeployerAddress = _tranchesDepl;
+        compTokenAddress = _compTokenAddress;
+        comptrollerAddress = _comptrollAddress;
+        rewardsToken = _rewardsToken;
         redeemTimeout = 3; //default
         totalBlocksPerYear = 2102400; // same number like in Compound protocol
     }
@@ -41,7 +51,7 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
      * @dev admins modifiers
      */
     modifier onlyAdmins() {
-        require(IJPriceOracle(priceOracleAddress).isAdmin(msg.sender), "JCompound: not an Admin");
+        require(IJAdminTools(adminToolsAddress).isAdmin(msg.sender), "JCompound: not an Admin");
         _;
     }
 
@@ -61,17 +71,27 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
 
     /**
      * @dev set new addresses for price oracle, fees collector and tranche deployer 
-     * @param _priceOracle price oracle address
+     * @param _adminTools price oracle address
      * @param _feesCollector fees collector contract address
      * @param _tranchesDepl tranches deployer contract address
+     * @param _compTokenAddress COMP token contract address
+     * @param _comptrollAddress comptroller contract address
+     * @param _rewardsToken rewards token address (slice token address)
      */
-    function setNewEnvironment(address _priceOracle, 
+    function setNewEnvironment(address _adminTools, 
             address _feesCollector, 
-            address _tranchesDepl) external onlyOwner{
-        require((_priceOracle != address(0)) && (_feesCollector != address(0)) && (_tranchesDepl != address(0)), "JCompound: check addresses");
-        priceOracleAddress = _priceOracle;
+            address _tranchesDepl,
+            address _compTokenAddress,
+            address _comptrollAddress,
+            address _rewardsToken) external onlyOwner {
+        require((_adminTools != address(0)) && (_feesCollector != address(0)) && 
+            (_tranchesDepl != address(0)) && (_comptrollAddress != address(0)) && (_compTokenAddress != address(0)), "JCompound: check addresses");
+        adminToolsAddress = _adminTools;
         feesCollectorAddress = _feesCollector;
         tranchesDeployerAddress = _tranchesDepl;
+        compTokenAddress = _compTokenAddress;
+        comptrollerAddress = _comptrollAddress;
+        rewardsToken = _rewardsToken;
     }
 
     /**
@@ -94,9 +114,9 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
      * @dev set relationship between ethers and the corresponding Compound cETH contract
      * @param _cEtherContract compound token contract address (cETH contract, on Kovan: 0x41b5844f4680a8c38fbb695b7f9cfd1f64474a72)
      */
-    function setCEtherContract(address payable _cEtherContract) external onlyAdmins {
+    function setCEtherContract(address _cEtherContract) external onlyAdmins {
         cEthToken = ICEth(_cEtherContract);
-        cTokenContracts[0x0000000000000000000000000000000000000000] = _cEtherContract;
+        cTokenContracts[address(0)] = _cEtherContract;
     }
 
     /**
@@ -118,9 +138,9 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
     }
 
     /**
-     * @dev get percentage from compound
+     * @dev get RPB from compound
      * @param _trancheNum tranche number
-     * @return cToken percentage per year
+     * @return cToken compound supply RPB
      */
     function getCompoundSupplyRPB(uint256 _trancheNum) external view returns (uint256) {
         if (trancheAddresses[_trancheNum].buyerCoinAddress == address(0)) {
@@ -191,9 +211,9 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         trancheAddresses[tranchePairsCounter].cTokenAddress = cTokenContracts[_erc20Contract];
         // our tokens always with 18 decimals
         trancheAddresses[tranchePairsCounter].ATrancheAddress = 
-                IJTranchesDeployer(tranchesDeployerAddress).deployNewTrancheATokens(_nameA, _symbolA, msg.sender);
+                IJTranchesDeployer(tranchesDeployerAddress).deployNewTrancheATokens(_nameA, _symbolA, msg.sender, rewardsToken);
         trancheAddresses[tranchePairsCounter].BTrancheAddress = 
-                IJTranchesDeployer(tranchesDeployerAddress).deployNewTrancheBTokens(_nameB, _symbolB, msg.sender);
+                IJTranchesDeployer(tranchesDeployerAddress).deployNewTrancheBTokens(_nameB, _symbolB, msg.sender, rewardsToken);
         
         trancheParameters[tranchePairsCounter].cTokenDecimals = _cTokenDec;
         trancheParameters[tranchePairsCounter].underlyingDecimals = _underlyingDec;
@@ -243,7 +263,7 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         // i.e. cDAI contract, on Kovan: 0xf0d0eb522cfa50b716b3b1604c4f0fa6f04376ad
         ICErc20 cToken = ICErc20(cTokenContracts[_erc20Contract]);
 
-        if (_redeemType == true) {
+        if (_redeemType) {
             // Retrieve your asset based on a cToken amount
             redeemResult = cToken.redeem(_amount);
         } else {
@@ -319,11 +339,12 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
      * @param _trancheNum tranche number
      * @return tranche A token stored price
      */
-    function setTrancheAExchangeRate(uint256 _trancheNum) public returns (uint256) {
+    function setTrancheAExchangeRate(uint256 _trancheNum) internal returns (uint256) {
         calcRPBFromPercentage(_trancheNum);
         uint256 deltaBlocks = (block.number).sub(trancheParameters[_trancheNum].trancheALastActionBlock);
         uint256 deltaPrice = (trancheParameters[_trancheNum].trancheACurrentRPB).mul(deltaBlocks);
         trancheParameters[_trancheNum].storedTrancheAPrice = (trancheParameters[_trancheNum].storedTrancheAPrice).add(deltaPrice);
+        trancheParameters[_trancheNum].trancheALastActionBlock = block.number;
         return trancheParameters[_trancheNum].storedTrancheAPrice;
     }
 
@@ -456,7 +477,6 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         uint256 prevCompTokenBalance = getTokenBalance(trancheAddresses[_trancheNum].cTokenAddress);
         if (trancheAddresses[_trancheNum].buyerCoinAddress == address(0)){
             require(msg.value == _amount, "JCompound: msg.value not equal to amount");
-            //_amount = msg.value;
             //Transfer ETH from msg.sender to protocol;
             TransferETHHelper.safeTransferETH(address(this), _amount);
             // transfer ETH to Coompound receiving cETH
@@ -474,7 +494,6 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         setTrancheAExchangeRate(_trancheNum);
         uint256 taAmount;
         if (newCompTokenBalance > prevCompTokenBalance) {
-            //taAmount = _amount.mul(10 ** uint256(trancheParameters[_trancheNum].underlyingDecimals)).div(trancheParameters[_trancheNum].storedTrancheAPrice);
             // if normalized price in tranche A price, everything should be scaled to 1e18 
             uint256 diffDec = uint256(18).sub(uint256(trancheParameters[_trancheNum].underlyingDecimals));
             uint256 normAmount = _amount.mul(10 ** diffDec);
@@ -484,7 +503,6 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         }
         
         lastActivity[msg.sender] = block.number;
-        trancheParameters[_trancheNum].trancheALastActionBlock = block.number;
         emit TrancheATokenMinted(_trancheNum, msg.sender, _amount, taAmount);
     }
 
@@ -509,12 +527,12 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         uint256 taAmount = _amount.mul(trancheParameters[_trancheNum].storedTrancheAPrice).div(1e18);
         uint256 diffDec = uint256(18).sub(uint256(trancheParameters[_trancheNum].underlyingDecimals));
         uint256 normAmount = taAmount.div(10 ** diffDec);
+        uint256 cTokenBal = getTokenBalance(trancheAddresses[_trancheNum].cTokenAddress); // needed for emergency
         if (trancheAddresses[_trancheNum].buyerCoinAddress == address(0)) {
-            uint256 cEthBal = getTokenBalance(trancheAddresses[_trancheNum].cTokenAddress);
-            SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(trancheAddresses[_trancheNum].cTokenAddress), address(ethGateway), cEthBal);
+            SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(trancheAddresses[_trancheNum].cTokenAddress), address(ethGateway), cTokenBal);
             // calculate taAmount via cETH price
             oldBal = getEthBalance();
-            ethGateway.withdrawETH(normAmount, address(this), false);
+            ethGateway.withdrawETH(normAmount, address(this), false, cTokenBal);
             diffBal = getEthBalance().sub(oldBal);
             userAmount = diffBal.mul(trancheParameters[_trancheNum].redemptionPercentage).div(PERCENT_DIVIDER);
             TransferETHHelper.safeTransferETH(msg.sender, userAmount);
@@ -526,7 +544,11 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         } else {
             // calculate taAmount via cToken price
             oldBal = getTokenBalance(trancheAddresses[_trancheNum].buyerCoinAddress);
-            require(redeemCErc20Tokens(trancheAddresses[_trancheNum].buyerCoinAddress, normAmount, false) == 0, "JCompound: incorrect answer from cToken");
+            uint256 compoundRetCode = redeemCErc20Tokens(trancheAddresses[_trancheNum].buyerCoinAddress, normAmount, false);
+            if(compoundRetCode != 0) {
+                // emergency: send all ctokens balance to compound 
+                redeemCErc20Tokens(trancheAddresses[_trancheNum].buyerCoinAddress, cTokenBal, true);  
+            }
             diffBal = getTokenBalance(trancheAddresses[_trancheNum].buyerCoinAddress).sub(oldBal);
             userAmount = diffBal.mul(trancheParameters[_trancheNum].redemptionPercentage).div(PERCENT_DIVIDER);
             SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(trancheAddresses[_trancheNum].buyerCoinAddress), msg.sender, userAmount);
@@ -539,7 +561,6 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
      
         IJTrancheTokens(trancheAddresses[_trancheNum].ATrancheAddress).burn(_amount);
         lastActivity[msg.sender] = block.number;
-        trancheParameters[_trancheNum].trancheALastActionBlock = block.number;
         emit TrancheATokenRedemption(_trancheNum, msg.sender, _amount, userAmount, feesAmount);
     }
 
@@ -607,12 +628,12 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         uint256 tbAmount = _amount.mul(getTrancheBExchangeRate(_trancheNum, 0)).div(1e18);
         uint256 diffDec = uint256(18).sub(uint256(trancheParameters[_trancheNum].underlyingDecimals));
         uint256 normAmount = tbAmount.div(10 ** diffDec);
+        uint256 cTokenBal = getTokenBalance(trancheAddresses[_trancheNum].cTokenAddress); // needed for emergency
         if (trancheAddresses[_trancheNum].buyerCoinAddress == address(0)){
-            uint256 cethBal = getTokenBalance(trancheAddresses[_trancheNum].cTokenAddress);
-            SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(trancheAddresses[_trancheNum].cTokenAddress), address(ethGateway), cethBal);
+            SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(trancheAddresses[_trancheNum].cTokenAddress), address(ethGateway), cTokenBal);
             // calculate tbETH amount via cETH price
             oldBal = getEthBalance();
-            ethGateway.withdrawETH(normAmount, address(this), false);
+            ethGateway.withdrawETH(normAmount, address(this), false, cTokenBal);
             diffBal = getEthBalance().sub(oldBal);
             userAmount = diffBal.mul(trancheParameters[_trancheNum].redemptionPercentage).div(PERCENT_DIVIDER);
             TransferETHHelper.safeTransferETH(msg.sender, userAmount);
@@ -637,6 +658,7 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
         
         IJTrancheTokens(trancheAddresses[_trancheNum].BTrancheAddress).burn(_amount);
         lastActivity[msg.sender] = block.number;
+        
         emit TrancheBTokenRedemption(_trancheNum, msg.sender, _amount,  userAmount, feesAmount);
     }
 
@@ -648,9 +670,10 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
     function redeemCTokenAmount(uint256 _trancheNum, uint256 _cTokenAmount) external onlyAdmins locked {
         uint256 oldBal;
         uint256 diffBal;
+        uint256 cTokenBal = getTokenBalance(trancheAddresses[_trancheNum].cTokenAddress); // needed for emergency
         if (trancheAddresses[_trancheNum].buyerCoinAddress == address(0)) {
             oldBal = getEthBalance();
-            ethGateway.withdrawETH(_cTokenAmount, address(this), true);
+            ethGateway.withdrawETH(_cTokenAmount, address(this), true, cTokenBal);
             diffBal = getEthBalance().sub(oldBal);
             TransferETHHelper.safeTransferETH(feesCollectorAddress, diffBal);
         } else {
@@ -693,5 +716,42 @@ contract JCompound is OwnableUpgradeable, JCompoundStorage, IJCompound {
     function withdrawEthToFeesCollector(uint256 _amount) external onlyAdmins {
         TransferETHHelper.safeTransferETH(feesCollectorAddress, _amount);
     }
+
+    /**
+     * @dev get total accrued Comp token from all market in comptroller
+     * @return comp amount accrued
+     */
+    function getTotalCompAccrued() public view onlyAdmins returns (uint256) {
+        return IComptrollerLensInterface(comptrollerAddress).compAccrued(address(this));
+    }
+/*
+    /**
+     * @dev claim total accrued Comp token from all market in comptroller and transfer the amount in fees collector
+     */
+/*    function claimTotalCompAccrued() external onlyAdmins locked {
+        uint256 totAccruedAmount = getTotalCompAccrued();
+        if (totAccruedAmount > 0) {
+            IComptrollerLensInterface(comptrollerAddress).claimComp(address(this));
+            uint256 amount = IERC20Upgradeable(compTokenAddress).balanceOf(address(this));
+            SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(compTokenAddress), feesCollectorAddress, amount);
+        }
+    }
+*/
+    /**
+     * @dev claim total accrued Comp token from all market in comptroller and transfer the amount to a receiver address
+     * @param _receiver destination address
+     */
+    function claimTotalCompAccruedToReceiver(address _receiver) external onlyAdmins locked {
+        uint256 totAccruedAmount = getTotalCompAccrued();
+        if (totAccruedAmount > 0) {
+            IComptrollerLensInterface(comptrollerAddress).claimComp(address(this));
+            uint256 amount = IERC20Upgradeable(compTokenAddress).balanceOf(address(this));
+            SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(compTokenAddress), _receiver, amount);
+        }
+    }
+
+    function emergencyRemoveTokensFromTranche(address _trancheAddress, address _token, address _receiver, uint256 _amount) external onlyAdmins locked {
+        IJTrancheTokens(_trancheAddress).emergencyTokenTransfer(_token, _receiver, _amount);
+    } 
 
 }

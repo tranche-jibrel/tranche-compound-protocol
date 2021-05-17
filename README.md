@@ -29,6 +29,34 @@ Users can now call buy and redeem functions for tranche A & B tokens
 
 Note: if ETH tranche is deployed, please deploy ETHGateway contract without a proxy, then set its address in JCompound with setETHGateway function.
 
+## Uniswap contracts
+# !!! Please note: we have to use 2 different versions of library for tests and for deploy on mainnet / testnet !!!
+
+This is due to different init code hash for UniswapV2Library file when compiled with other solidity compiler versions.
+
+    - hex'96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f' // init code hash original, remember to restore it before deploying and recompile all files
+
+    - hex'555c8bf3a68dcde924051e2b2db6a6bbce50f756cacad88fdfcaab07ec40b7d9' // i.e. init code hash for tests
+
+Please launch !!uniswapInitHashCode.test.js to get your init code hash in test environment
+
+Tests on Kovan
+
+Uniswap factory on kovan: 0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f - Uniswap Router02 on kovan: 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D
+
+Fees Collector on kovan: 0x3623DC2600c8419F8D88bE276FEA9354e3A8C3C0
+
+Some examples:
+
+DAI address: 0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa
+
+WETH address: 0xd0a1e359811322d97991e03f863a0c30c2cf029c
+
+USDC address: 0xe22da380ee6B445bb8273C81944ADEB6E8450422
+
+you can test whatever pair you like that is already been deployed by uniswap factory!
+
+
 
 ## Contracts Size (main contracts, no interfaces, no test contracts)
 Limit is 24 KiB for single contract
@@ -42,27 +70,51 @@ Limit is 24 KiB for single contract
     <tbody>
         <tr>
             <td>ETHGateway</td>
-            <td><code>3.13 KiB</code></td>
+            <td><code>3.08 KiB</code></td>
+        </tr>
+        <tr>
+            <td>JAdminTools</td>
+            <td><code>2.73 KiB</code></td>
+        </tr>
+        <tr>
+            <td>JAdminToolsStorage</td>
+            <td><code>0.87 KiB</code></td>
         </tr>
         <tr>
             <td>JCompound</td>
-            <td><code>20.34 KiB</code></td>
+            <td><code>22.29 KiB</code></td>
         </tr>
         <tr>
             <td>JCompoundStorage</td>
-            <td><code>1.59 KiB</code></td>
+            <td><code>1.69 KiB</code></td>
+        </tr>
+        <tr>
+            <td>JFeesCollector</td>
+            <td><code>9.99 KiB</code></td>
+        </tr>
+        <tr>
+            <td>JFeesCollectorStorage</td>
+            <td><code>0.99 KiB</code></td>
         </tr>
         <tr>
             <td>JTrancheAToken</td>
-            <td><code>7.71 KiB</code></td>
+            <td><code>10.28 KiB</code></td>
+        </tr>
+        <tr>
+            <td>JTrancheATokenStorage</td>
+            <td><code>0.44 KiB</code></td>
         </tr>
         <tr>
             <td>JTrancheBToken</td>
-            <td><code>7.71 KiB</code></td>
+            <td><code>10.18 KiB</code></td>
+        </tr>
+        <tr>
+            <td>JTrancheBTokenStorage</td>
+            <td><code>0.44 KiB</code></td>
         </tr>
         <tr>
             <td>JTranchesDeployer</td>
-            <td><code>18.62 KiB</code></td>
+            <td><code>23.70 KiB</code></td>
         </tr>
     </tbody>
   </table>

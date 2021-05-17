@@ -35,6 +35,7 @@ module.exports = {
       skipDryRun: true
     },
   },
+  plugins: ['truffle-contract-size'],
   // Set default mocha options here, use special reporters etc.
   mocha: {
     timeout: 100000
