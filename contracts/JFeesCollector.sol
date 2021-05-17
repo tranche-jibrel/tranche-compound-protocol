@@ -9,6 +9,7 @@ pragma solidity 0.6.12;
 import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/SafeERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import './uniswap/UniswapV2Library.sol';
 import './uniswap/IUniswapV2Pair.sol';
 import "./TransferETHHelper.sol";
@@ -16,7 +17,7 @@ import "./JFeesCollectorStorage.sol";
 import "./interfaces/IJAdminTools.sol";
 import "./interfaces/IJFeesCollector.sol";
 
-contract JFeesCollector is OwnableUpgradeable, JFeesCollectorStorage, IJFeesCollector {
+contract JFeesCollector is OwnableUpgradeable, ReentrancyGuardUpgradeable, JFeesCollectorStorage, IJFeesCollector {
     using SafeMathUpgradeable for uint256;
 
     function initialize(address _adminTools) external initializer {
@@ -27,13 +28,6 @@ contract JFeesCollector is OwnableUpgradeable, JFeesCollectorStorage, IJFeesColl
 
     function setAdminToolsAddress(address _adminTools) external onlyOwner {
         adminToolsAddress = _adminTools;
-    }
-
-    modifier locked() {
-        require(!fLock);
-        fLock = true;
-        _;
-        fLock = false;
     }
 
     /**
@@ -61,7 +55,7 @@ contract JFeesCollector is OwnableUpgradeable, JFeesCollectorStorage, IJFeesColl
     * @dev withdraw eth amount
     * @param _amount amount of withdrawed eth
     */
-    function ethWithdraw(uint256 _amount) external onlyAdmins locked {
+    function ethWithdraw(uint256 _amount) external onlyAdmins nonReentrant {
         require(_amount <= address(this).balance, "Not enough contract balance");
         TransferETHHelper.safeTransferETH(msg.sender, _amount);
         emit EthWithdrawn(_amount, block.number);
@@ -118,7 +112,7 @@ contract JFeesCollector is OwnableUpgradeable, JFeesCollectorStorage, IJFeesColl
     * @param _tok address of the token
     * @param _amount token amount
     */
-    function withdrawTokens(address _tok, uint256 _amount) external onlyAdmins locked {
+    function withdrawTokens(address _tok, uint256 _amount) external onlyAdmins nonReentrant {
         require(isTokenAllowed(_tok), "Token not allowed");
         SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(_tok), msg.sender, _amount);
         emit TokenWithdrawn(_tok, _amount, block.number);
@@ -130,7 +124,7 @@ contract JFeesCollector is OwnableUpgradeable, JFeesCollectorStorage, IJFeesColl
     * @param _receiver recipient address
     * @param _amount token amount
     */
-    function sendTokensToReceiver(address _tok, address _receiver, uint256 _amount) external onlyAdmins locked {
+    function sendTokensToReceiver(address _tok, address _receiver, uint256 _amount) external onlyAdmins nonReentrant {
         require(isTokenAllowed(_tok), "Token not allowed");
         SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(_tok), _receiver, _amount);
         emit TokenWithdrawn(_tok, _amount, block.number);

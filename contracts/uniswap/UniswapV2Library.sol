@@ -24,7 +24,7 @@ library UniswapV2Library {
                 factory,
                 keccak256(abi.encodePacked(token0, token1)),
                 //hex'96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f' // init code hash original to be retored when deploying on blockchain
-                hex'743806ab13c4cbf3548bf6e81929bd92d92d252278b87bd02aa360ae708eef43' // init code hash for tests
+                hex'aefdd5f67058e5e1f8b530deb9907de77990cabe799b928359c5df032db34726' // init code hash for tests
             ))));
     }
 

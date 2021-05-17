@@ -96,6 +96,5 @@ contract JAdminTools is OwnableUpgradeable, JAdminToolsStorage, IJAdminTools {
         contractVersion = _ver;
     }
 
-
 }
 

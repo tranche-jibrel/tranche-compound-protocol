@@ -22,6 +22,7 @@ const weth = contract.fromArtifact("myWETH");
 const token1 = contract.fromArtifact("myERC20");
 const token2 = contract.fromArtifact("myERC20");
 
+const JAdminTools = contract.fromArtifact("JAdminTools");
 const JFeesCollector = contract.fromArtifact("JFeesCollector");
 
 // FACTORY
@@ -48,8 +49,12 @@ describe('Uniswap JFeesCollector', function () {
       this.weth = await weth.new({ from: tokenOwner });
       console.log("myWETH address: " + this.weth.address);
 
+      this.AT = await JAdminTools.new({ from: jfcOwner });
+      console.log("myAT address: " + this.AT.address);
+      await this.AT.initialize({ from: jfcOwner })
+
       this.JFeesCollector = await JFeesCollector.new({ from: jfcOwner });
-      tx = await this.JFeesCollector.initialize({ from: jfcOwner })
+      tx = await this.JFeesCollector.initialize(this.AT.address, { from: jfcOwner })
 
 			this.uniswapV2Factory = await UniswapV2Factory.new(this.JFeesCollector.address, { from: factoryOwner });
 			this.uniswapV2Router02 = await UniswapV2Router02.new(this.uniswapV2Factory.address, this.weth.address, { from: factoryOwner });

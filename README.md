@@ -70,7 +70,7 @@ Limit is 24 KiB for single contract
     <tbody>
         <tr>
             <td>ETHGateway</td>
-            <td><code>3.08 KiB</code></td>
+            <td><code>3.02 KiB</code></td>
         </tr>
         <tr>
             <td>JAdminTools</td>
@@ -82,23 +82,23 @@ Limit is 24 KiB for single contract
         </tr>
         <tr>
             <td>JCompound</td>
-            <td><code>22.29 KiB</code></td>
+            <td><code>21.86 KiB</code></td>
         </tr>
         <tr>
             <td>JCompoundStorage</td>
-            <td><code>1.69 KiB</code></td>
+            <td><code>1.63 KiB</code></td>
         </tr>
         <tr>
             <td>JFeesCollector</td>
-            <td><code>9.99 KiB</code></td>
+            <td><code>10.10 KiB</code></td>
         </tr>
         <tr>
             <td>JFeesCollectorStorage</td>
-            <td><code>0.99 KiB</code></td>
+            <td><code>0.96 KiB</code></td>
         </tr>
         <tr>
             <td>JTrancheAToken</td>
-            <td><code>10.28 KiB</code></td>
+            <td><code>10.18 KiB</code></td>
         </tr>
         <tr>
             <td>JTrancheATokenStorage</td>
@@ -115,6 +115,10 @@ Limit is 24 KiB for single contract
         <tr>
             <td>JTranchesDeployer</td>
             <td><code>23.70 KiB</code></td>
+        </tr>
+        <tr>
+            <td>JTranchesDeployerStorage</td>
+            <td><code>0.14 KiB</code></td>
         </tr>
     </tbody>
   </table>
