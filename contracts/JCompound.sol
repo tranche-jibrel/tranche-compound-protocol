@@ -169,7 +169,6 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
      * @param _newTrAPercentage new tranche A RPB
      */
     function setTrancheAFixedPercentage(uint256 _trancheNum, uint256 _newTrAPercentage) external onlyAdmins {
-        trancheParameters[_trancheNum].trancheALastActionBlock = block.number;
         trancheParameters[_trancheNum].trancheAFixedPercentage = _newTrAPercentage;
         trancheParameters[_trancheNum].storedTrancheAPrice = setTrancheAExchangeRate(_trancheNum);
     }
@@ -265,16 +264,25 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
     }
 
     /**
-     * @dev get cETH exchange rate from compound contract
+     * @dev get cETH stored exchange rate from compound contract
      * @return exchRateMantissa exchange rate cEth mantissa
      */
     function getCEthExchangeRate() public view returns (uint256 exchRateMantissa) {
         // Amount of current exchange rate from cToken to underlying
         return exchRateMantissa = cEthToken.exchangeRateStored(); // it returns something like 200335783821833335165549849
     }
-
+/*
     /**
-     * @dev get cETH exchange rate from compound contract
+     * @dev get cETH current exchange rate from compound contract
+     * @return exchRateMantissa exchange rate cEth mantissa
+     */
+/*    function getCEthExchangeRateCurrent() public returns (uint256 exchRateMantissa) {
+        // Amount of current exchange rate from cToken to underlying
+        return exchRateMantissa = cEthToken.exchangeRateCurrent(); // it returns something like 200335783821833335165549849
+    }
+*/
+    /**
+     * @dev get cETH stored exchange rate from compound contract
      * @param _tokenContract tranche number
      * @return exchRateMantissa exchange rate cToken mantissa
      */
@@ -283,7 +291,18 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
         // Amount of current exchange rate from cToken to underlying
         return exchRateMantissa = cToken.exchangeRateStored(); // it returns something like 210615675702828777787378059 (cDAI contract) or 209424757650257 (cUSDT contract)
     }
-
+/*
+    /**
+     * @dev get cETH current exchange rate from compound contract
+     * @param _tokenContract tranche number
+     * @return exchRateMantissa exchange rate cToken mantissa
+     */
+/*    function getCTokenExchangeRateCurrent(address _tokenContract) public returns (uint256 exchRateMantissa) {
+        ICErc20 cToken = ICErc20(cTokenContracts[_tokenContract]);
+        // Amount of current exchange rate from cToken to underlying
+        return exchRateMantissa = cToken.exchangeRateCurrent(); // it returns something like 210615675702828777787378059 (cDAI contract) or 209424757650257 (cUSDT contract)
+    }
+*/
     /**
      * @dev get tranche mantissa
      * @param _trancheNum tranche number
@@ -309,7 +328,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
     }
 
     /**
-     * @dev get compound price for a single tranche
+     * @dev get compound price for a single tranche scaled by 1e18
      * @param _trancheNum tranche number
      * @return compNormPrice compound current normalized price
      */

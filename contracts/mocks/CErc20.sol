@@ -73,6 +73,10 @@ contract CErc20 is OwnableUpgradeable, ERC20Upgradeable {
         return exchangeRateStoredVal;
     }
 
+    function exchangeRateCurrent() public view returns (uint) {
+        return exchangeRateStoredVal;
+    }
+
     /**
      * @notice User supplies assets into the market and receives cTokens in exchange
      * @dev Assumes interest has already been accrued up to the current block
