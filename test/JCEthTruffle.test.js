@@ -21,7 +21,7 @@ const {
 const myERC20 = artifacts.require("myERC20");
 const CEther = artifacts.require("CEther");
 const CErc20 = artifacts.require("CErc20");
-const JPriceOracle = artifacts.require('JPriceOracle');
+const JAdminTools = artifacts.require('JAdminTools');
 const JFeesCollector = artifacts.require('JFeesCollector');
 
 const JCompound = artifacts.require('JCompound');
@@ -35,7 +35,7 @@ const EthGateway = artifacts.require('./ETHGateway');
 const MYERC20_TOKEN_SUPPLY = 5000000;
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
-let daiContract, cEtherContract, cERC20Contract, jFCContract, jPOContract, jTrDeplContract, jCompContract;
+let daiContract, cEtherContract, cERC20Contract, jFCContract, jATContract, jTrDeplContract, jCompContract;
 let ethTrAContract, ethTrBContract, daiTrAContract, daiTrBContract;
 let tokenOwner, user1;
 
@@ -73,10 +73,10 @@ contract("JCompound", function (accounts) {
     expect(jFCContract.address).to.match(/0x[0-9a-fA-F]{40}/);
     console.log(jFCContract.address);
 
-    jPOContract = await JPriceOracle.deployed();
-    expect(jPOContract.address).to.be.not.equal(ZERO_ADDRESS);
-    expect(jPOContract.address).to.match(/0x[0-9a-fA-F]{40}/);
-    console.log(jPOContract.address);
+    jATContract = await JAdminTools.deployed();
+    expect(jATContract.address).to.be.not.equal(ZERO_ADDRESS);
+    expect(jATContract.address).to.match(/0x[0-9a-fA-F]{40}/);
+    console.log(jATContract.address);
 
     jTrDeplContract = await JTranchesDeployer.deployed();
     expect(jTrDeplContract.address).to.be.not.equal(ZERO_ADDRESS);
@@ -183,7 +183,7 @@ contract("JCompound", function (accounts) {
     block = await web3.eth.getBlock("latest");
     console.log("New Actual Block: " + block.number);
 
-    //await cEtherContract.setExchangeRateStored(new BN("22597347673700721")); //22595347673700721
+    await cEtherContract.setExchangeRateStored(new BN("23230929272867851")); //23230829272867851
     console.log("Compound New price: " + await cEtherContract.exchangeRateStored());
   });
 
@@ -225,7 +225,7 @@ contract("JCompound", function (accounts) {
     await time.advanceBlockTo(newBlock);
     block = await web3.eth.getBlock("latest");
     console.log("New Actual Block: " + block.number);
-    await cEtherContract.setExchangeRateStored(new BN("22598347673700721")); //22597347673700721
+    await cEtherContract.setExchangeRateStored(new BN("23231029272867851")); //23230929272867851
     console.log("Compound New price: " + await cEtherContract.exchangeRateStored());
   });
 
@@ -235,7 +235,14 @@ contract("JCompound", function (accounts) {
     bal = await ethTrBContract.balanceOf(user1);
     console.log("User1 trB tokens: " + web3.utils.fromWei(bal, "ether") + " ETB");
     console.log("JCompound cEth balance: " + web3.utils.fromWei(await jCompContract.getTokenBalance(cEtherContract.address), "ether") + " cEth");
-    console.log("TrB price: " + web3.utils.fromWei(await jCompContract.getTrancheBExchangeRate(0, 0), "ether"));
+    trbPrice = web3.utils.fromWei(await jCompContract.getTrancheBExchangeRate(0, 0), "ether")
+    console.log("TrB price: " + trbPrice);
+    console.log("CEther eth bal:" + web3.utils.fromWei(await web3.eth.getBalance(cEtherContract.address)), "ether");
+    //console.log(stPrice.toString());
+    tempAmnt = bal * Math.pow(10, -18);
+    //console.log(tempAmnt.toString())
+    taAmount = tempAmnt * trbPrice;
+    console.log(taAmount);
     tx = await ethTrBContract.approve(jCompContract.address, bal, {
       from: user1
     });

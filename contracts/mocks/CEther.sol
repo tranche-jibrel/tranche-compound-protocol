@@ -48,13 +48,13 @@ contract CEther is OwnableUpgradeable, ERC20Upgradeable {
         uint256 amount = redeemAmount.mul(exchangeRateStoredVal).div(uint(1e18));
 
         msg.sender.transfer(amount);
+        super._burn(msg.sender, redeemAmount);
 
         return amount;
     }
 
     function redeemUnderlying(uint redeemAmount) external returns (uint) {
-        redeemFresh(msg.sender, 0, redeemAmount);
-        return 0;
+        return redeemFresh(msg.sender, 0, redeemAmount);
     }
 
     function setExchangeRateStored(uint256 rate) external {
@@ -62,6 +62,10 @@ contract CEther is OwnableUpgradeable, ERC20Upgradeable {
     }
 
     function exchangeRateStored() public view returns (uint) {
+        return exchangeRateStoredVal;
+    }
+
+    function exchangeRateCurrent() public view returns (uint) {
         return exchangeRateStoredVal;
     }
 
@@ -94,7 +98,7 @@ contract CEther is OwnableUpgradeable, ERC20Upgradeable {
      * @param redeemTokensIn The number of cTokens to redeem into underlying (only one of redeemTokensIn or redeemAmountIn may be non-zero)
      * @param redeemAmountIn The number of underlying tokens to receive from redeeming cTokens (only one of redeemTokensIn or redeemAmountIn may be non-zero)
      */
-    function redeemFresh(address payable redeemer, uint redeemTokensIn, uint redeemAmountIn) internal {
+    function redeemFresh(address payable redeemer, uint redeemTokensIn, uint redeemAmountIn) internal returns (uint) {
         require(redeemTokensIn == 0 || redeemAmountIn == 0, "one of redeemTokensIn or redeemAmountIn must be zero");
 
         uint256 redeemAmount;
@@ -132,7 +136,10 @@ contract CEther is OwnableUpgradeable, ERC20Upgradeable {
          *  totalSupplyNew = totalSupply - redeemTokens
          *  accountTokensNew = accountTokens[redeemer] - redeemTokens
          */
-        super._burn(redeemer, redeemTokens);
+        if (redeemTokens <= totalSupply())
+            super._burn(redeemer, redeemTokens);
+        else
+            return 1;
 
         /*
          * We invoke doTransferOut for the redeemer and the redeemAmount.
@@ -141,5 +148,6 @@ contract CEther is OwnableUpgradeable, ERC20Upgradeable {
          *  doTransferOut reverts if anything goes wrong, since we can't be sure if side effects occurred.
          */
         doTransferOut(redeemer, redeemAmount);
+        return 0;
     }
 }

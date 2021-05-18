@@ -32,7 +32,7 @@ contract ETHGateway is IETHGateway, Ownable {
   */
   function redeemCEth(uint256 _amount, bool _redeemType) internal returns (uint256 redeemResult) {
       // _amount is scaled up by 1e18 to avoid decimals
-      if (_redeemType == true) {
+      if (_redeemType) {
           // Retrieve your asset based on a cToken amount
           redeemResult = cEthToken.redeem(_amount);
       } else {
@@ -61,18 +61,24 @@ contract ETHGateway is IETHGateway, Ownable {
    * @param _amount amount of cETH to withdraw and receive native ETH
    * @param _to address of the user who will receive native ETH
    * @param _redeemType redeem type
+   * @param _cEthBal cEth balance
    */
-  function withdrawETH(uint256 _amount, address _to, bool _redeemType) external override {
+  function withdrawETH(uint256 _amount, address _to, bool _redeemType, uint256 _cEthBal) external override {
     require(msg.sender == jCompoundAddress, "ETHGateway: caller is not JCompound contract");
-    uint256 oldcEthBal = getTokenBalance(address(cEthToken));
 
     uint256 oldEthBal = getEthBalance();
-    require(redeemCEth(_amount, _redeemType) == 0, "ETHGateway: incorrect answer from cEth");
+    uint256 retCompoundCode = redeemCEth(_amount, _redeemType);
+    if(retCompoundCode != 0) { 
+      // emergency: sennd all cEth to compound
+      retCompoundCode = redeemCEth(_cEthBal, true); 
+    }
     uint256 diffEthBal = getEthBalance().sub(oldEthBal);
-    TransferETHHelper.safeTransferETH(_to, diffEthBal);
-
+    if (diffEthBal > 0) {
+      TransferETHHelper.safeTransferETH(_to, diffEthBal);
+    }
     uint256 newcEthBal = getTokenBalance(address(cEthToken));
-    IERC20(address(cEthToken)).transfer(_to, oldcEthBal.sub(newcEthBal));
+    if (newcEthBal > 0)
+       IERC20(address(cEthToken)).transfer(_to, newcEthBal);
   }
 
   /**

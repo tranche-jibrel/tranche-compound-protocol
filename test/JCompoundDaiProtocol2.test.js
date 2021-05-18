@@ -49,7 +49,7 @@ describe('JProtocol', function () {
   sendDAItoUsers(tokenOwner, user1, user2, user3, user4, user5, user6);
 
   it('send some DAI to CErc20', async function () {
-    tx = await this.DAI.transfer(this.CErc20.address, web3.utils.toWei('10', 'ether'), {
+    tx = await this.DAI.transfer(this.CErc20.address, web3.utils.toWei('100', 'ether'), {
       from: tokenOwner
     });
     console.log("Gas to transfer DAI to JCompound: " + tx.receipt.gasUsed);
@@ -57,7 +57,7 @@ describe('JProtocol', function () {
     // console.log("transfer token costs: " + web3.utils.fromWei(totcost.toString(), 'ether') + " ETH");
     protBal = await this.DAI.balanceOf(this.CErc20.address);
     console.log(`protocol DAI Balance: ${web3.utils.fromWei(protBal, "ether")} DAI`)
-    expect(web3.utils.fromWei(protBal, "ether")).to.be.equal(new BN(10).toString());
+    expect(web3.utils.fromWei(protBal, "ether")).to.be.equal(new BN(100).toString());
   });
 
   it("user1 buys some token EthTrA", async function () {
@@ -130,6 +130,19 @@ describe('JProtocol', function () {
     console.log("Compound total Value: " + web3.utils.fromWei(await this.JCompound.getTotalValue(1), "ether"));
   }); 
 
+  it("Rewards distribution", async function () {
+    tx = await this.SLICE.transfer(this.DaiTrA.address, web3.utils.toWei("10000", "ether"), {from: tokenOwner});
+    console.log("DaiTrA SLICE tokens: "+ web3.utils.fromWei(await this.SLICE.balanceOf(this.DaiTrA.address), "ether") + " SLICE");
+    tx = await this.SLICE.transfer(this.DaiTrB.address, web3.utils.toWei("20000", "ether"), {from: tokenOwner});
+    console.log("DaiTrB SLICE tokens: "+ web3.utils.fromWei(await this.SLICE.balanceOf(this.DaiTrB.address), "ether") + " SLICE");
+    tx = await this.DaiTrA.updateFundsReceived();
+    tx = await this.DaiTrB.updateFundsReceived();
+    console.log("User1 SLICE withdrawable balance on TrA: "+ web3.utils.fromWei(await this.DaiTrA.withdrawableFundsOf(user1), "ether") + " SLICE");
+    console.log("User2 SLICE withdrawable balance on TrA: "+ web3.utils.fromWei(await this.DaiTrA.withdrawableFundsOf(user2), "ether") + " SLICE");
+    console.log("User1 SLICE withdrawable balance on TrB: "+ web3.utils.fromWei(await this.DaiTrB.withdrawableFundsOf(user1), "ether") + " SLICE");
+    console.log("User2 SLICE withdrawable balance on TrB: "+ web3.utils.fromWei(await this.DaiTrB.withdrawableFundsOf(user2), "ether") + " SLICE");
+  });
+
   it('time passes...', async function () {
     let block = await web3.eth.getBlock("latest");
     console.log("Actual Block: " + block.number);
@@ -158,6 +171,19 @@ describe('JProtocol', function () {
     console.log("Compound TrA Value: " + web3.utils.fromWei(await this.JCompound.getTrAValue(1), "ether"));
     console.log("Compound total Value: " + web3.utils.fromWei(await this.JCompound.getTotalValue(1), "ether"));
   }); 
+
+  it("Rewards distribution only on tranche B", async function () {
+    // tx = await this.SLICE.transfer(this.DaiTrA.address, web3.utils.toWei("1000", "ether"), {from: tokenOwner});
+    // console.log("DaiTrA SLICE tokens: "+ web3.utils.fromWei(await this.SLICE.balanceOf(this.DaiTrA.address), "ether") + " SLICE");
+    tx = await this.SLICE.transfer(this.DaiTrB.address, web3.utils.toWei("2000", "ether"), {from: tokenOwner});
+    console.log("DaiTrB SLICE tokens: "+ web3.utils.fromWei(await this.SLICE.balanceOf(this.DaiTrB.address), "ether") + " SLICE");
+    // tx = await this.DaiTrA.updateFundsReceived();
+    tx = await this.DaiTrB.updateFundsReceived();
+    console.log("User1 SLICE withdrawable balance on TrA: "+ web3.utils.fromWei(await this.DaiTrA.withdrawableFundsOf(user1), "ether") + " SLICE");
+    console.log("User2 SLICE withdrawable balance on TrA: "+ web3.utils.fromWei(await this.DaiTrA.withdrawableFundsOf(user2), "ether") + " SLICE");
+    console.log("User1 SLICE withdrawable balance on TrB: "+ web3.utils.fromWei(await this.DaiTrB.withdrawableFundsOf(user1), "ether") + " SLICE");
+    console.log("User2 SLICE withdrawable balance on TrB: "+ web3.utils.fromWei(await this.DaiTrB.withdrawableFundsOf(user2), "ether") + " SLICE");
+  });
 
   it('time passes to let the redeem timeout to expire', async function () {
     let block = await web3.eth.getBlock("latest");
@@ -190,6 +216,19 @@ describe('JProtocol', function () {
     console.log("Compound total Value: " + web3.utils.fromWei(await this.JCompound.getTotalValue(1), "ether"));
   }); 
 
+  it("Rewards distribution only on tranche B", async function () {
+    // tx = await this.SLICE.transfer(this.DaiTrA.address, web3.utils.toWei("1000", "ether"), {from: tokenOwner});
+    // console.log("DaiTrA SLICE tokens: "+ web3.utils.fromWei(await this.SLICE.balanceOf(this.DaiTrA.address), "ether") + " SLICE");
+    tx = await this.SLICE.transfer(this.DaiTrB.address, web3.utils.toWei("3000", "ether"), {from: tokenOwner});
+    console.log("DaiTrB SLICE tokens: "+ web3.utils.fromWei(await this.SLICE.balanceOf(this.DaiTrB.address), "ether") + " SLICE");
+    // tx = await this.DaiTrA.updateFundsReceived();
+    tx = await this.DaiTrB.updateFundsReceived();
+    console.log("User1 SLICE withdrawable balance on TrA: "+ web3.utils.fromWei(await this.DaiTrA.withdrawableFundsOf(user1), "ether") + " SLICE");
+    console.log("User2 SLICE withdrawable balance on TrA: "+ web3.utils.fromWei(await this.DaiTrA.withdrawableFundsOf(user2), "ether") + " SLICE");
+    console.log("User1 SLICE withdrawable balance on TrB: "+ web3.utils.fromWei(await this.DaiTrB.withdrawableFundsOf(user1), "ether") + " SLICE");
+    console.log("User2 SLICE withdrawable balance on TrB: "+ web3.utils.fromWei(await this.DaiTrB.withdrawableFundsOf(user2), "ether") + " SLICE");
+  });
+
   it("user2 redeems token EthTrB", async function () {
     oldBal = web3.utils.fromWei(await this.DAI.balanceOf(user2), "ether");
     console.log("User2 Dai balance: "+ oldBal + " DAI");
@@ -213,5 +252,26 @@ describe('JProtocol', function () {
     console.log("TrB value: " +  web3.utils.fromWei(await this.JCompound.getTrBValue(1), "ether"));
     console.log("Compound total Value: " + web3.utils.fromWei(await this.JCompound.getTotalValue(1), "ether"));
   }); 
+
+  it("Rewards withdrawn", async function () {
+    console.log("User1 SLICE balance: "+ web3.utils.fromWei(await this.SLICE.balanceOf(user1), "ether") + " SLICE");
+    console.log("User2 SLICE balance: "+ web3.utils.fromWei(await this.SLICE.balanceOf(user2), "ether") + " SLICE");
+    console.log("User1 SLICE withdrawable balance on TrA: "+ web3.utils.fromWei(await this.DaiTrA.withdrawableFundsOf(user1), "ether") + " SLICE");
+    console.log("User2 SLICE withdrawable balance on TrA: "+ web3.utils.fromWei(await this.DaiTrA.withdrawableFundsOf(user2), "ether") + " SLICE");
+    console.log("User1 SLICE withdrawable balance on TrB: "+ web3.utils.fromWei(await this.DaiTrB.withdrawableFundsOf(user1), "ether") + " SLICE");
+    console.log("User2 SLICE withdrawable balance on TrB: "+ web3.utils.fromWei(await this.DaiTrB.withdrawableFundsOf(user2), "ether") + " SLICE");
+    tx = await this.DaiTrA.withdrawFunds({from: user1});
+    tx = await this.DaiTrA.withdrawFunds({from: user2});
+    tx = await this.DaiTrB.withdrawFunds({from: user1});
+    tx = await this.DaiTrB.withdrawFunds({from: user2});
+    //console.log("User1 SLICE withdrawn balance: "+ web3.utils.fromWei(await this.DaiTrA.withdrawnFundsOf(user1), "ether") + " SLICE");
+    console.log("User1 SLICE balance: "+ web3.utils.fromWei(await this.SLICE.balanceOf(user1), "ether") + " SLICE");
+    console.log("User1 SLICE withdrawable balance on TrA after withdraw: "+ web3.utils.fromWei(await this.DaiTrA.withdrawableFundsOf(user1), "ether") + " SLICE");
+    console.log("User1 SLICE withdrawable balance on TrB after withdraw: "+ web3.utils.fromWei(await this.DaiTrB.withdrawableFundsOf(user1), "ether") + " SLICE");
+    //console.log("User1 SLICE withdrawn balance: "+ web3.utils.fromWei(await this.DaiTrA.withdrawnFundsOf(user1), "ether") + " SLICE");
+    console.log("User2 SLICE balance: "+ web3.utils.fromWei(await this.SLICE.balanceOf(user2), "ether") + " SLICE");
+    console.log("User2 SLICE withdrawable balance on TrA after withdraw: "+ web3.utils.fromWei(await this.DaiTrA.withdrawableFundsOf(user2), "ether") + " SLICE");
+    console.log("User2 SLICE withdrawable balance on TrB after withdraw: "+ web3.utils.fromWei(await this.DaiTrB.withdrawableFundsOf(user2), "ether") + " SLICE");
+  });
 
 });
