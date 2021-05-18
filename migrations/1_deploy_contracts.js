@@ -122,11 +122,11 @@ module.exports = async (deployer, network, accounts) => {
         await JCompoundInstance.addTrancheToProtocol(TRANCHE_TWO_TOKEN_ADDRESS, "Tranche A - Compound USDT", "ACUSDT", "Tranche B - Compound USDT", "BCUSDT", web3.utils.toWei("0.02", "ether"), 8, 6, { from: factoryOwner });
 
         trParams = await JCompoundInstance.trancheAddresses(0);
-        let DaiTrA = trParams.ATrancheAddress;
-        let DaiTrB = trParams.BTrancheAddress;
+        let DaiTrA = await trParams.ATrancheAddress;
+        let DaiTrB = await trParams.BTrancheAddress;
         trParams = await JCompoundInstance.trancheAddresses(1);
-        let USDTTrA = trParams.ATrancheAddress;
-        let USDTTrB = trParams.BTrancheAddress;
+        let USDTTrA = await trParams.ATrancheAddress;
+        let USDTTrB = await trParams.BTrancheAddress;
 
         console.log(`COMPOUND_TRANCHE_ADDRESS=${JCompoundInstance.address}`);
         console.log(`REACT_APP_COMP_TRANCHE_TOKENS=${DaiTrA.address},${DaiTrB.address},${USDTTrA.address},${USDTTrB.address}`)
@@ -135,16 +135,22 @@ module.exports = async (deployer, network, accounts) => {
       }
     }
   } else if (network == "mainnet") {
-    let { FEE_COLLECTOR_ADDRESS, PRICE_ORACLE_ADDRESS,
+    let { 
       TRANCHE_ONE_TOKEN_ADDRESS, TRANCHE_ONE_CTOKEN_ADDRESS, TRANCHE_TWO_TOKEN_ADDRESS, TRANCHE_TWO_CTOKEN_ADDRESS, COMP_ADDRESS, COMP_CONTROLLER, SLICE_ADDRESS
     } = process.env;
     const accounts = await web3.eth.getAccounts();
     const factoryOwner = accounts[0];
     try {
+      const JATinstance = await deployProxy(JAdminTools, [], { from: factoryOwner });
+      console.log('JAdminTools Deployed: ', JATinstance.address);
+
+      const JFCinstance = await deployProxy(JFeesCollector, [JATinstance.address], { from: factoryOwner });
+      console.log('JFeesCollector Deployed: ', JFCinstance.address);
+
       const compoundDeployer = await deployProxy(JTranchesDeployer, [], { from: factoryOwner, unsafeAllowCustomTypes: true });
       console.log(`COMPOUND_DEPLOYER=${compoundDeployer.address}`);
 
-      const JCompoundInstance = await deployProxy(JCompound, [PRICE_ORACLE_ADDRESS, FEE_COLLECTOR_ADDRESS, compoundDeployer.address, COMP_ADDRESS, COMP_CONTROLLER, SLICE_ADDRESS],
+      const JCompoundInstance = await deployProxy(JCompound, [JATinstance.address, JFCinstance.address, compoundDeployer.address, COMP_ADDRESS, COMP_CONTROLLER, SLICE_ADDRESS],
         { from: factoryOwner });
 
       console.log(`COMPOUND_TRANCHE_ADDRESS=${JCompoundInstance.address}`);
