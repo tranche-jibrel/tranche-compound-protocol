@@ -81,7 +81,7 @@ module.exports = async (deployer, network, accounts) => {
     console.log("Eth Tranche B Token Address: " + DaiTrB.address);
 
   } else if (network == "kovan") {
-    let { FEE_COLLECTOR_ADDRESS, PRICE_ORACLE_ADDRESS, IS_UPGRADE, TRANCHE_ONE_TOKEN_ADDRESS, TRANCHE_ONE_CTOKEN_ADDRESS,
+    let { IS_UPGRADE, TRANCHE_ONE_TOKEN_ADDRESS, TRANCHE_ONE_CTOKEN_ADDRESS,
       TRANCHE_TWO_TOKEN_ADDRESS, TRANCHE_TWO_CTOKEN_ADDRESS, COMP_ADDRESS, COMP_CONTROLLER, SLICE_ADDRESS
     } = process.env;
     const accounts = await web3.eth.getAccounts();
@@ -91,11 +91,17 @@ module.exports = async (deployer, network, accounts) => {
     } else {
       // deployed new contract
       try {
+        const JATinstance = await deployProxy(JAdminTools, [], { from: factoryOwner });
+        console.log('JAdminTools Deployed: ', JATinstance.address);
+
+        const JFCinstance = await deployProxy(JFeesCollector, [JATinstance.address], { from: factoryOwner });
+        console.log('JFeesCollector Deployed: ', JFCinstance.address);
+
         const compoundDeployer = await deployProxy(JTranchesDeployer, [], { from: factoryOwner, unsafeAllowCustomTypes: true });
         console.log(`COMPOUND_DEPLOYER=${compoundDeployer.address}`);
 
         // Source: https://github.com/compound-finance/compound-config/blob/master/networks/kovan.json
-        const JCompoundInstance = await deployProxy(JCompound, [PRICE_ORACLE_ADDRESS, FEE_COLLECTOR_ADDRESS, compoundDeployer.address, COMP_ADDRESS, COMP_CONTROLLER, SLICE_ADDRESS],
+        const JCompoundInstance = await deployProxy(JCompound, [JATinstance.address, JFCinstance.address, compoundDeployer.address, COMP_ADDRESS, COMP_CONTROLLER, SLICE_ADDRESS],
           { from: factoryOwner });
 
         console.log(`COMPOUND_TRANCHE_ADDRESS=${JCompoundInstance.address}`);
@@ -116,11 +122,11 @@ module.exports = async (deployer, network, accounts) => {
         await JCompoundInstance.addTrancheToProtocol(TRANCHE_TWO_TOKEN_ADDRESS, "Tranche A - Compound USDT", "ACUSDT", "Tranche B - Compound USDT", "BCUSDT", web3.utils.toWei("0.02", "ether"), 8, 6, { from: factoryOwner });
 
         trParams = await JCompoundInstance.trancheAddresses(0);
-        let DaiTrA = await JTrancheAToken.at(trParams.ATrancheAddress);
-        let DaiTrB = await JTrancheBToken.at(trParams.BTrancheAddress);
+        let DaiTrA = trParams.ATrancheAddress;
+        let DaiTrB = trParams.BTrancheAddress;
         trParams = await JCompoundInstance.trancheAddresses(1);
-        let USDTTrA = await JTrancheAToken.at(trParams.ATrancheAddress);
-        let USDTTrB = await JTrancheBToken.at(trParams.BTrancheAddress);
+        let USDTTrA = trParams.ATrancheAddress;
+        let USDTTrB = trParams.BTrancheAddress;
 
         console.log(`COMPOUND_TRANCHE_ADDRESS=${JCompoundInstance.address}`);
         console.log(`REACT_APP_COMP_TRANCHE_TOKENS=${DaiTrA.address},${DaiTrB.address},${USDTTrA.address},${USDTTrB.address}`)
