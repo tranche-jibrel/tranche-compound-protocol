@@ -9,7 +9,6 @@ import "./interfaces/IJTrancheTokens.sol";
 import "./math/SafeMathUint.sol";
 import "./math/SafeMathInt.sol";
 import "./interfaces/IFDTBasic.sol";
-import "./interfaces/IJAdminTools.sol";
 import "./JTrancheATokenStorage.sol";
 
 contract JTrancheAToken is IFDTBasic, ERC20Upgradeable, AccessControlUpgradeable, OwnableUpgradeable, JTrancheATokenStorage, IJTrancheTokens {

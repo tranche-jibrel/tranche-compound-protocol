@@ -164,9 +164,9 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
     }
 
     /**
-     * @dev set tranche redemption percentage
+     * @dev set tranche A fixed percentage (scaled by 1e18)
      * @param _trancheNum tranche number
-     * @param _newTrAPercentage new tranche A RPB
+     * @param _newTrAPercentage new tranche A fixed percentage (scaled by 1e18)
      */
     function setTrancheAFixedPercentage(uint256 _trancheNum, uint256 _newTrAPercentage) external onlyAdmins {
         trancheParameters[_trancheNum].trancheAFixedPercentage = _newTrAPercentage;
