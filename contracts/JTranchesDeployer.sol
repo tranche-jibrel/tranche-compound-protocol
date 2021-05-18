@@ -11,12 +11,11 @@ import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
 import "./interfaces/IJTranchesDeployer.sol";
 import "./JTrancheAToken.sol";
 import "./JTrancheBToken.sol";
+import "./JTranchesDeployerStorage.sol";
 
 
-contract JTranchesDeployer is OwnableUpgradeable, IJTranchesDeployer {
+contract JTranchesDeployer is OwnableUpgradeable, JTranchesDeployerStorage, IJTranchesDeployer {
     using SafeMathUpgradeable for uint256;
-
-    address public jCompoundAddress;
 
     function initialize() external initializer() {
         OwnableUpgradeable.__Ownable_init();

@@ -11,7 +11,6 @@ import '@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol';
 
 contract JFeesCollectorStorage is OwnableUpgradeable {
 /* WARNING: NEVER RE-ORDER VARIABLES! Always double-check that new variables are added APPEND-ONLY. Re-ordering variables can permanently BREAK the deployed proxy contract.*/
-    bool public fLock;
     uint256 public contractVersion;
 
     mapping(address => bool) public tokensAllowed;

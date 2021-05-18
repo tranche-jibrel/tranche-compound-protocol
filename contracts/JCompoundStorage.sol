@@ -43,8 +43,6 @@ contract JCompoundStorage is OwnableUpgradeable {
     uint256 public totalBlocksPerYear; 
     uint32 public redeemTimeout;
 
-    bool public fLock;
-
     mapping(address => address) public cTokenContracts;
     mapping(uint256 => TrancheAddresses) public trancheAddresses;
     mapping(uint256 => TrancheParameters) public trancheParameters;
