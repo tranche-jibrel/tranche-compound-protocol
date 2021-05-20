@@ -138,8 +138,8 @@ contract JFeesCollector is OwnableUpgradeable, ReentrancyGuardUpgradeable, JFees
     function setUniswapAddresses(address _factory, address _routerV02) external onlyAdmins {
         require(_factory != address(0), "JFC: Zero address for UNI factory");
         require(_routerV02 != address(0), "JFC: Zero address for UNI router02");
-        factory = _factory; //Kovan factory: 0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f
-        uniV2Router02 = IUniswapV2Router02(_routerV02); //Kovan router02: 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D
+        factory = _factory;
+        uniV2Router02 = IUniswapV2Router02(_routerV02);
     }
 
     /**
@@ -150,10 +150,10 @@ contract JFeesCollector is OwnableUpgradeable, ReentrancyGuardUpgradeable, JFees
     * @return reserveB reserves for token B
     * @return totalSupply total supply
     */
-    function pairInfo(address _tokenA, address _tokenB) public view returns (uint reserveA, uint reserveB, uint totalSupply) {
+    function pairInfo(address _tokenA, address _tokenB) public view returns (uint256 reserveA, uint256 reserveB, uint256 totalSupply) {
         IUniswapV2Pair pair = IUniswapV2Pair(UniswapV2Library.pairFor(factory, _tokenA, _tokenB));
         totalSupply = pair.totalSupply();
-        (uint reserves0, uint reserves1,) = pair.getReserves();
+        (uint256 reserves0, uint256 reserves1,) = pair.getReserves();
         (reserveA, reserveB) = _tokenA == pair.token0() ? (reserves0, reserves1) : (reserves1, reserves0);
         return (reserveA, reserveB, totalSupply);
     } 
@@ -163,14 +163,12 @@ contract JFeesCollector is OwnableUpgradeable, ReentrancyGuardUpgradeable, JFees
     * @param _token token of the pair to be received
     * @param _amount eth amount to be sent to uniswap pool
     */
-    function swapEthForToken(address _token, uint _amount) public payable {
-        // amountOutMin must be retrieved from an oracle of some kind
-        //uint amountOutMin = getUniswapPrice(_amount);
+    function swapEthForToken(address _token, uint256 _amount) public payable {
         address[] memory path = new address[](2);
         path[0] = uniV2Router02.WETH();
         path[1] = _token;
-        (uint reserveA, uint reserveB,) = pairInfo(path[0], path[1]);
-        uint amountOutMin = reserveB / reserveA * _amount;
+        (uint256 reserveA, uint256 reserveB,) = pairInfo(path[0], path[1]);
+        uint256 amountOutMin = reserveB.mul(_amount).div(reserveA);
         uniV2Router02.swapExactETHForTokens{value: _amount}(amountOutMin, path, address(this), block.timestamp);
     }
 
@@ -179,16 +177,13 @@ contract JFeesCollector is OwnableUpgradeable, ReentrancyGuardUpgradeable, JFees
     * @param _token token of the pair to be sent
     * @param _amount token amount to be sent to uniswap pool
     */
-    function swapTokenForEth(address _token, uint _amount) public {
-        //require(IERC20Upgradeable(_token).transferFrom(msg.sender, address(this), _amount), 'transferFrom failed.');
+    function swapTokenForEth(address _token, uint256 _amount) public {
         require(IERC20Upgradeable(_token).approve(address(uniV2Router02), _amount), 'approve failed.');
-        // amountOutMin must be retrieved from an oracle of some kind
-        //uint amountOutMin = getUniswapPrice(_amount);
         address[] memory path = new address[](2);
         path[0] = _token;
         path[1] = uniV2Router02.WETH();
-        (uint reserveA, uint reserveB,) = pairInfo(path[0], path[1]);
-        uint amountOutMin = reserveB / reserveA * _amount;
+        (uint256 reserveA, uint256 reserveB,) = pairInfo(path[0], path[1]);
+        uint256 amountOutMin = reserveB.mul(_amount).div(reserveA);
         uniV2Router02.swapExactTokensForETH(_amount, amountOutMin, path, address(this), block.timestamp);
     }
 
@@ -198,16 +193,13 @@ contract JFeesCollector is OwnableUpgradeable, ReentrancyGuardUpgradeable, JFees
     * @param _tokenBack token of the pair to be received
     * @param _amount token amount to be sent to uniswap pool
     */
-    function swapTokenForToken(address _tokenSent, address _tokenBack, uint _amount) public {
-        //require(IERC20Upgradeable(_tokenSent).transferFrom(msg.sender, address(this), _amount), 'transferFrom failed.');
+    function swapTokenForToken(address _tokenSent, address _tokenBack, uint256 _amount) public {
         require(IERC20Upgradeable(_tokenSent).approve(address(uniV2Router02), _amount), 'approve failed.');
-        // amountOutMin must be retrieved from an oracle of some kind
-        //uint amountOutMin = getUniswapPrice(_amount);
         address[] memory path = new address[](2);
         path[0] = _tokenSent;
         path[1] = _tokenBack;
-        (uint reserveA, uint reserveB,) = pairInfo(path[0], path[1]);
-        uint amountOutMin = reserveB / reserveA * _amount;
+        (uint256 reserveA, uint256 reserveB,) = pairInfo(path[0], path[1]);
+        uint256 amountOutMin = reserveB.mul(_amount).div(reserveA);
         uniV2Router02.swapExactTokensForTokens(_amount, amountOutMin, path, address(this), block.timestamp);
     }
 
