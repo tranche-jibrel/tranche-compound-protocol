@@ -163,7 +163,8 @@ contract JFeesCollector is OwnableUpgradeable, ReentrancyGuardUpgradeable, JFees
     * @param _token token of the pair to be received
     * @param _amount eth amount to be sent to uniswap pool
     */
-    function swapEthForToken(address _token, uint256 _amount) public payable {
+    function swapEthForToken(address _token, uint256 _amount) external payable onlyAdmins {
+        // require(isTokenAllowed(_token), "Token not allowed");
         address[] memory path = new address[](2);
         path[0] = uniV2Router02.WETH();
         path[1] = _token;
@@ -177,7 +178,8 @@ contract JFeesCollector is OwnableUpgradeable, ReentrancyGuardUpgradeable, JFees
     * @param _token token of the pair to be sent
     * @param _amount token amount to be sent to uniswap pool
     */
-    function swapTokenForEth(address _token, uint256 _amount) public {
+    function swapTokenForEth(address _token, uint256 _amount) external onlyAdmins {
+        // require(isTokenAllowed(_token), "Token not allowed");
         require(IERC20Upgradeable(_token).approve(address(uniV2Router02), _amount), 'approve failed.');
         address[] memory path = new address[](2);
         path[0] = _token;
@@ -193,7 +195,8 @@ contract JFeesCollector is OwnableUpgradeable, ReentrancyGuardUpgradeable, JFees
     * @param _tokenBack token of the pair to be received
     * @param _amount token amount to be sent to uniswap pool
     */
-    function swapTokenForToken(address _tokenSent, address _tokenBack, uint256 _amount) public {
+    function swapTokenForToken(address _tokenSent, address _tokenBack, uint256 _amount) external onlyAdmins {
+        // require(isTokenAllowed(_tokenBack), "Token not allowed");
         require(IERC20Upgradeable(_tokenSent).approve(address(uniV2Router02), _amount), 'approve failed.');
         address[] memory path = new address[](2);
         path[0] = _tokenSent;
