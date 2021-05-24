@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: MIT
 /**
- * Created on 2020-11-09
- * @summary: Jibrel Price Oracle
+ * Created on 2021-05-16
+ * @summary: Jibrel Admin Tools
  * @author: Jibrel Team
  */
 pragma solidity 0.6.12;
 pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
-import "./IJPriceOracleTest.sol";
-import "./JPriceOracleStorage.sol";
+import "./interfaces/IJAdminTools.sol";
+import "./JAdminToolsStorage.sol";
 
-contract JPriceOracle is OwnableUpgradeable, JPriceOracleStorage, IJPriceOracleTest { 
+contract JAdminTools is OwnableUpgradeable, JAdminToolsStorage, IJAdminTools { 
     using SafeMathUpgradeable for uint256;
 
     /**
@@ -95,7 +95,6 @@ contract JPriceOracle is OwnableUpgradeable, JPriceOracleStorage, IJPriceOracleT
         require(_ver > contractVersion, "!NewVersion");
         contractVersion = _ver;
     }
-
 
 }
 

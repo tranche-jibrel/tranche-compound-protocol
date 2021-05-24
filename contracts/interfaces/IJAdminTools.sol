@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 /**
- * Created on 2020-11-09
- * @summary: JPriceOracle Interface
+ * Created on 2021-05-16
+ * @summary: Admin Tools Interface
  * @author: Jibrel Team
  */
 pragma solidity 0.6.12;
 
-interface IJPriceOracleTest {
+interface IJAdminTools {
     function isAdmin(address account) external view returns (bool);
     function addAdmin(address account) external;
     function removeAdmin(address account) external;

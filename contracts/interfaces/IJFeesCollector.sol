@@ -11,5 +11,5 @@ interface IJFeesCollector {
     event EthWithdrawn(uint256 amount, uint256 blockNumber);
     event TokenAdded(address token, uint256 blockNumber);
     event TokenRemoved(address token, uint256 blockNumber);
-    event TokenWithdrawed(address token, uint256 amount, uint256 blockNumber);
+    event TokenWithdrawn(address token, uint256 amount, uint256 blockNumber);
 }
