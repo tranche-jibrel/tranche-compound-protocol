@@ -81,13 +81,15 @@ module.exports = async (deployer, network, accounts) => {
     console.log("Eth Tranche B Token Address: " + DaiTrB.address);
 
   } else if (network == "kovan") {
-    let { IS_UPGRADE, TRANCHE_ONE_TOKEN_ADDRESS, TRANCHE_ONE_CTOKEN_ADDRESS,
-      TRANCHE_TWO_TOKEN_ADDRESS, TRANCHE_TWO_CTOKEN_ADDRESS, COMP_ADDRESS, COMP_CONTROLLER, SLICE_ADDRESS
+    let { 
+      IS_UPGRADE, TRANCHE_ONE_TOKEN_ADDRESS, TRANCHE_ONE_CTOKEN_ADDRESS, TRANCHE_TWO_TOKEN_ADDRESS, TRANCHE_TWO_CTOKEN_ADDRESS, COMP_ADDRESS, COMP_CONTROLLER, SLICE_ADDRESS, FEE_COLLECTOR_ADDRESS
     } = process.env;
     const accounts = await web3.eth.getAccounts();
     const factoryOwner = accounts[0];
     if (IS_UPGRADE == 'true') {
-      console.log('contracts are upgraded');
+      console.log('contracts are being upgraded');
+      const JFCinstance = await upgradeProxy(FEE_COLLECTOR_ADDRESS, JFeesCollector, { from: factoryOwner });
+      console.log(`FEE_COLLECTOR_ADDRESS=${JFCinstance.address}`)
     } else {
       // deployed new contract
       try {
@@ -122,11 +124,11 @@ module.exports = async (deployer, network, accounts) => {
         await JCompoundInstance.addTrancheToProtocol(TRANCHE_TWO_TOKEN_ADDRESS, "Tranche A - Compound USDT", "ACUSDT", "Tranche B - Compound USDT", "BCUSDT", web3.utils.toWei("0.02", "ether"), 8, 6, { from: factoryOwner });
 
         trParams = await JCompoundInstance.trancheAddresses(0);
-        let DaiTrA = await trParams.ATrancheAddress;
-        let DaiTrB = await trParams.BTrancheAddress;
+        let DaiTrA = await JTrancheAToken.at(trParams.ATrancheAddress);
+        let DaiTrB = await JTrancheBToken.at(trParams.BTrancheAddress);
         trParams = await JCompoundInstance.trancheAddresses(1);
-        let USDTTrA = await trParams.ATrancheAddress;
-        let USDTTrB = await trParams.BTrancheAddress;
+        let USDTTrA = await JTrancheAToken.at(trParams.ATrancheAddress);
+        let USDTTrB = await JTrancheBToken.at(trParams.BTrancheAddress);
 
         console.log(`COMPOUND_TRANCHE_ADDRESS=${JCompoundInstance.address}`);
         console.log(`REACT_APP_COMP_TRANCHE_TOKENS=${DaiTrA.address},${DaiTrB.address},${USDTTrA.address},${USDTTrB.address}`)
@@ -136,11 +138,16 @@ module.exports = async (deployer, network, accounts) => {
     }
   } else if (network == "mainnet") {
     let { 
-      TRANCHE_ONE_TOKEN_ADDRESS, TRANCHE_ONE_CTOKEN_ADDRESS, TRANCHE_TWO_TOKEN_ADDRESS, TRANCHE_TWO_CTOKEN_ADDRESS, COMP_ADDRESS, COMP_CONTROLLER, SLICE_ADDRESS
+      IS_UPGRADE, TRANCHE_ONE_TOKEN_ADDRESS, TRANCHE_ONE_CTOKEN_ADDRESS, TRANCHE_TWO_TOKEN_ADDRESS, TRANCHE_TWO_CTOKEN_ADDRESS, COMP_ADDRESS, COMP_CONTROLLER, SLICE_ADDRESS, FEE_COLLECTOR_ADDRESS
     } = process.env;
     const accounts = await web3.eth.getAccounts();
     const factoryOwner = accounts[0];
-    try {
+    if (IS_UPGRADE == 'true') {
+      console.log('contracts are being upgraded');
+      const JFCinstance = await upgradeProxy(FEE_COLLECTOR_ADDRESS, JFeesCollector, { from: factoryOwner });
+      console.log(`FEE_COLLECTOR_ADDRESS=${JFCinstance.address}`)
+    } else {
+try {
       const JATinstance = await deployProxy(JAdminTools, [], { from: factoryOwner });
       console.log('JAdminTools Deployed: ', JATinstance.address);
 
