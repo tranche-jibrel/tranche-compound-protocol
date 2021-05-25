@@ -1,4 +1,3 @@
-
 const { accounts, contract, web3 } = require('@openzeppelin/test-environment');
 const { expect } = require('chai');
 const {
@@ -101,7 +100,7 @@ describe('Uniswap JFeesCollector', function () {
 
       console.log('tokenOwner TK1 balance: ' + web3.utils.fromWei(await this.token1.balanceOf(tokenOwner)))
       console.log('tokenOwner TK2 balance: ' + web3.utils.fromWei(await this.token2.balanceOf(tokenOwner)))
-      console.log('tokenOwner LP balance: ' + web3.utils.fromWei(await this.uniV2TokensPair.balanceOf(tokenOwner)))
+      console.log('tokenOwner LP0 balance: ' + web3.utils.fromWei(await this.uniV2TokensPair.balanceOf(tokenOwner)))
 
       console.log('Pairs0 total supply: ' + web3.utils.fromWei(await this.uniV2TokensPair.totalSupply()));
       //console.log('Pairs0 reserves: ' + JSON.stringify(await this.uniV2TokensPair.getReserves()));
@@ -125,7 +124,7 @@ describe('Uniswap JFeesCollector', function () {
       
       console.log('tokenOwner TK1 balance: ' + web3.utils.fromWei(await this.token1.balanceOf(tokenOwner)))
       console.log('tokenOwner TK2 balance: ' + web3.utils.fromWei(await this.token2.balanceOf(tokenOwner)))
-      console.log('tokenOwner LP balance: ' + web3.utils.fromWei(await this.uniV2TokensPair.balanceOf(tokenOwner)))
+      console.log('tokenOwner LP0 balance: ' + web3.utils.fromWei(await this.uniV2TokensPair.balanceOf(tokenOwner)))
 
       console.log('Pairs0 total supply: ' + web3.utils.fromWei(await this.uniV2TokensPair.totalSupply()))
       //console.log('Pairs0 reserves: ' + JSON.stringify(await this.uniV2TokensPair.getReserves()));
@@ -149,11 +148,13 @@ describe('Uniswap JFeesCollector', function () {
       
       console.log('tokenOwner TK1 balance: ' + web3.utils.fromWei(await this.token1.balanceOf(tokenOwner)))
       console.log('tokenOwner TK2 balance: ' + web3.utils.fromWei(await this.token2.balanceOf(tokenOwner)))
-      console.log('tokenOwner LP balance: ' + web3.utils.fromWei(await this.uniV2TokensPair.balanceOf(tokenOwner)))
+      console.log('tokenOwner LP0 balance: ' + web3.utils.fromWei(await this.uniV2TokensPair.balanceOf(tokenOwner)))
 
       console.log('Pairs0 total supply: ' + web3.utils.fromWei(await this.uniV2TokensPair.totalSupply()));
       //console.log('Pairs0 reserves: ' + JSON.stringify(await this.uniV2TokensPair.getReserves()));
-      console.log('Pair liquidity: ' + JSON.stringify(await this.JFeesCollector.pairInfo(this.token1.address, this.token2.address)));
+      infoPair = await this.JFeesCollector.pairInfo(this.token1.address, this.token2.address)
+      console.log('Pair liquidity - reserveA: ' + web3.utils.fromWei(infoPair[0].toString()) + 
+          ", reserveB: " + web3.utils.fromWei(infoPair[1].toString()) + ", totalSupply: " + web3.utils.fromWei(infoPair[2].toString()));
     });
 
     it('set a new pair of tokens and ETH and add liquidity', async () => {
@@ -185,9 +186,9 @@ describe('Uniswap JFeesCollector', function () {
 
       console.log('tokenOwner TK1 balance: ' + web3.utils.fromWei(await this.token1.balanceOf(tokenOwner)))
       console.log('tokenOwner eth balance: ' + web3.utils.fromWei(await web3.eth.getBalance(tokenOwner)))
-      console.log('tokenOwner LP balance: ' + web3.utils.fromWei(await this.uniV2EthPair.balanceOf(tokenOwner)))
+      console.log('tokenOwner LP1 balance: ' + web3.utils.fromWei(await this.uniV2EthPair.balanceOf(tokenOwner)))
 
-      console.log('Pairs0 total supply: ' + web3.utils.fromWei(await this.uniV2TokensPair.totalSupply()))
+      console.log('Pairs1 total supply: ' + web3.utils.fromWei(await this.uniV2EthPair.totalSupply()))
       //console.log('Pairs0 reserves: ' + JSON.stringify(await this.uniV2TokensPair.getReserves()));
       console.log('Pair liquidity: ' + JSON.stringify(await this.JFeesCollector.pairInfo(this.weth.address, this.token1.address)));
     });
@@ -208,9 +209,9 @@ describe('Uniswap JFeesCollector', function () {
       
       console.log('tokenOwner TK1 balance: ' + web3.utils.fromWei(await this.token1.balanceOf(tokenOwner)))
       console.log('tokenOwner eth balance: ' + web3.utils.fromWei(await web3.eth.getBalance(tokenOwner)))
-      console.log('tokenOwner LP balance: ' + web3.utils.fromWei(await this.uniV2EthPair.balanceOf(tokenOwner)))
+      console.log('tokenOwner LP1 balance: ' + web3.utils.fromWei(await this.uniV2EthPair.balanceOf(tokenOwner)))
 
-      console.log('Pairs0 total supply: ' + web3.utils.fromWei(await this.uniV2TokensPair.totalSupply()))
+      console.log('Pairs1 total supply: ' + web3.utils.fromWei(await this.uniV2EthPair.totalSupply()))
       //console.log('Pairs0 reserves: ' + JSON.stringify(await this.uniV2TokensPair.getReserves()));
       console.log('Pair liquidity: ' + JSON.stringify(await this.JFeesCollector.pairInfo(this.weth.address, this.token1.address)));;
     });
@@ -232,11 +233,13 @@ describe('Uniswap JFeesCollector', function () {
       
       console.log('tokenOwner TK1 balance: ' + web3.utils.fromWei(await this.token1.balanceOf(tokenOwner)))
       console.log('tokenOwner eth balance: ' + web3.utils.fromWei(await web3.eth.getBalance(tokenOwner)))
-      console.log('tokenOwner LP balance: ' + web3.utils.fromWei(await this.uniV2EthPair.balanceOf(tokenOwner)))
+      console.log('tokenOwner LP1 balance: ' + web3.utils.fromWei(await this.uniV2EthPair.balanceOf(tokenOwner)))
 
-      console.log('Pairs0 total supply: ' + web3.utils.fromWei(await this.uniV2TokensPair.totalSupply()))
+      console.log('Pairs1 total supply: ' + web3.utils.fromWei(await this.uniV2EthPair.totalSupply()))
       //console.log('Pairs0 reserves: ' + JSON.stringify(await this.uniV2TokensPair.getReserves()));
-      console.log('Pair liquidity: ' + JSON.stringify(await this.JFeesCollector.pairInfo(this.weth.address, this.token1.address)));
+      infoPair = await this.JFeesCollector.pairInfo(this.weth.address, this.token1.address)
+      console.log('Pair liquidity - reserveA: ' + web3.utils.fromWei(infoPair[0].toString()) + 
+          ", reserveB: " + web3.utils.fromWei(infoPair[1].toString()) + ", totalSupply: " + web3.utils.fromWei(infoPair[2].toString()));
     });
 
     it('sends eth and token2 to Fees collector', async () => {
@@ -247,14 +250,17 @@ describe('Uniswap JFeesCollector', function () {
     });
 
     it('Fees collector sends token2 for token1 in LP0', async () => {
-      tx = await this.JFeesCollector.swapTokenForToken(this.token2.address, this.token1.address, web3.utils.toWei("500",'ether'))
+      bal = await this.JFeesCollector.getTokenBalance(this.token2.address)
+      console.log(web3.utils.fromWei(bal.toString()))
+      tx = await this.JFeesCollector.swapTokenForToken(this.token2.address, this.token1.address, web3.utils.toWei("500",'ether'), { from: jfcOwner })
       console.log("JFC TK2 balance: " + web3.utils.fromWei(await this.JFeesCollector.getTokenBalance(this.token2.address)) + " TK2")
       console.log("JFC TK1 balance: " + web3.utils.fromWei(await this.JFeesCollector.getTokenBalance(this.token1.address)) + " TK1")
     });
 
     it('Fees collector sends token1 for token2 in LP0', async () => {
       bal = await this.JFeesCollector.getTokenBalance(this.token1.address)
-      tx = await this.JFeesCollector.swapTokenForToken(this.token1.address, this.token2.address, bal)
+      console.log(web3.utils.fromWei(bal.toString()))
+      tx = await this.JFeesCollector.swapTokenForToken(this.token1.address, this.token2.address, bal, { from: jfcOwner })
       console.log("JFC TK2 balance: " + web3.utils.fromWei(await this.JFeesCollector.getTokenBalance(this.token2.address)) + " TK2")
       console.log("JFC TK1 balance: " + web3.utils.fromWei(await this.JFeesCollector.getTokenBalance(this.token1.address)) + " TK1")
       bal = await this.JFeesCollector.getTokenBalance(this.token1.address)
@@ -262,14 +268,17 @@ describe('Uniswap JFeesCollector', function () {
     });
 
     it('Fees collector sends eth for token1 in LP1', async () => {
-      tx = await this.JFeesCollector.swapEthForToken(this.token1.address, web3.utils.toWei("5",'ether'))
+      bal = await web3.eth.getBalance(this.JFeesCollector.address)
+      console.log(web3.utils.fromWei(bal.toString()))
+      tx = await this.JFeesCollector.swapEthForToken(this.token1.address, web3.utils.toWei("5",'ether'), { from: jfcOwner })
       console.log("JFC eth balance: " + web3.utils.fromWei(await this.JFeesCollector.getEthBalance()) + " ETH")
       console.log("JFC TK1 balance: " + web3.utils.fromWei(await this.JFeesCollector.getTokenBalance(this.token1.address)) + " TK1")
     });
 
     it('Fees collector sends token1 for eth in LP1', async () => {
       bal = await this.JFeesCollector.getTokenBalance(this.token1.address)
-      tx = await this.JFeesCollector.swapTokenForEth(this.token1.address, bal)
+      console.log(web3.utils.fromWei(bal.toString()))
+      tx = await this.JFeesCollector.swapTokenForEth(this.token1.address, bal, { from: jfcOwner })
       console.log("JFC eth balance: " + web3.utils.fromWei(await this.JFeesCollector.getEthBalance()) + " ETH")
       console.log("JFC TK1 balance: " + web3.utils.fromWei(await this.JFeesCollector.getTokenBalance(this.token1.address)) + " TK1")
       bal = await this.JFeesCollector.getTokenBalance(this.token1.address)
