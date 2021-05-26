@@ -147,45 +147,46 @@ module.exports = async (deployer, network, accounts) => {
       const JFCinstance = await upgradeProxy(FEE_COLLECTOR_ADDRESS, JFeesCollector, { from: factoryOwner });
       console.log(`FEE_COLLECTOR_ADDRESS=${JFCinstance.address}`)
     } else {
-try {
-      const JATinstance = await deployProxy(JAdminTools, [], { from: factoryOwner });
-      console.log('JAdminTools Deployed: ', JATinstance.address);
+      try {
+        const JATinstance = await deployProxy(JAdminTools, [], { from: factoryOwner });
+        console.log('JAdminTools Deployed: ', JATinstance.address);
 
-      const JFCinstance = await deployProxy(JFeesCollector, [JATinstance.address], { from: factoryOwner });
-      console.log('JFeesCollector Deployed: ', JFCinstance.address);
+        const JFCinstance = await deployProxy(JFeesCollector, [JATinstance.address], { from: factoryOwner });
+        console.log('JFeesCollector Deployed: ', JFCinstance.address);
 
-      const compoundDeployer = await deployProxy(JTranchesDeployer, [], { from: factoryOwner, unsafeAllowCustomTypes: true });
-      console.log(`COMPOUND_DEPLOYER=${compoundDeployer.address}`);
+        const compoundDeployer = await deployProxy(JTranchesDeployer, [], { from: factoryOwner, unsafeAllowCustomTypes: true });
+        console.log(`COMPOUND_DEPLOYER=${compoundDeployer.address}`);
 
-      const JCompoundInstance = await deployProxy(JCompound, [JATinstance.address, JFCinstance.address, compoundDeployer.address, COMP_ADDRESS, COMP_CONTROLLER, SLICE_ADDRESS],
-        { from: factoryOwner });
+        const JCompoundInstance = await deployProxy(JCompound, [JATinstance.address, JFCinstance.address, compoundDeployer.address, COMP_ADDRESS, COMP_CONTROLLER, SLICE_ADDRESS],
+          { from: factoryOwner });
 
-      console.log(`COMPOUND_TRANCHE_ADDRESS=${JCompoundInstance.address}`);
-      compoundDeployer.setJCompoundAddress(JCompoundInstance.address);
-      console.log('compound deployer 1');
+        console.log(`COMPOUND_TRANCHE_ADDRESS=${JCompoundInstance.address}`);
+        compoundDeployer.setJCompoundAddress(JCompoundInstance.address);
+        console.log('compound deployer 1');
 
-      await JCompoundInstance.setCTokenContract(TRANCHE_ONE_TOKEN_ADDRESS, TRANCHE_ONE_CTOKEN_ADDRESS, { from: factoryOwner });
-      console.log('compound deployer 2');
+        await JCompoundInstance.setCTokenContract(TRANCHE_ONE_TOKEN_ADDRESS, TRANCHE_ONE_CTOKEN_ADDRESS, { from: factoryOwner });
+        console.log('compound deployer 2');
 
-      await JCompoundInstance.setCTokenContract(TRANCHE_TWO_TOKEN_ADDRESS, TRANCHE_TWO_CTOKEN_ADDRESS, { from: factoryOwner });
+        await JCompoundInstance.setCTokenContract(TRANCHE_TWO_TOKEN_ADDRESS, TRANCHE_TWO_CTOKEN_ADDRESS, { from: factoryOwner });
 
-      console.log('compound deployer 3');
-      await JCompoundInstance.addTrancheToProtocol(TRANCHE_ONE_TOKEN_ADDRESS, "Tranche A - Compound DAI", "ACDAI", "Tranche B - Compound DAI", "BCDAI", web3.utils.toWei("0.04", "ether"), 8, 18, { from: factoryOwner });
+        console.log('compound deployer 3');
+        await JCompoundInstance.addTrancheToProtocol(TRANCHE_ONE_TOKEN_ADDRESS, "Tranche A - Compound DAI", "ACDAI", "Tranche B - Compound DAI", "BCDAI", web3.utils.toWei("0.04", "ether"), 8, 18, { from: factoryOwner });
 
-      console.log('compound deployer 4');
-      await JCompoundInstance.addTrancheToProtocol(TRANCHE_TWO_TOKEN_ADDRESS, "Tranche A - Compound USDC", "ACUSDC", "Tranche B - Compound USDC", "BCUSDC", web3.utils.toWei("0.02", "ether"), 8, 6, { from: factoryOwner });
+        console.log('compound deployer 4');
+        await JCompoundInstance.addTrancheToProtocol(TRANCHE_TWO_TOKEN_ADDRESS, "Tranche A - Compound USDC", "ACUSDC", "Tranche B - Compound USDC", "BCUSDC", web3.utils.toWei("0.02", "ether"), 8, 6, { from: factoryOwner });
 
-      trParams = await JCompoundInstance.trancheAddresses(0);
-      let DaiTrA = await JTrancheAToken.at(trParams.ATrancheAddress);
-      let DaiTrB = await JTrancheBToken.at(trParams.BTrancheAddress);
-      trParams = await JCompoundInstance.trancheAddresses(1);
-      let USDCTrA = await JTrancheAToken.at(trParams.ATrancheAddress);
-      let USDCTrB = await JTrancheBToken.at(trParams.BTrancheAddress);
+        trParams = await JCompoundInstance.trancheAddresses(0);
+        let DaiTrA = await JTrancheAToken.at(trParams.ATrancheAddress);
+        let DaiTrB = await JTrancheBToken.at(trParams.BTrancheAddress);
+        trParams = await JCompoundInstance.trancheAddresses(1);
+        let USDCTrA = await JTrancheAToken.at(trParams.ATrancheAddress);
+        let USDCTrB = await JTrancheBToken.at(trParams.BTrancheAddress);
 
-      console.log(`COMPOUND_TRANCHE_ADDRESS=${JCompoundInstance.address}`);
-      console.log(`REACT_APP_COMP_TRANCHE_TOKENS=${DaiTrA.address},${DaiTrB.address},${USDCTrA.address},${USDCTrB.address}`)
-    } catch (error) {
-      console.log(error);
+        console.log(`COMPOUND_TRANCHE_ADDRESS=${JCompoundInstance.address}`);
+        console.log(`REACT_APP_COMP_TRANCHE_TOKENS=${DaiTrA.address},${DaiTrB.address},${USDCTrA.address},${USDCTrB.address}`)
+      } catch (error) {
+        console.log(error);
+      }
     }
   }
 }
