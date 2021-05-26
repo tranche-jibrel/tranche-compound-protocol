@@ -337,9 +337,9 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
 
         uint256 mantissa = getMantissa(_trancheNum);
         if (mantissa < 18) {
-            compNormPrice = compNormPrice.mul(10 ** uint256(18).sub(mantissa));
+            compNormPrice = compNormPrice.mul(10 ** (uint256(18).sub(mantissa)));
         } else {
-            compNormPrice = compNormPrice.div(10 ** mantissa.sub(uint256(18)));
+            compNormPrice = compNormPrice.div(10 ** (mantissa.sub(uint256(18))));
         }
         return compNormPrice;
     }
@@ -428,7 +428,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
         uint256 compNormPrice = getCompoundPrice(_trancheNum);
         uint256 mantissa = getMantissa(_trancheNum);
         if (mantissa < 18) {
-            compNormPrice = compNormPrice.div(10 ** uint256(18).sub(mantissa));
+            compNormPrice = compNormPrice.div(10 ** (uint256(18).sub(mantissa)));
         } else {
             compNormPrice = getCompoundPurePrice(_trancheNum);
         }

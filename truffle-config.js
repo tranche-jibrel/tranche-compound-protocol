@@ -35,7 +35,10 @@ module.exports = {
       skipDryRun: true
     },
   },
-  plugins: ['truffle-contract-size'],
+  plugins: ['truffle-contract-size', 
+    'solidity-coverage',
+    'truffle-plugin-verify',
+  ],
   // Set default mocha options here, use special reporters etc.
   mocha: {
     timeout: 100000
