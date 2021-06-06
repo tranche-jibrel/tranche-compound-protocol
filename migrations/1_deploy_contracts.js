@@ -73,12 +73,16 @@ module.exports = async (deployer, network, accounts) => {
     let EthTrB = await JTrancheBToken.at(trParams.BTrancheAddress);
     console.log("Eth Tranche B Token Address: " + EthTrB.address);
 
+    await JCinstance.setTrancheDeposit(0, true); // enabling deposit
+
     await JCinstance.addTrancheToProtocol(myDAIinstance.address, "jDaiTrancheAToken", "JDA", "jDaiTrancheBToken", "JDB", web3.utils.toWei("0.02", "ether"), 18, 18, { from: factoryOwner });
     trParams = await JCinstance.trancheAddresses(1);
     let DaiTrA = await JTrancheAToken.at(trParams.ATrancheAddress);
     console.log("Eth Tranche A Token Address: " + DaiTrA.address);
     let DaiTrB = await JTrancheBToken.at(trParams.BTrancheAddress);
     console.log("Eth Tranche B Token Address: " + DaiTrB.address);
+
+    await JCinstance.setTrancheDeposit(1, true); // enabling deposit
 
   } else if (network == "kovan") {
     let { 
@@ -117,11 +121,12 @@ module.exports = async (deployer, network, accounts) => {
 
         console.log('compound deployer 3');
         await JCompoundInstance.addTrancheToProtocol(TRANCHE_ONE_TOKEN_ADDRESS, "Tranche A - Compound DAI", "ACDAI", "Tranche B - Compound DAI", "BCDAI", web3.utils.toWei("0.04", "ether"), 8, 18, { from: factoryOwner });
-
+        await JCompoundInstance.setTrancheDeposit(0, true); // enabling deposit
         console.log('compound deployer 4');
         //await JCompoundInstance.addTrancheToProtocol(ZERO_ADDRESS, "Tranche A - Compound ETH", "ACETH", "Tranche B - Compound ETH", "BCETH", web3.utils.toWei("0.04", "ether"), 8, 18, { from: factoryOwner });
         // await JCompoundInstance.addTrancheToProtocol("0xb7a4f3e9097c08da09517b5ab877f7a917224ede", "Tranche A - Compound USDC", "ACUSDC", "Tranche B - Compound USDC", "BCUSDC", web3.utils.toWei("0.02", "ether"), 8, 6, { from: factoryOwner });
         await JCompoundInstance.addTrancheToProtocol(TRANCHE_TWO_TOKEN_ADDRESS, "Tranche A - Compound USDT", "ACUSDT", "Tranche B - Compound USDT", "BCUSDT", web3.utils.toWei("0.02", "ether"), 8, 6, { from: factoryOwner });
+        await JCompoundInstance.setTrancheDeposit(1, true); // enabling deposit
 
         trParams = await JCompoundInstance.trancheAddresses(0);
         let DaiTrA = await JTrancheAToken.at(trParams.ATrancheAddress);
@@ -171,9 +176,11 @@ module.exports = async (deployer, network, accounts) => {
 
         console.log('compound deployer 3');
         await JCompoundInstance.addTrancheToProtocol(TRANCHE_ONE_TOKEN_ADDRESS, "Tranche A - Compound DAI", "ACDAI", "Tranche B - Compound DAI", "BCDAI", web3.utils.toWei("0.04", "ether"), 8, 18, { from: factoryOwner });
+        await JCompoundInstance.setTrancheDeposit(0, true); // enabling deposit
 
         console.log('compound deployer 4');
         await JCompoundInstance.addTrancheToProtocol(TRANCHE_TWO_TOKEN_ADDRESS, "Tranche A - Compound USDC", "ACUSDC", "Tranche B - Compound USDC", "BCUSDC", web3.utils.toWei("0.02", "ether"), 8, 6, { from: factoryOwner });
+        await JCompoundInstance.setTrancheDeposit(1, true); // enabling deposit
 
         trParams = await JCompoundInstance.trancheAddresses(0);
         let DaiTrA = await JTrancheAToken.at(trParams.ATrancheAddress);

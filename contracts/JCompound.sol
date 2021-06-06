@@ -222,6 +222,15 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
     } 
 
     /**
+     * @dev enables or disables tranche deposit (default: disabled)
+     * @param _trancheNum tranche number
+     * @param _enable true or false
+     */
+    function setTrancheDeposit(uint256 _trancheNum, bool _enable) external onlyAdmins {
+        trancheDepositEnabled[_trancheNum] = _enable;
+    }
+
+    /**
      * @dev send an amount of tokens to corresponding compound contract (it takes tokens from this contract). Only allowed token should be sent
      * @param _erc20Contract token contract address
      * @param _numTokensToSupply token amount to be sent
@@ -486,6 +495,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
      * @param _amount amount of stable coins sent by buyer
      */
     function buyTrancheAToken(uint256 _trancheNum, uint256 _amount) external payable nonReentrant {
+        require(trancheDepositEnabled[_trancheNum], "JCompound: tranche deposit disabled");
         uint256 prevCompTokenBalance = getTokenBalance(trancheAddresses[_trancheNum].cTokenAddress);
         if (trancheAddresses[_trancheNum].buyerCoinAddress == address(0)){
             require(msg.value == _amount, "JCompound: msg.value not equal to amount");
@@ -582,6 +592,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
      * @param _amount amount of stable coins sent by buyer
      */
     function buyTrancheBToken(uint256 _trancheNum, uint256 _amount) external payable nonReentrant {
+        require(trancheDepositEnabled[_trancheNum], "JCompound: tranche deposit disabled");
         uint256 prevCompTokenBalance = getTokenBalance(trancheAddresses[_trancheNum].cTokenAddress);
         // if eth, ignore _amount parameter and set it to msg.value
         if (trancheAddresses[_trancheNum].buyerCoinAddress == address(0)) {
@@ -736,19 +747,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
     function getTotalCompAccrued() public view onlyAdmins returns (uint256) {
         return IComptrollerLensInterface(comptrollerAddress).compAccrued(address(this));
     }
-/*
-    /**
-     * @dev claim total accrued Comp token from all market in comptroller and transfer the amount in fees collector
-     */
-/*    function claimTotalCompAccrued() external onlyAdmins locked {
-        uint256 totAccruedAmount = getTotalCompAccrued();
-        if (totAccruedAmount > 0) {
-            IComptrollerLensInterface(comptrollerAddress).claimComp(address(this));
-            uint256 amount = IERC20Upgradeable(compTokenAddress).balanceOf(address(this));
-            SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(compTokenAddress), feesCollectorAddress, amount);
-        }
-    }
-*/
+
     /**
      * @dev claim total accrued Comp token from all market in comptroller and transfer the amount to a receiver address
      * @param _receiver destination address

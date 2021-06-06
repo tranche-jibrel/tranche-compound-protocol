@@ -51,4 +51,7 @@ contract JCompoundStorage is OwnableUpgradeable {
 
     ICEth public cEthToken;
     IETHGateway public ethGateway;
+
+    // enabling / disabling tranches for fund deposit
+    mapping(uint256 => bool) public trancheDepositEnabled;
 }
