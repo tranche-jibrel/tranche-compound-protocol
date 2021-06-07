@@ -11,4 +11,5 @@ interface IJTrancheTokens {
     function burn(uint256 value) external;
     function updateFundsReceived() external;
     function emergencyTokenTransfer(address _token, address _to, uint256 _amount) external;
+    function setRewardTokenAddress(address _token) external;
 }

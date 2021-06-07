@@ -113,6 +113,13 @@ contract("JCompound", function (accounts) {
     console.log(daiTrBContract.address);
   });
 
+  it('changing reward token address', async function () {
+    rewTok = await jCompContract.rewardsToken()
+    console.log(rewTok)
+    await ethTrAContract.setRewardTokenAddress("0xc00e94cb662c3520282e6f5717214004a7f26888", {from: tokenOwner})
+    await ethTrAContract.setRewardTokenAddress(rewTok, {from: tokenOwner})
+  });
+
   it('send some DAI to CErc20', async function () {
     tx = await daiContract.transfer(cERC20Contract.address, web3.utils.toWei('1000', 'ether'), {
       from: tokenOwner

@@ -162,14 +162,15 @@ contract JFeesCollector is OwnableUpgradeable, ReentrancyGuardUpgradeable, JFees
     * @dev swap eth amount for tokens in a uniswap pool
     * @param _token token of the pair to be received
     * @param _amount eth amount to be sent to uniswap pool
+    * @param amountOutMin expected minimum amount
     */
-    function swapEthForToken(address _token, uint256 _amount) external payable onlyAdmins {
-        // require(isTokenAllowed(_token), "Token not allowed");
+    function swapEthForToken(address _token, uint256 _amount, uint256 amountOutMin) external payable onlyAdmins {
         address[] memory path = new address[](2);
         path[0] = uniV2Router02.WETH();
         path[1] = _token;
-        (uint256 reserveA, uint256 reserveB,) = pairInfo(path[0], path[1]);
-        uint256 amountOutMin = reserveB.div(reserveA).mul(_amount); 
+        //(uint256 reserveA, uint256 reserveB,) = pairInfo(path[0], path[1]);
+        //uint256 amountOutMin = reserveB.div(reserveA).mul(_amount); 
+        //uint256 amountOutMin = UniswapV2Library.getAmountOut(_amount, reserveA, reserveB);
         uniV2Router02.swapExactETHForTokens{value: _amount}(amountOutMin, path, address(this), block.timestamp);
     }
 
@@ -177,15 +178,16 @@ contract JFeesCollector is OwnableUpgradeable, ReentrancyGuardUpgradeable, JFees
     * @dev swap token amount for eth in a uniswap pool
     * @param _token token of the pair to be sent
     * @param _amount token amount to be sent to uniswap pool
+    * @param amountOutMin expected minimum amount
     */
-    function swapTokenForEth(address _token, uint256 _amount) external onlyAdmins {
-        // require(isTokenAllowed(_token), "Token not allowed");
+    function swapTokenForEth(address _token, uint256 _amount, uint256 amountOutMin) external onlyAdmins {
         require(IERC20Upgradeable(_token).approve(address(uniV2Router02), _amount), 'approve failed.');
         address[] memory path = new address[](2);
         path[0] = _token;
         path[1] = uniV2Router02.WETH();
-        (uint256 reserveA, uint256 reserveB,) = pairInfo(path[0], path[1]);
-        uint256 amountOutMin = reserveB.div(reserveA).mul(_amount);
+        //(uint256 reserveA, uint256 reserveB,) = pairInfo(path[0], path[1]);
+        //uint256 amountOutMin = reserveB.div(reserveA).mul(_amount);
+        //uint256 amountOutMin = UniswapV2Library.getAmountOut(_amount, reserveA, reserveB);
         uniV2Router02.swapExactTokensForETH(_amount, amountOutMin, path, address(this), block.timestamp);
     }
 
@@ -194,15 +196,16 @@ contract JFeesCollector is OwnableUpgradeable, ReentrancyGuardUpgradeable, JFees
     * @param _tokenSent token of the pair to be sent
     * @param _tokenBack token of the pair to be received
     * @param _amount token amount to be sent to uniswap pool
+    *  amountOutMin expected minimum amount
     */
-    function swapTokenForToken(address _tokenSent, address _tokenBack, uint256 _amount) external onlyAdmins {
-        // require(isTokenAllowed(_tokenBack), "Token not allowed");
+    function swapTokenForToken(address _tokenSent, address _tokenBack, uint256 _amount, uint256 amountOutMin) external onlyAdmins {
         require(IERC20Upgradeable(_tokenSent).approve(address(uniV2Router02), _amount), 'approve failed.');
         address[] memory path = new address[](2);
         path[0] = _tokenSent;
         path[1] = _tokenBack;
-        (uint256 reserveA, uint256 reserveB,) = pairInfo(path[0], path[1]);
-        uint256 amountOutMin = reserveB.div(reserveA).mul(_amount);
+        //(uint256 reserveA, uint256 reserveB,) = pairInfo(path[0], path[1]);
+        //uint256 amountOutMin = reserveB.div(reserveA).mul(_amount);
+        //uint256 amountOutMin = UniswapV2Library.getAmountOut(_amount, reserveA, reserveB);
         uniV2Router02.swapExactTokensForTokens(_amount, amountOutMin, path, address(this), block.timestamp);
     }
 
