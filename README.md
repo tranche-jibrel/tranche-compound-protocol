@@ -30,6 +30,8 @@ truffle run test
 
 ## Tranche Compound Protocol Usage
 
+Following is a description on how to use project on Kovan testnet, for Mainnet please change addresses accordingly.
+
 a) deploy JCompound contract and initialize it ((address _adminTools, address _feesCollector, address _tranchesDepl,
             address _compTokenAddress, address _comptrollAddress, address _rewardsToken)
 
