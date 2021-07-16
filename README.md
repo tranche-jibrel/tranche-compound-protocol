@@ -6,6 +6,28 @@
 
 Compound Tranche is a decentralized protocol for managing risk and maximizing returns. The protocol integrates with Compound's cTokens, to create two new interest-bearing instruments, one with a fixed-rate, Tranche A, and one with a variable rate, Tranche B. 
 
+Info URL: https://docs.tranche.finance/tranchefinance/
+
+## Development
+
+### Install Dependencies
+
+```bash
+npm i
+```
+
+### Compile project
+
+```bash
+truffle compile --all
+```
+
+### Run test
+
+```bash
+truffle run test
+```
+
 ## Tranche Compound Protocol Usage
 
 a) deploy JCompound contract and initialize it ((address _adminTools, address _feesCollector, address _tranchesDepl,
@@ -47,13 +69,15 @@ Note: if ETH tranche is deployed, please deploy ETHGateway contract without a pr
 
 This is due to different init code hash for UniswapV2Library file when compiled with other solidity compiler versions.
 
-    - hex'96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f' // init code hash original, remember to restore it before deploying and recompile all files
+    - hex'96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f' 
+    // original init code hash, remember to restore it before deploying and recompile all files
 
-    - hex'555c8bf3a68dcde924051e2b2db6a6bbce50f756cacad88fdfcaab07ec40b7d9' // i.e. init code hash for tests
+    - hex'555c8bf3a68dcde924051e2b2db6a6bbce50f756cacad88fdfcaab07ec40b7d9' 
+    // i.e. init code hash for tests
 
-Please launch !!uniswapInitHashCode.test.js to get your init code hash in test environment
+Please launch `!!uniswapInitHashCode.test.js` to get your init code hash in test environment
 
-Tests on Kovan
+Tests performed on Kovan with the following already present contracts that can be used in this project:
 
     Uniswap factory on kovan: 0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f 
     
@@ -63,7 +87,7 @@ Tests on Kovan
 
     WETH address: 0xd0a1e359811322d97991e03f863a0c30c2cf029c
 
-    USDC address: 0xe22da380ee6B445bb8273C81944ADEB6E8450422
+    USDC address: 0xb7a4F3E9097C08dA09517b5aB877F7a917224ede
 
 [(Back to top)](#Compound-Tranche-Protocol)
 
@@ -75,7 +99,7 @@ Limit is 24 KiB for single contract
       <tr>
         <th>Contract</th>
         <th>Size</th>
-        <th>Decription</th>
+        <th>Description</th>
       </tr>
     </thead>
     <tbody>
