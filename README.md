@@ -93,7 +93,7 @@ Tests performed on Kovan with the following already present contracts that can b
 
 
 ## Contracts Size (main contracts, no interfaces, no test contracts)
-Limit is 24 KiB for single contract
+
 <table>
     <thead>
       <tr>
