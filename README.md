@@ -112,49 +112,49 @@ Tests performed on Kovan with the following already present contracts that can b
     <thead>
       <tr>
         <th>Name</th>
-        <th>Size</th>
+        <th>Size (KiB)</th>
         <th>Description</th>
       </tr>
     </thead>
     <tbody>
         <tr>
             <td>ETHGateway</td>
-            <td><code>3.02 KiB</code></td>
+            <td><code>3.02</code></td>
             <td>Ethereum gateway, useful when dealing with ethers</td>
         </tr>
         <tr>
             <td>JAdminTools</td>
-            <td><code>2.73 KiB</code></td>
+            <td><code>2.73</code></td>
             <td>Contract for administrative roles control (implementation), allowing the identification of addresses when dealing with reserved methods.</td>
         </tr>
         <tr>
             <td>JAdminToolsStorage</td>
-            <td><code>0.87 KiB</code></td>
+            <td><code>0.87</code></td>
             <td>Contract for administrative roles control (storage)</td>
         </tr>
         <tr>
             <td>JCompound</td>
-            <td><code>22.40 KiB</code></td>
+            <td><code>22.40</code></td>
             <td>Core contract protocol (implementation). It is responsible to make all actions to give the exact amount of tranche token to users, connecting with Compound to have interest rates and other informations to give tokens the price they should have block by block. It claims extra token from Compound, sending them to Fees collector contract, that changes all fees and extra tokens into new interests for token holders. It also opens new tranches, and, via Tranche Deployer contract, it deploys new tranche tokens.</td>
         </tr>
         <tr>
             <td>JCompoundStorage</td>
-            <td><code>1.71 KiB</code></td>
+            <td><code>1.71</code></td>
             <td>Core contract protocol (storage)</td>
         </tr>
         <tr>
             <td>JFeesCollector</td>
-            <td><code>10.40 KiB</code></td>
+            <td><code>10.40</code></td>
             <td>Fees collector and uniswap swapper (implementation), it changes all fees and extra tokens into new interests for token holders, sending back extra mount to Compound protocol contract</td>
         </tr>
         <tr>
             <td>JFeesCollectorStorage</td>
-            <td><code>0.96 KiB</code></td>
+            <td><code>0.96</code></td>
             <td>Fees collector and uniswap swapper (storage)</td>
         </tr>
         <tr>
             <td>JTrancheAToken</td>
-            <td><code>10.18 KiB</code></td>
+            <td><code>10.18</code></td>
             <td>Tranche A token (implementation), with a non decreasing price, making possible for holders to have a fixed interest percentage.</td>
         </tr>
         <tr>
@@ -164,22 +164,22 @@ Tests performed on Kovan with the following already present contracts that can b
         </tr>
         <tr>
             <td>JTrancheBToken</td>
-            <td><code>10.18 KiB</code></td>
+            <td><code>10.18</code></td>
             <td>Tranche B token (implementation), with a floating price, making possible for holders to have a variable interest percentage.</td>
         </tr>
         <tr>
             <td>JTrancheBTokenStorage</td>
-            <td><code>0.44 KiB</code></td>
+            <td><code>0.44</code></td>
             <td>Tranche B token (storage)</td>
         </tr>
         <tr>
             <td>JTranchesDeployer</td>
-            <td><code>23.70 KiB</code></td>
+            <td><code>23.70</code></td>
             <td>Tranche A & B token deployer (implementation): this contract deploys tranche tokens everytime a new tranche is opened by the core protocol contract</td>
         </tr>
         <tr>
             <td>JTranchesDeployerStorage</td>
-            <td><code>0.14 KiB</code></td>
+            <td><code>0.14</code></td>
             <td>Tranche A & B token deployer (storage)</td>
         </tr>
     </tbody>
