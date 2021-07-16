@@ -1,4 +1,40 @@
-## compoundProtocol usage
+<!-- Add banner here -->
+
+# Compound Tranche
+
+<img src="https://gblobscdn.gitbook.com/spaces%2F-MP969WsfbfQJJFgxp2K%2Favatar-1617981494187.png?alt=media">
+
+Compound Tranche is a decentralized protocol for managing risk and maximizing returns. The protocol integrates with Compound's cTokens, to create two new interest-bearing instruments, one with a fixed-rate, Tranche A, and one with a variable rate, Tranche B. 
+
+# Table of contents
+
+<!-- After you have introduced your project, it is a good idea to add a **Table of contents** or **TOC** as **cool** people say it. This would make it easier for people to navigate through your README and find exactly what they are looking for.
+
+Here is a sample TOC(*wow! such cool!*) that is actually the TOC for this README. -->
+
+- [Project Title](#project-title)
+- [Demo-Preview](#demo-preview)
+- [Table of contents](#table-of-contents)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Development](#development)
+- [Contribute](#contribute)
+    - [Sponsor](#sponsor)
+    - [Adding new features or fixing bugs](#adding-new-features-or-fixing-bugs)
+- [License](#license)
+- [Footer](#footer)
+
+# Usage
+[(Back to top)](#table-of-contents)
+
+<!-- This is optional and it is used to give the user info on how to use the project after installation. This could be added in the Installation section also. -->
+
+
+
+
+
+
+## Tranche Compound Protocol Usage
 
 a) deploy JCompound contract and initialize it ((address _adminTools, address _feesCollector, address _tranchesDepl,
             address _compTokenAddress, address _comptrollAddress, address _rewardsToken)
