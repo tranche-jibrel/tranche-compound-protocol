@@ -1,38 +1,10 @@
 <!-- Add banner here -->
 
-# Compound Tranche
+# Compound Tranche Protocol
 
-<img src="https://gblobscdn.gitbook.com/spaces%2F-MP969WsfbfQJJFgxp2K%2Favatar-1617981494187.png?alt=media" alt="Tranche Logo" width="200">
+<img src="https://gblobscdn.gitbook.com/spaces%2F-MP969WsfbfQJJFgxp2K%2Favatar-1617981494187.png?alt=media" alt="Tranche Logo" width="100">
 
 Compound Tranche is a decentralized protocol for managing risk and maximizing returns. The protocol integrates with Compound's cTokens, to create two new interest-bearing instruments, one with a fixed-rate, Tranche A, and one with a variable rate, Tranche B. 
-
-# Table of contents
-
-<!-- After you have introduced your project, it is a good idea to add a **Table of contents** or **TOC** as **cool** people say it. This would make it easier for people to navigate through your README and find exactly what they are looking for.
-
-Here is a sample TOC(*wow! such cool!*) that is actually the TOC for this README. -->
-
-- [Project Title](#project-title)
-- [Demo-Preview](#demo-preview)
-- [Table of contents](#table-of-contents)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Development](#development)
-- [Contribute](#contribute)
-    - [Sponsor](#sponsor)
-    - [Adding new features or fixing bugs](#adding-new-features-or-fixing-bugs)
-- [License](#license)
-- [Footer](#footer)
-
-# Usage
-[(Back to top)](#table-of-contents)
-
-<!-- This is optional and it is used to give the user info on how to use the project after installation. This could be added in the Installation section also. -->
-
-
-
-
-
 
 ## Tranche Compound Protocol Usage
 
@@ -68,8 +40,9 @@ Users can now call buy and redeem functions for tranche A & B tokens
 
 Note: if ETH tranche is deployed, please deploy ETHGateway contract without a proxy, then set its address in JCompound with setETHGateway function.
 
+[(Back to top)](#Compound-Tranche-Protocol)
 
-## Uniswap contracts
+### Uniswap contracts
 ### !!! Please note: we have to use 2 different versions of library for tests and for deploy on mainnet / testnet !!!
 
 This is due to different init code hash for UniswapV2Library file when compiled with other solidity compiler versions.
@@ -82,20 +55,17 @@ Please launch !!uniswapInitHashCode.test.js to get your init code hash in test e
 
 Tests on Kovan
 
-Uniswap factory on kovan: 0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f - Uniswap Router02 on kovan: 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D
+    Uniswap factory on kovan: 0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f 
+    
+    Uniswap Router02 on kovan: 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D
 
-Fees Collector on kovan: 0x3623DC2600c8419F8D88bE276FEA9354e3A8C3C0
+    DAI address: 0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa
 
-Some examples:
+    WETH address: 0xd0a1e359811322d97991e03f863a0c30c2cf029c
 
-DAI address: 0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa
+    USDC address: 0xe22da380ee6B445bb8273C81944ADEB6E8450422
 
-WETH address: 0xd0a1e359811322d97991e03f863a0c30c2cf029c
-
-USDC address: 0xe22da380ee6B445bb8273C81944ADEB6E8450422
-
-you can test whatever pair you like that is already been deployed by uniswap factory!
-
+[(Back to top)](#Compound-Tranche-Protocol)
 
 
 ## Contracts Size (main contracts, no interfaces, no test contracts)
@@ -105,60 +75,76 @@ Limit is 24 KiB for single contract
       <tr>
         <th>Contract</th>
         <th>Size</th>
+        <th>Decription</th>
       </tr>
     </thead>
     <tbody>
         <tr>
             <td>ETHGateway</td>
             <td><code>3.02 KiB</code></td>
+            <td>Ethereum gateway</td>
         </tr>
         <tr>
             <td>JAdminTools</td>
             <td><code>2.73 KiB</code></td>
+            <td>Contract for administrative roles control (implementation)</td>
         </tr>
         <tr>
             <td>JAdminToolsStorage</td>
             <td><code>0.87 KiB</code></td>
+            <td>Contract for administrative roles control (storage)</td>
         </tr>
         <tr>
             <td>JCompound</td>
             <td><code>22.40 KiB</code></td>
+            <td>Core contract protocol (implementation)</td>
         </tr>
         <tr>
             <td>JCompoundStorage</td>
             <td><code>1.71 KiB</code></td>
+            <td>Core contract protocol (storage)</td>
         </tr>
         <tr>
             <td>JFeesCollector</td>
             <td><code>10.40 KiB</code></td>
+            <td>Fees collector and uniswap swapper (implementation)</td>
         </tr>
         <tr>
             <td>JFeesCollectorStorage</td>
             <td><code>0.96 KiB</code></td>
+            <td>Fees collector and uniswap swapper (storage)</td>
         </tr>
         <tr>
             <td>JTrancheAToken</td>
             <td><code>10.18 KiB</code></td>
+            <td>Tranche A token (implementation)</td>
         </tr>
         <tr>
             <td>JTrancheATokenStorage</td>
             <td><code>0.44 KiB</code></td>
+            <td>Tranche A token (storage)</td>
         </tr>
         <tr>
             <td>JTrancheBToken</td>
             <td><code>10.18 KiB</code></td>
+            <td>Tranche B token (implementation)</td>
         </tr>
         <tr>
             <td>JTrancheBTokenStorage</td>
             <td><code>0.44 KiB</code></td>
+            <td>Tranche B token (storage)</td>
         </tr>
         <tr>
             <td>JTranchesDeployer</td>
             <td><code>23.70 KiB</code></td>
+            <td>Tranche A & B token deployer (implementation)</td>
         </tr>
         <tr>
             <td>JTranchesDeployerStorage</td>
             <td><code>0.14 KiB</code></td>
+            <td>Tranche A & B token deployer (storage)</td>
         </tr>
     </tbody>
   </table>
+
+  [(Back to top)](#Compound-Tranche-Protocol)
