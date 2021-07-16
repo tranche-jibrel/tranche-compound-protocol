@@ -159,7 +159,7 @@ Tests performed on Kovan with the following already present contracts that can b
         </tr>
         <tr>
             <td>JTrancheATokenStorage</td>
-            <td><code>0.44 KiB</code></td>
+            <td><code>0.44</code></td>
             <td>Tranche A token (storage)</td>
         </tr>
         <tr>
