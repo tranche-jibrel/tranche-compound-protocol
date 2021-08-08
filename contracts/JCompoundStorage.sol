@@ -55,3 +55,31 @@ contract JCompoundStorage is OwnableUpgradeable {
     // enabling / disabling tranches for fund deposit
     mapping(uint256 => bool) public trancheDepositEnabled;
 }
+
+
+contract JCompoundStorageV2 is JCompoundStorage {
+    struct StakingDetails {
+        uint256 startTime;
+        uint256 amount;
+        uint256 trancheNum;
+    }
+
+    // struct TrancheHolder {
+    //     address user;
+    //     StakingDetails[] addressStakes;
+    // }
+
+    // struct StakingSummary{
+    //      uint256 total_amount;
+    //      StakingDetails[] stakes;
+    // }
+
+    // TrancheHolder[] internal trancheHolders;
+
+    // user => trancheNum => counter
+    mapping (address => mapping(uint256 => uint256)) public stakeCounterTrA;
+    mapping (address => mapping(uint256 => uint256)) public stakeCounterTrB;
+    // user => stakeCounter => struct
+    mapping (address => mapping (uint256 => StakingDetails)) public stakingDetailsTrancheA;
+    mapping (address => mapping (uint256 => StakingDetails)) public stakingDetailsTrancheB;
+}
