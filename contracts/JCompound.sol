@@ -17,7 +17,7 @@ import "./interfaces/ICErc20.sol";
 import "./interfaces/IComptrollerLensInterface.sol";
 import "./JCompoundStorage.sol";
 import "./TransferETHHelper.sol";
-// import "./JErrors.sol";
+import "./interfaces/IIncentivesController.sol";
 
 
 contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundStorageV2, IJCompound {
@@ -102,6 +102,13 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
         ethGateway = IETHGateway(_ethGateway);
     }
 
+    /**
+     * @dev set incentive rewards address
+     * @param _incentivesController incentives controller contract address
+     */
+    function setincentivesControllerAddress(address _incentivesController) external onlyAdmins {
+        incentivesControllerAddress = _incentivesController;
+    }
     /**
      * @dev set relationship between ethers and the corresponding Compound cETH contract
      * @param _cEtherContract compound token contract address (cETH contract, on Kovan: 0x41b5844f4680a8c38fbb695b7f9cfd1f64474a72)
@@ -501,14 +508,12 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
         for (uint i = 1; i <= senderCounter; i++) {
             StakingDetails storage details = stakingDetailsTrancheA[msg.sender][i];
             if (details.amount > 0) {
-                if (details.amount < tmpAmount) {
+                if (details.amount <= tmpAmount) {
                     tmpAmount = tmpAmount.sub(details.amount);
                     details.amount = 0;
-                    // delete stakingDetailsTrancheA[msg.sender][i];
-                    // // update details number
-                    // stakeCounterTrA[msg.sender][_trancheNum] = stakeCounterTrA[msg.sender][_trancheNum].sub(1);
-                    // senderCounter = stakeCounterTrA[msg.sender][_trancheNum];
-                    // i = i.sub(1);
+                    delete stakingDetailsTrancheA[msg.sender][i];
+                    // update details number
+                    stakeCounterTrA[msg.sender][_trancheNum] = stakeCounterTrA[msg.sender][_trancheNum].sub(1);
                 } else {
                     details.amount = details.amount.sub(tmpAmount);
                 }
@@ -538,14 +543,12 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
         for (uint i = 1; i <= senderCounter; i++) {
             StakingDetails storage details = stakingDetailsTrancheB[msg.sender][i];
             if (details.amount > 0) {
-                if (details.amount < tmpAmount) {
+                if (details.amount <= tmpAmount) {
                     tmpAmount = tmpAmount.sub(details.amount);
                     details.amount = 0;
-                    // delete stakingDetailsTrancheB[msg.sender][i];
-                    // // update details number
-                    // stakeCounterTrB[msg.sender][_trancheNum] = stakeCounterTrB[msg.sender][_trancheNum].sub(1);
-                    // senderCounter = stakeCounterTrB[msg.sender][_trancheNum];
-                    // i = i.sub(1);
+                    delete stakingDetailsTrancheB[msg.sender][i];
+                    // update details number
+                    stakeCounterTrB[msg.sender][_trancheNum] = stakeCounterTrB[msg.sender][_trancheNum].sub(1);
                 } else {
                     details.amount = details.amount.sub(tmpAmount);
                 }
@@ -662,6 +665,8 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
             }
         }
 
+        IIncentivesController(incentivesControllerAddress).claimRewardsAllMarkets();
+
         if (_amount > 0)
             decreaseTrancheATokenFromStake(_trancheNum, _amount);
      
@@ -771,6 +776,8 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
             }   
         }
 
+        IIncentivesController(incentivesControllerAddress).claimRewardsAllMarkets();
+
         if (_amount > 0)
             decreaseTrancheBTokenFromStake(_trancheNum, _amount);
 
@@ -856,8 +863,8 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
         }
     }
 
-    function emergencyRemoveTokensFromTranche(address _trancheAddress, address _token, address _receiver, uint256 _amount) external onlyAdmins nonReentrant {
-        IJTrancheTokens(_trancheAddress).emergencyTokenTransfer(_token, _receiver, _amount);
-    } 
+    // function emergencyRemoveTokensFromTranche(address _trancheAddress, address _token, address _receiver, uint256 _amount) external onlyAdmins nonReentrant {
+    //     IJTrancheTokens(_trancheAddress).emergencyTokenTransfer(_token, _receiver, _amount);
+    // } 
 
 }

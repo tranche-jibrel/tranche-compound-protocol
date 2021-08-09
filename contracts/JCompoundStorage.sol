@@ -76,6 +76,8 @@ contract JCompoundStorageV2 is JCompoundStorage {
 
     // TrancheHolder[] internal trancheHolders;
 
+    address public incentivesControllerAddress;
+
     // user => trancheNum => counter
     mapping (address => mapping(uint256 => uint256)) public stakeCounterTrA;
     mapping (address => mapping(uint256 => uint256)) public stakeCounterTrB;

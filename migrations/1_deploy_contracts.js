@@ -16,6 +16,8 @@ var JTrancheBToken = artifacts.require('./JTrancheBToken');
 
 var EthGateway = artifacts.require('./ETHGateway');
 
+var IncentivesController = artifacts.require('./IncentivesController');
+
 module.exports = async (deployer, network, accounts) => {
   const MYERC20_TOKEN_SUPPLY = 5000000;
   const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
@@ -83,6 +85,11 @@ module.exports = async (deployer, network, accounts) => {
     console.log("DAI Tranche B Token Address: " + DaiTrB.address);
 
     await JCinstance.setTrancheDeposit(1, true); // enabling deposit
+
+    const JIController = await deployProxy(IncentivesController, [], { from: factoryOwner });
+    console.log("Tranches Deployer: " + JIController.address);
+
+    await JCinstance.setincentivesControllerAddress(JIController.address)
 
   } else if (network == "kovan") {
     let { 
