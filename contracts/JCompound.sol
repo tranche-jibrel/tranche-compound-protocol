@@ -506,12 +506,12 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
         uint256 senderCounter = stakeCounterTrA[msg.sender][_trancheNum];
         uint256 tmpAmount = _amount;
         for (uint i = 1; i <= senderCounter; i++) {
-            StakingDetails storage details = stakingDetailsTrancheA[msg.sender][i];
+            StakingDetails storage details = stakingDetailsTrancheA[msg.sender][_trancheNum][i];
             if (details.amount > 0) {
                 if (details.amount <= tmpAmount) {
                     tmpAmount = tmpAmount.sub(details.amount);
                     details.amount = 0;
-                    delete stakingDetailsTrancheA[msg.sender][i];
+                    delete stakingDetailsTrancheA[msg.sender][_trancheNum][i];
                     // update details number
                     stakeCounterTrA[msg.sender][_trancheNum] = stakeCounterTrA[msg.sender][_trancheNum].sub(1);
                 } else {
@@ -526,10 +526,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
     }
 
     function getSingleTrancheUserSingleStakeDetailsTrA(address _user, uint256 _trancheNum, uint256 _num) external view override returns (uint256, uint256) {
-        if(stakingDetailsTrancheA[_user][_num].trancheNum == _trancheNum) {
-            return (stakingDetailsTrancheA[_user][_num].startTime, stakingDetailsTrancheA[_user][_num].amount);
-        }
-        return (0, 0);
+        return (stakingDetailsTrancheA[_user][_trancheNum][_num].startTime, stakingDetailsTrancheA[_user][_trancheNum][_num].amount);
     }
 
     /**
@@ -541,12 +538,12 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
         uint256 senderCounter = stakeCounterTrB[msg.sender][_trancheNum];
         uint256 tmpAmount = _amount;
         for (uint i = 1; i <= senderCounter; i++) {
-            StakingDetails storage details = stakingDetailsTrancheB[msg.sender][i];
+            StakingDetails storage details = stakingDetailsTrancheB[msg.sender][_trancheNum][i];
             if (details.amount > 0) {
                 if (details.amount <= tmpAmount) {
                     tmpAmount = tmpAmount.sub(details.amount);
                     details.amount = 0;
-                    delete stakingDetailsTrancheB[msg.sender][i];
+                    delete stakingDetailsTrancheB[msg.sender][_trancheNum][i];
                     // update details number
                     stakeCounterTrB[msg.sender][_trancheNum] = stakeCounterTrB[msg.sender][_trancheNum].sub(1);
                 } else {
@@ -561,10 +558,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
     }
 
     function getSingleTrancheUserSingleStakeDetailsTrB(address _user, uint256 _trancheNum, uint256 _num) external view override returns (uint256, uint256) {
-        if(stakingDetailsTrancheB[_user][_num].trancheNum == _trancheNum) {
-            return (stakingDetailsTrancheB[_user][_num].startTime, stakingDetailsTrancheB[_user][_num].amount);
-        }
-        return (0, 0);
+        return (stakingDetailsTrancheB[_user][_trancheNum][_num].startTime, stakingDetailsTrancheB[_user][_trancheNum][_num].amount);
     }
 
     /**
@@ -603,10 +597,10 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
         }
         
         stakeCounterTrA[msg.sender][_trancheNum] = stakeCounterTrA[msg.sender][_trancheNum].add(1);
-        StakingDetails storage details = stakingDetailsTrancheA[msg.sender][stakeCounterTrA[msg.sender][_trancheNum]];
+        StakingDetails storage details = stakingDetailsTrancheA[msg.sender][_trancheNum][stakeCounterTrA[msg.sender][_trancheNum]];
         details.startTime = block.timestamp;
         details.amount = taAmount;
-        details.trancheNum = _trancheNum;
+        // details.trancheNum = _trancheNum;
 
         lastActivity[msg.sender] = block.number;
         emit TrancheATokenMinted(_trancheNum, msg.sender, _amount, taAmount);
@@ -716,10 +710,10 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
             tbAmount = 0;
 
         stakeCounterTrB[msg.sender][_trancheNum] = stakeCounterTrB[msg.sender][_trancheNum].add(1);
-        StakingDetails storage details = stakingDetailsTrancheB[msg.sender][stakeCounterTrB[msg.sender][_trancheNum]];
+        StakingDetails storage details = stakingDetailsTrancheB[msg.sender][_trancheNum][stakeCounterTrB[msg.sender][_trancheNum]];
         details.startTime = block.timestamp;
         details.amount = tbAmount;
-        details.trancheNum = _trancheNum;
+        // details.trancheNum = _trancheNum;
 
         lastActivity[msg.sender] = block.number;
         emit TrancheBTokenMinted(_trancheNum, msg.sender, _amount, tbAmount);
