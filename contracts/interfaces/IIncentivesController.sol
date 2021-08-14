@@ -7,8 +7,8 @@
 pragma solidity 0.6.12;
 
 interface IIncentivesController {
-    function trancheANewEnter(address account, uint256 amount, address trancheA) external; 
-    function trancheBNewEnter(address account, uint256 amount, address trancheB) external; 
+    // function trancheANewEnter(address account, uint256 amount, address trancheA) external; 
+    // function trancheBNewEnter(address account, uint256 amount, address trancheB) external; 
 
     function claimRewardsAllMarkets() external;
     function claimRewardSingleMarketTrA(uint256 _idxMarket) external;

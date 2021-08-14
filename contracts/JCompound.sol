@@ -601,7 +601,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
         details.startTime = block.timestamp;
         details.amount = taAmount;
         
-        IIncentivesController(incentivesControllerAddress).trancheANewEnter(msg.sender, taAmount, trancheAddresses[_trancheNum].ATrancheAddress);
+        // IIncentivesController(incentivesControllerAddress).trancheANewEnter(msg.sender, taAmount, trancheAddresses[_trancheNum].ATrancheAddress);
 
         lastActivity[msg.sender] = block.number;
         emit TrancheATokenMinted(_trancheNum, msg.sender, _amount, taAmount);
@@ -715,7 +715,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
         details.startTime = block.timestamp;
         details.amount = tbAmount;
         
-        IIncentivesController(incentivesControllerAddress).trancheBNewEnter(msg.sender, tbAmount, trancheAddresses[_trancheNum].BTrancheAddress);
+        // IIncentivesController(incentivesControllerAddress).trancheBNewEnter(msg.sender, tbAmount, trancheAddresses[_trancheNum].BTrancheAddress);
 
         lastActivity[msg.sender] = block.number;
         emit TrancheBTokenMinted(_trancheNum, msg.sender, _amount, tbAmount);
