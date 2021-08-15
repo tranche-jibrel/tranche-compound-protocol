@@ -61,20 +61,7 @@ contract JCompoundStorageV2 is JCompoundStorage {
     struct StakingDetails {
         uint256 startTime;
         uint256 amount;
-        // uint256 trancheNum;
     }
-
-    // struct TrancheHolder {
-    //     address user;
-    //     StakingDetails[] addressStakes;
-    // }
-
-    // struct StakingSummary{
-    //      uint256 total_amount;
-    //      StakingDetails[] stakes;
-    // }
-
-    // TrancheHolder[] internal trancheHolders;
 
     address public incentivesControllerAddress;
 
