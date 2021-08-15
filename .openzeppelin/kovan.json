@@ -1,5 +1,31 @@
 {
-  "manifestVersion": "3.1",
+  "manifestVersion": "3.2",
+  "admin": {
+    "address": "0x6cAb326287d50A4f8F3C05424aee4389A9f7832A",
+    "txHash": "0x24bc58b3a76fd618687377358e375ada152ff4ae199156be58fd644556236582"
+  },
+  "proxies": [
+    {
+      "address": "0xb1c8993C9C8Fb4bCBFA07a7688f0BDd3Ad6775C0",
+      "txHash": "0x6f5065c1a14e6202b51add74af41b802dc161927a60f4aa4a63e9ef900aa3f56",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xC0c7EFB8d45dC65ed343FC6e6433812cB43315b1",
+      "txHash": "0xdf987140048dfa7fc0e98dcc377f59c0677f6a7d08fa6a3e0c98d594eacd85be",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x19f792fBA533D5fa9b30da496fA4Cb06CBCdD1cc",
+      "txHash": "0x8ef3a5a559fadf386baaf2f702d7378e1d39829cc955d5151a7bdce7035206c7",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x6e8Aaa1B9b9E7D9743384236EB5c44Fe1CD4cbCF",
+      "txHash": "0x716ae3a83187d9ee4dc8940d4c5352ab964e455c3d092cf04801aacf287c91ce",
+      "kind": "transparent"
+    }
+  ],
   "impls": {
     "5bd60e6cc41dad882695893a251595c94b446263890330535cfed07941b18898": {
       "address": "0x933872f21C17F0CcbB02c21a7A7b8B4eE7f7BA68",
@@ -733,10 +759,493 @@
           }
         }
       }
+    },
+    "cb71e8ed677d6b8bdb1a23db2f5ecc422c6d6c76cece11e6dc7bc32959fb66f8": {
+      "address": "0x47F8176cD240d986F7f16db54E2395A273a167AD",
+      "txHash": "0x9df2c546d22f247f24fb656d309d9c9175752b6e9226547770d4ef92964d6fbe",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:25"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:30"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "../@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:20"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:74"
+          },
+          {
+            "contract": "JAdminToolsStorage",
+            "label": "contractVersion",
+            "type": "t_uint256",
+            "src": "JAdminToolsStorage.sol:13"
+          },
+          {
+            "contract": "JAdminToolsStorage",
+            "label": "adminCounter",
+            "type": "t_uint256",
+            "src": "JAdminToolsStorage.sol:14"
+          },
+          {
+            "contract": "JAdminToolsStorage",
+            "label": "_Admins",
+            "type": "t_mapping(t_address,t_bool)",
+            "src": "JAdminToolsStorage.sol:16"
+          }
+        ],
+        "types": {
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    },
+    "f2070bdd65c2cd8dbd1688c6303be472cdac91cea4413282ea707cb584f03858": {
+      "address": "0x33BC66Fc20E75C7116fed6BF24c48D3f3d8168Bb",
+      "txHash": "0x0d0eb09f7a7bb5beb5539bf7b1c0192b74863d4587e42f944407ba01d10fdd70",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:25"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:30"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "../@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:20"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:74"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeable",
+            "label": "_status",
+            "type": "t_uint256",
+            "src": "../@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:37"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:67"
+          },
+          {
+            "contract": "JFeesCollectorStorage",
+            "label": "contractVersion",
+            "type": "t_uint256",
+            "src": "JFeesCollectorStorage.sol:14"
+          },
+          {
+            "contract": "JFeesCollectorStorage",
+            "label": "tokensAllowed",
+            "type": "t_mapping(t_address,t_bool)",
+            "src": "JFeesCollectorStorage.sol:16"
+          },
+          {
+            "contract": "JFeesCollectorStorage",
+            "label": "factory",
+            "type": "t_address",
+            "src": "JFeesCollectorStorage.sol:18"
+          },
+          {
+            "contract": "JFeesCollectorStorage",
+            "label": "uniV2Router02",
+            "type": "t_contract(IUniswapV2Router02)16318",
+            "src": "JFeesCollectorStorage.sol:19"
+          },
+          {
+            "contract": "JFeesCollectorStorage",
+            "label": "adminToolsAddress",
+            "type": "t_address",
+            "src": "JFeesCollectorStorage.sol:21"
+          }
+        ],
+        "types": {
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_contract(IUniswapV2Router02)16318": {
+            "label": "contract IUniswapV2Router02"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    },
+    "f0a222ff44b66a4faaf5a6039da26091c08ab16216586cc4302e460715bb4679": {
+      "address": "0xf3f61Bd0D7cE8918739F66F61fB3E7Ad4667b554",
+      "txHash": "0x57fea908e44ce435a497d7587dd290cae40801242d667562a6c39db8297f9544",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:25"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:30"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "../@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:20"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:74"
+          },
+          {
+            "contract": "JTranchesDeployerStorage",
+            "label": "jCompoundAddress",
+            "type": "t_address",
+            "src": "JTranchesDeployerStorage.sol:13"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          },
+          "t_bool": {
+            "label": "bool"
+          }
+        }
+      }
+    },
+    "ab00fd272b324ec358c4904c474914bef5af7033e59b85e2a185420b8b7f6450": {
+      "address": "0xC701D38e1D269ef15a67d774056225331eB5b3a3",
+      "txHash": "0x6fdc14fe6ddaa44f26d48ef541351e63e4fe92f56ee714e83d9058fe4de13329",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:25"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:30"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "../@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:20"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:74"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeable",
+            "label": "_status",
+            "type": "t_uint256",
+            "src": "../@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:37"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:67"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "adminToolsAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:35"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "feesCollectorAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:36"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "tranchesDeployerAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:37"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "compTokenAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:38"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "comptrollerAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:39"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "rewardsToken",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:40"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "tranchePairsCounter",
+            "type": "t_uint256",
+            "src": "JCompoundStorage.sol:42"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "totalBlocksPerYear",
+            "type": "t_uint256",
+            "src": "JCompoundStorage.sol:43"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "redeemTimeout",
+            "type": "t_uint32",
+            "src": "JCompoundStorage.sol:44"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "cTokenContracts",
+            "type": "t_mapping(t_address,t_address)",
+            "src": "JCompoundStorage.sol:46"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "trancheAddresses",
+            "type": "t_mapping(t_uint256,t_struct(TrancheAddresses)3186_storage)",
+            "src": "JCompoundStorage.sol:47"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "trancheParameters",
+            "type": "t_mapping(t_uint256,t_struct(TrancheParameters)3201_storage)",
+            "src": "JCompoundStorage.sol:48"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "lastActivity",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "JCompoundStorage.sol:50"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "cEthToken",
+            "type": "t_contract(ICEth)5190",
+            "src": "JCompoundStorage.sol:52"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "ethGateway",
+            "type": "t_contract(IETHGateway)5303",
+            "src": "JCompoundStorage.sol:53"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "trancheDepositEnabled",
+            "type": "t_mapping(t_uint256,t_bool)",
+            "src": "JCompoundStorage.sol:56"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_uint32": {
+            "label": "uint32"
+          },
+          "t_mapping(t_address,t_address)": {
+            "label": "mapping(address => address)"
+          },
+          "t_mapping(t_uint256,t_struct(TrancheAddresses)3186_storage)": {
+            "label": "mapping(uint256 => struct JCompoundStorage.TrancheAddresses)"
+          },
+          "t_struct(TrancheAddresses)3186_storage": {
+            "label": "struct JCompoundStorage.TrancheAddresses",
+            "members": [
+              {
+                "label": "buyerCoinAddress",
+                "type": "t_address"
+              },
+              {
+                "label": "cTokenAddress",
+                "type": "t_address"
+              },
+              {
+                "label": "ATrancheAddress",
+                "type": "t_address"
+              },
+              {
+                "label": "BTrancheAddress",
+                "type": "t_address"
+              }
+            ]
+          },
+          "t_mapping(t_uint256,t_struct(TrancheParameters)3201_storage)": {
+            "label": "mapping(uint256 => struct JCompoundStorage.TrancheParameters)"
+          },
+          "t_struct(TrancheParameters)3201_storage": {
+            "label": "struct JCompoundStorage.TrancheParameters",
+            "members": [
+              {
+                "label": "trancheAFixedPercentage",
+                "type": "t_uint256"
+              },
+              {
+                "label": "trancheALastActionBlock",
+                "type": "t_uint256"
+              },
+              {
+                "label": "storedTrancheAPrice",
+                "type": "t_uint256"
+              },
+              {
+                "label": "trancheACurrentRPB",
+                "type": "t_uint256"
+              },
+              {
+                "label": "redemptionPercentage",
+                "type": "t_uint16"
+              },
+              {
+                "label": "cTokenDecimals",
+                "type": "t_uint8"
+              },
+              {
+                "label": "underlyingDecimals",
+                "type": "t_uint8"
+              }
+            ]
+          },
+          "t_uint16": {
+            "label": "uint16"
+          },
+          "t_uint8": {
+            "label": "uint8"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_contract(ICEth)5190": {
+            "label": "contract ICEth"
+          },
+          "t_contract(IETHGateway)5303": {
+            "label": "contract IETHGateway"
+          },
+          "t_mapping(t_uint256,t_bool)": {
+            "label": "mapping(uint256 => bool)"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
     }
-  },
-  "admin": {
-    "address": "0x6cAb326287d50A4f8F3C05424aee4389A9f7832A",
-    "txHash": "0x24bc58b3a76fd618687377358e375ada152ff4ae199156be58fd644556236582"
   }
 }
