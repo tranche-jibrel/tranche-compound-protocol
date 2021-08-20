@@ -415,10 +415,10 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
     function getTrAValue(uint256 _trancheNum) public view returns (uint256 trANormValue) {
         uint256 totASupply = IERC20Upgradeable(trancheAddresses[_trancheNum].ATrancheAddress).totalSupply();
         uint256 diffDec = uint256(18).sub(uint256(trancheParameters[_trancheNum].underlyingDecimals));
-        if (diffDec > 0)
+        // if (diffDec > 0)
             trANormValue = totASupply.mul(getTrancheAExchangeRate(_trancheNum)).div(1e18).div(10 ** diffDec);
-        else    
-            trANormValue = totASupply.mul(getTrancheAExchangeRate(_trancheNum)).div(1e18);
+        // else    
+        //     trANormValue = totASupply.mul(getTrancheAExchangeRate(_trancheNum)).div(1e18);
         return trANormValue;
     }
 
@@ -593,7 +593,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
             uint256 normAmount = _amount.mul(10 ** diffDec);
             taAmount = normAmount.mul(1e18).div(trancheParameters[_trancheNum].storedTrancheAPrice);
             //Mint trancheA tokens and send them to msg.sender and notify to incentive controller BEFORE totalSupply updates
-            IIncentivesController(incentivesControllerAddress).trancheANewEnter(msg.sender, /*taAmount,*/ trancheAddresses[_trancheNum].ATrancheAddress);
+            IIncentivesController(incentivesControllerAddress).trancheANewEnter(msg.sender, trancheAddresses[_trancheNum].ATrancheAddress);
             IJTrancheTokens(trancheAddresses[_trancheNum].ATrancheAddress).mint(msg.sender, taAmount);
         } else {
             taAmount = 0;
@@ -661,7 +661,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
             }
         }
 
-        IIncentivesController(incentivesControllerAddress).claimRewardsAllMarkets();
+        IIncentivesController(incentivesControllerAddress).claimRewardsAllMarkets(msg.sender);
 
         if (_amount > 0)
             decreaseTrancheATokenFromStake(_trancheNum, _amount);
@@ -707,7 +707,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
         uint256 newCompTokenBalance = getTokenBalance(trancheAddresses[_trancheNum].cTokenAddress);
         if (newCompTokenBalance > prevCompTokenBalance) {
             //Mint trancheB tokens and send them to msg.sender and notify to incentive controller BEFORE totalSupply updates
-            IIncentivesController(incentivesControllerAddress).trancheBNewEnter(msg.sender, /*tbAmount,*/ trancheAddresses[_trancheNum].BTrancheAddress);
+            IIncentivesController(incentivesControllerAddress).trancheBNewEnter(msg.sender, trancheAddresses[_trancheNum].BTrancheAddress);
             IJTrancheTokens(trancheAddresses[_trancheNum].BTrancheAddress).mint(msg.sender, tbAmount);
         } else 
             tbAmount = 0;
@@ -772,7 +772,8 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
             }   
         }
 
-        IIncentivesController(incentivesControllerAddress).claimRewardsAllMarkets();
+        // claim and transfer rewards to msg.sender
+        IIncentivesController(incentivesControllerAddress).claimRewardsAllMarkets(msg.sender);
 
         if (_amount > 0)
             decreaseTrancheBTokenFromStake(_trancheNum, _amount);
