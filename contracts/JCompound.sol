@@ -511,9 +511,9 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
                 if (details.amount <= tmpAmount) {
                     tmpAmount = tmpAmount.sub(details.amount);
                     details.amount = 0;
-                    delete stakingDetailsTrancheA[msg.sender][_trancheNum][i];
+                    //delete stakingDetailsTrancheA[msg.sender][_trancheNum][i];
                     // update details number
-                    stakeCounterTrA[msg.sender][_trancheNum] = stakeCounterTrA[msg.sender][_trancheNum].sub(1);
+                    //stakeCounterTrA[msg.sender][_trancheNum] = stakeCounterTrA[msg.sender][_trancheNum].sub(1);
                 } else {
                     details.amount = details.amount.sub(tmpAmount);
                 }
@@ -543,9 +543,9 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
                 if (details.amount <= tmpAmount) {
                     tmpAmount = tmpAmount.sub(details.amount);
                     details.amount = 0;
-                    delete stakingDetailsTrancheB[msg.sender][_trancheNum][i];
+                    //delete stakingDetailsTrancheB[msg.sender][_trancheNum][i];
                     // update details number
-                    stakeCounterTrB[msg.sender][_trancheNum] = stakeCounterTrB[msg.sender][_trancheNum].sub(1);
+                    //stakeCounterTrB[msg.sender][_trancheNum] = stakeCounterTrB[msg.sender][_trancheNum].sub(1);
                 } else {
                     details.amount = details.amount.sub(tmpAmount);
                 }
