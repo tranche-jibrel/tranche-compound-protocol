@@ -135,8 +135,13 @@ Tests performed on Kovan with the following already present contracts that can b
         </tr>
         <tr>
             <td>JCompound</td>
-            <td><code>23.36</code></td>
+            <td><code>23.06</code></td>
             <td>Core contract protocol (implementation). It is responsible to make all actions to give the exact amount of tranche token to users, connecting with Compound to have interest rates and other informations to give tokens the price they should have block by block. It claims extra token from Compound, sending them to Fees collector contract, that changes all fees and extra tokens into new interests for token holders. It also opens new tranches, and, via Tranche Deployer contract, it deploys new tranche tokens.</td>
+        </tr>
+        <tr>
+            <td>JCompoundHelper</td>
+            <td><code>2.40</code></td>
+            <td>JCompound Helper for some calculation on price from Compound</td>
         </tr>
         <tr>
             <td>JCompoundStorage</td>
@@ -145,7 +150,7 @@ Tests performed on Kovan with the following already present contracts that can b
         </tr>
         <tr>
             <td>JCompoundStorageV2</td>
-            <td><code>2.10</code></td>
+            <td><code>2.20</code></td>
             <td>Core contract protocol V2 (storage)</td>
         </tr>
         <tr>

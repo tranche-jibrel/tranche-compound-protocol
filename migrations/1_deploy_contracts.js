@@ -9,6 +9,7 @@ var CEther = artifacts.require('./mocks/CEther.sol');
 var JAdminTools = artifacts.require("./JAdminTools.sol");
 var JFeesCollector = artifacts.require("./JFeesCollector.sol");
 var JCompound = artifacts.require('./JCompound');
+var JCompoundHelper = artifacts.require('./JCompoundHelper');
 var JTranchesDeployer = artifacts.require('./JTranchesDeployer');
 
 var JTrancheAToken = artifacts.require('./JTrancheAToken');
@@ -68,6 +69,11 @@ module.exports = async (deployer, network, accounts) => {
     await JCinstance.setCEtherContract(mycEthinstance.address, { from: factoryOwner });
     await JCinstance.setCTokenContract(myDAIinstance.address, mycDaiinstance.address, { from: factoryOwner });
 
+    const JCHelper = await deployProxy(JCompoundHelper, [/*JCinstance.address*/], { from: factoryOwner });
+    console.log("JC Helper: " + JCHelper.address);
+
+    await JCinstance.setJCompoundHelperAddress(JCHelper.address)
+
     await JCinstance.addTrancheToProtocol(ZERO_ADDRESS, "jEthTrancheAToken", "JEA", "jEthTrancheBToken", "JEB", web3.utils.toWei("0.04", "ether"), 18, 18, { from: factoryOwner });
     trParams = await JCinstance.trancheAddresses(0);
     let EthTrA = await JTrancheAToken.at(trParams.ATrancheAddress);
@@ -88,7 +94,7 @@ module.exports = async (deployer, network, accounts) => {
 
     const JIController = await deployProxy(IncentivesController, [], { from: factoryOwner });
     console.log("Tranches Deployer: " + JIController.address);
-
+    
     await JCinstance.setincentivesControllerAddress(JIController.address)
 
   } else if (network == "kovan") {

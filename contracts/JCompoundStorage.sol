@@ -71,4 +71,6 @@ contract JCompoundStorageV2 is JCompoundStorage {
     // user => trancheNum => stakeCounter => struct
     mapping (address => mapping (uint256 => mapping (uint256 => StakingDetails))) public stakingDetailsTrancheA;
     mapping (address => mapping (uint256 => mapping (uint256 => StakingDetails))) public stakingDetailsTrancheB;
+
+    address public jCompoundHelperAddress;
 }
