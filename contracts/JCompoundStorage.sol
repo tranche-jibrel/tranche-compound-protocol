@@ -13,7 +13,7 @@ import "./interfaces/IETHGateway.sol";
 contract JCompoundStorage is OwnableUpgradeable {
 /* WARNING: NEVER RE-ORDER VARIABLES! Always double-check that new variables are added APPEND-ONLY. Re-ordering variables can permanently BREAK the deployed proxy contract.*/
 
-    uint256 public constant PERCENT_DIVIDER = 10000;  // percentage divider
+    uint256 public constant PERCENT_DIVIDER = 10000;  // percentage divider for redemption
 
     struct TrancheAddresses {
         address buyerCoinAddress;       // ETH (ZERO_ADDRESS) or DAI
@@ -27,7 +27,7 @@ contract JCompoundStorage is OwnableUpgradeable {
         uint256 trancheALastActionBlock;
         uint256 storedTrancheAPrice;
         uint256 trancheACurrentRPB;
-        uint16 redemptionPercentage;        // percentage with 2 decimals (divided by 10000, i.e. 95% is 9500)
+        uint16 redemptionPercentage;        // percentage with 2 decimals (divided by 10000, i.e. 95% is 9500) Unused, to be removed
         uint8 cTokenDecimals;
         uint8 underlyingDecimals;
     }
@@ -40,8 +40,8 @@ contract JCompoundStorage is OwnableUpgradeable {
     address public rewardsToken;
 
     uint256 public tranchePairsCounter;
-    uint256 public totalBlocksPerYear; 
-    uint32 public redeemTimeout;
+    uint256 public totalBlocksPerYear;  // unused, to be removed
+    uint32 public redeemTimeout;        // unused, to be removed
 
     mapping(address => address) public cTokenContracts;
     mapping(uint256 => TrancheAddresses) public trancheAddresses;
@@ -73,4 +73,7 @@ contract JCompoundStorageV2 is JCompoundStorage {
     mapping (address => mapping (uint256 => mapping (uint256 => StakingDetails))) public stakingDetailsTrancheB;
 
     address public jCompoundHelperAddress;
+    uint256 public constant REDEMPTION_PERCENT = 9950;  // redemption percentage (scaled by 1e4)
+    uint256 public constant REDEMPTION_TIMEOUT = 3;  // redemption timeout, in blocks
+    uint256 public constant BLOCKS_PER_YEAR = 2102400;  // same number like in Compound protocol
 }

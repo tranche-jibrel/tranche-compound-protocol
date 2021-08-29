@@ -87,9 +87,9 @@ contract("JCompound", function (accounts) {
     expect(jCompContract.address).to.be.not.equal(ZERO_ADDRESS);
     expect(jCompContract.address).to.match(/0x[0-9a-fA-F]{40}/);
     console.log(jCompContract.address);
-    await jCompContract.setRedemptionTimeout(0, {
-      from: accounts[0]
-    });
+    // await jCompContract.setRedemptionTimeout(0, {
+    //   from: accounts[0]
+    // });
 
     jCompHelperContract = await JCompoundHelper.deployed();
     expect(jCompHelperContract.address).to.be.not.equal(ZERO_ADDRESS);
@@ -152,15 +152,14 @@ contract("JCompound", function (accounts) {
     console.log((await jCompHelperContract.getCompoundPriceHelper(trAddresses[1], trPars[6], trPars[5])).toString());
     trPar = await jCompContract.trancheParameters(1);
     console.log("param tranche A: " + JSON.stringify(trPar));
-    console.log("rpb tranche A: " + await jCompContract.getTrancheACurrentRPB(1));
+    console.log("rpb tranche A: " + trPar[3].toString());
     tx = await jCompContract.calcRPBFromPercentage(1, {
       from: user1
     });
-    console.log("rpb tranche A: " + await jCompContract.getTrancheACurrentRPB(1));
-    trAPrice = await jCompContract.getTrancheAExchangeRate(1, {
-      from: user1
-    });
-    console.log("price tranche A: " + trAPrice);
+
+    trPar = await jCompContract.trancheParameters(1);
+    console.log("rpb tranche A: " + trPar[3].toString());
+    console.log("price tranche A: " + trPar[2].toString());
     trPar = await jCompContract.trancheParameters(1);
     console.log("param tranche A: " + JSON.stringify(trPar));
     trParams = await jCompContract.trancheAddresses(1);
@@ -178,7 +177,8 @@ contract("JCompound", function (accounts) {
     console.log("CErc20 DAI balance: " + web3.utils.fromWei(await daiContract.balanceOf(cERC20Contract.address), "ether") + " DAI");
     console.log("JCompound DAI balance: " + web3.utils.fromWei(await daiContract.balanceOf(jCompContract.address), "ether") + " DAI");
     console.log("JCompound cDAI balance: " + web3.utils.fromWei(await jCompContract.getTokenBalance(cERC20Contract.address), "ether") + " cDai");
-    console.log("TrA price: " + web3.utils.fromWei(await jCompContract.getTrancheAExchangeRate(1), "ether"));
+    trPar = await jCompContract.trancheParameters(1);
+    console.log("TrA price: " + web3.utils.fromWei(trPar[2].toString()));
     trAddresses = await jCompContract.trancheAddresses(1); //.cTokenAddress;
     trPars = await jCompContract.trancheParameters(1);
     console.log("Compound Price: " + await jCompHelperContract.getCompoundPriceHelper(trAddresses[1], trPars[6], trPars[5]));
@@ -230,7 +230,8 @@ contract("JCompound", function (accounts) {
     trAddresses = await jCompContract.trancheAddresses(1); //.cTokenAddress;
     trPars = await jCompContract.trancheParameters(1);
     console.log("Compound Price: " + await jCompHelperContract.getCompoundPriceHelper(trAddresses[1], trPars[6], trPars[5]));
-    console.log("TrA price: " + web3.utils.fromWei(await jCompContract.getTrancheAExchangeRate(1), "ether"));
+    trPar = await jCompContract.trancheParameters(1);
+    console.log("TrA price: " + web3.utils.fromWei(trPar[2].toString()));
     console.log("Compound TrA Value: " + web3.utils.fromWei(await jCompContract.getTrAValue(1), "ether"));
     console.log("TrB value: " + web3.utils.fromWei(await jCompContract.getTrBValue(1), "ether"));
     console.log("Compound total Value: " + web3.utils.fromWei(await jCompContract.getTotalValue(1), "ether"));
@@ -261,7 +262,8 @@ contract("JCompound", function (accounts) {
     console.log("trA tokens total: "+ web3.utils.fromWei(tot, "ether") + " DTA");
     console.log("JCompound cDai balance: "+ web3.utils.fromWei(await jCompContract.getTokenBalance(cERC20Contract.address), "ether") + " cDai");
     tx = await daiTrAContract.approve(jCompContract.address, bal, {from: user1});
-    console.log("TrA price: " +  web3.utils.fromWei(await jCompContract.getTrancheAExchangeRate(1), "ether"));
+    trPar = await jCompContract.trancheParameters(1);
+    console.log("TrA price: " + web3.utils.fromWei(trPar[2].toString()));
     tx = await jCompContract.redeemTrancheAToken(1, bal, {from: user1});
     newBal = web3.utils.fromWei(await daiContract.balanceOf(user1), "ether");
     console.log("User1 New Dai balance: "+ newBal + " DAI");
