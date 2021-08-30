@@ -73,7 +73,7 @@ contract JCompoundStorageV2 is JCompoundStorage {
     mapping (address => mapping (uint256 => mapping (uint256 => StakingDetails))) public stakingDetailsTrancheB;
 
     address public jCompoundHelperAddress;
-    uint256 public constant REDEMPTION_PERCENT = 9950;  // redemption percentage (scaled by 1e4)
-    uint256 public constant REDEMPTION_TIMEOUT = 3;  // redemption timeout, in blocks
-    uint256 public constant BLOCKS_PER_YEAR = 2102400;  // same number like in Compound protocol
+    uint256 public REDEMPTION_PERCENT = 9950;  // redemption percentage (scaled by 1e4)
+    uint256 public REDEMPTION_TIMEOUT = 3;  // redemption timeout, in blocks
+    uint256 public BLOCKS_PER_YEAR = 2102400;  // same number like in Compound protocol
 }
