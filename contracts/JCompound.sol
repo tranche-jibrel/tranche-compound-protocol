@@ -516,8 +516,11 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
                     //stakeCounterTrA[msg.sender][_trancheNum] = stakeCounterTrA[msg.sender][_trancheNum].sub(1);
                 } else {
                     details.amount = details.amount.sub(tmpAmount);
+                    tmpAmount = 0;
                 }
             }
+            if (tmpAmount == 0)
+                break;
         }
     }
 
@@ -548,8 +551,11 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
                     //stakeCounterTrB[msg.sender][_trancheNum] = stakeCounterTrB[msg.sender][_trancheNum].sub(1);
                 } else {
                     details.amount = details.amount.sub(tmpAmount);
+                    tmpAmount = 0;
                 }
             }
+            if (tmpAmount == 0)
+                break;
         }
     }
 
