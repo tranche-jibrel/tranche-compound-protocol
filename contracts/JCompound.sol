@@ -46,6 +46,9 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
         compTokenAddress = _compTokenAddress;
         comptrollerAddress = _comptrollAddress;
         rewardsToken = _rewardsToken;
+        REDEMPTION_PERCENT = 9950;  // redemption percentage (scaled by 1e4)
+        REDEMPTION_TIMEOUT = 3;  // redemption timeout, in blocks
+        BLOCKS_PER_YEAR = 2102400;  // same number like in Compound protocol
         //redeemTimeout = REDEMPTION_TIMEOUT; //default
         //totalBlocksPerYear = BLOCKS_PER_YEAR; // same number like in Compound protocol
     }
