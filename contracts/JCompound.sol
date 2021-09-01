@@ -54,6 +54,18 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
     }
 
     /**
+     * @dev set constants for JCompound
+     * @param _redemPerc redemption percentage (scaled by 1e4)
+     * @param _redemTimeout redemption timeout, in blocks
+     * @param _blocksPerYear blocks per year (compound set it to 2102400)
+     */
+    function setConstantsValues(uint256 _redemPerc, uint256 _redemTimeout, uint256 _blocksPerYear) external onlyAdmins {
+        REDEMPTION_PERCENT = _redemPerc;
+        REDEMPTION_TIMEOUT = _redemTimeout;
+        BLOCKS_PER_YEAR = _blocksPerYear;
+    }
+
+    /**
      * @dev set eth gateway 
      * @param _ethGateway ethGateway address
      */
