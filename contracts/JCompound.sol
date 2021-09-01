@@ -263,7 +263,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
 
         calcRPBFromPercentage(tranchePairsCounter); // initialize tranche A RPB
 
-        // emit TrancheAddedToProtocol(tranchePairsCounter, trancheAddresses[tranchePairsCounter].ATrancheAddress, trancheAddresses[tranchePairsCounter].BTrancheAddress);
+        emit TrancheAddedToProtocol(tranchePairsCounter, trancheAddresses[tranchePairsCounter].ATrancheAddress, trancheAddresses[tranchePairsCounter].BTrancheAddress);
 
         tranchePairsCounter = tranchePairsCounter.add(1);
     } 
@@ -590,7 +590,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
         details.amount = taAmount;
 
         lastActivity[msg.sender] = block.number;
-        // emit TrancheATokenMinted(_trancheNum, msg.sender, _amount, taAmount);
+        emit TrancheATokenMinted(_trancheNum, msg.sender, _amount, taAmount);
     }
 
     /**
@@ -662,7 +662,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
         IJTrancheTokens(aTrancheAddress).burn(_amount);
 
         lastActivity[msg.sender] = block.number;
-        //emit TrancheATokenRedemption(_trancheNum, msg.sender, _amount, userAmount, feesAmount);
+        emit TrancheATokenRedemption(_trancheNum, msg.sender, _amount, userAmount, feesAmount);
     }
 
     /**
@@ -714,7 +714,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
         details.amount = tbAmount;     
 
         lastActivity[msg.sender] = block.number;
-        //emit TrancheBTokenMinted(_trancheNum, msg.sender, _amount, tbAmount);
+        emit TrancheBTokenMinted(_trancheNum, msg.sender, _amount, tbAmount);
     }
 
     /**
@@ -784,7 +784,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
         IJTrancheTokens(bTrancheAddress).burn(_amount);
 
         lastActivity[msg.sender] = block.number;
-        //emit TrancheBTokenRedemption(_trancheNum, msg.sender, _amount,  userAmount, feesAmount);
+        emit TrancheBTokenRedemption(_trancheNum, msg.sender, _amount,  userAmount, feesAmount);
     }
 
     /**
