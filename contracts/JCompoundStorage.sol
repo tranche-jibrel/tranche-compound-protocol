@@ -27,7 +27,7 @@ contract JCompoundStorage is OwnableUpgradeable {
         uint256 trancheALastActionBlock;
         uint256 storedTrancheAPrice;
         uint256 trancheACurrentRPB;
-        uint16 redemptionPercentage;        // percentage with 2 decimals (divided by 10000, i.e. 95% is 9500) Unused, to be removed
+        uint16 redemptionPercentage;        // percentage with 2 decimals (divided by 10000, i.e. 95% is 9500)
         uint8 cTokenDecimals;
         uint8 underlyingDecimals;
     }
@@ -40,8 +40,8 @@ contract JCompoundStorage is OwnableUpgradeable {
     address public rewardsToken;
 
     uint256 public tranchePairsCounter;
-    uint256 public totalBlocksPerYear;  // unused, to be removed
-    uint32 public redeemTimeout;        // unused, to be removed
+    uint256 public totalBlocksPerYear;
+    uint32 public redeemTimeout;
 
     mapping(address => address) public cTokenContracts;
     mapping(uint256 => TrancheAddresses) public trancheAddresses;
@@ -73,7 +73,5 @@ contract JCompoundStorageV2 is JCompoundStorage {
     mapping (address => mapping (uint256 => mapping (uint256 => StakingDetails))) public stakingDetailsTrancheB;
 
     address public jCompoundHelperAddress;
-    uint256 public REDEMPTION_PERCENT;  // redemption percentage (scaled by 1e4)
-    uint256 public REDEMPTION_TIMEOUT;  // redemption timeout, in blocks
-    uint256 public BLOCKS_PER_YEAR;  // same number like in Compound protocol
+
 }
