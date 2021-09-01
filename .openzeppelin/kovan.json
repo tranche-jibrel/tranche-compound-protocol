@@ -1,20 +1,20 @@
 {
   "manifestVersion": "3.2",
   "admin": {
-    "address": "0x7606B5E7ccA84932F68F27079539B4E2448150dd",
-    "txHash": "0x32ba099548519b480e9ecd8cd5982f50643ee477a0211d8ae4a598849fa79e7d"
+    "address": "0xA183F2503AD698A16a6286623b67Cc7b36585Ec0",
+    "txHash": "0x29cf9ee7324582ec2e3a52bdcfb4760867245b7d1d76eaeef5959b238e76111b"
   },
   "proxies": [
     {
-      "address": "0xb6f3f98D955d728FEbE5a2AB67e06cc781aB8d4f",
-      "txHash": "0xc24fa5603fe4cc140910f844c4e9009c2522df4f1e545a02678f81602192623c",
+      "address": "0x3f8D803c230d15aEd9D00B1c08932064931B62A1",
+      "txHash": "0x4b564d8142d9fe80aa4ebca3cb917f0844d13c303e53972636e19f933ec39bfa",
       "kind": "transparent"
     }
   ],
   "impls": {
-    "ab00fd272b324ec358c4904c474914bef5af7033e59b85e2a185420b8b7f6450": {
-      "address": "0x798c3De8A380a6d1B132C63De0c249Fe375adce9",
-      "txHash": "0xe41b4599fa26aa5500ddcb385e52eea590477a5fbaeb2194d6e9d80cc7c58439",
+    "ce7e31274b1515a59490b3a48c204d1e0318c68f96c182ed3ba15687ffcc75ef": {
+      "address": "0xf7630bC18f9975c356173f9422B438EE3ab8BbFC",
+      "txHash": "0x24979e08207ec0f47ef3f239ef59017fc834672e6a023c95db29152cea4f17ad",
       "layout": {
         "storage": [
           {
@@ -122,13 +122,13 @@
           {
             "contract": "JCompoundStorage",
             "label": "trancheAddresses",
-            "type": "t_mapping(t_uint256,t_struct(TrancheAddresses)3186_storage)",
+            "type": "t_mapping(t_uint256,t_struct(TrancheAddresses)3578_storage)",
             "src": "JCompoundStorage.sol:47"
           },
           {
             "contract": "JCompoundStorage",
             "label": "trancheParameters",
-            "type": "t_mapping(t_uint256,t_struct(TrancheParameters)3201_storage)",
+            "type": "t_mapping(t_uint256,t_struct(TrancheParameters)3593_storage)",
             "src": "JCompoundStorage.sol:48"
           },
           {
@@ -140,13 +140,13 @@
           {
             "contract": "JCompoundStorage",
             "label": "cEthToken",
-            "type": "t_contract(ICEth)5190",
+            "type": "t_contract(ICEth)5620",
             "src": "JCompoundStorage.sol:52"
           },
           {
             "contract": "JCompoundStorage",
             "label": "ethGateway",
-            "type": "t_contract(IETHGateway)5303",
+            "type": "t_contract(IETHGateway)5733",
             "src": "JCompoundStorage.sol:53"
           },
           {
@@ -154,14 +154,72 @@
             "label": "trancheDepositEnabled",
             "type": "t_mapping(t_uint256,t_bool)",
             "src": "JCompoundStorage.sol:56"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "incentivesControllerAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:66"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "stakeCounterTrA",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_uint256))",
+            "src": "JCompoundStorage.sol:69"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "stakeCounterTrB",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_uint256))",
+            "src": "JCompoundStorage.sol:70"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "stakingDetailsTrancheA",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_mapping(t_uint256,t_struct(StakingDetails)3643_storage)))",
+            "src": "JCompoundStorage.sol:72"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "stakingDetailsTrancheB",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_mapping(t_uint256,t_struct(StakingDetails)3643_storage)))",
+            "src": "JCompoundStorage.sol:73"
           }
         ],
         "types": {
           "t_address": {
             "label": "address"
           },
+          "t_mapping(t_address,t_mapping(t_uint256,t_uint256))": {
+            "label": "mapping(address => mapping(uint256 => uint256))"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)"
+          },
           "t_uint256": {
             "label": "uint256"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_mapping(t_uint256,t_struct(StakingDetails)3643_storage)))": {
+            "label": "mapping(address => mapping(uint256 => mapping(uint256 => struct JCompoundStorageV2.StakingDetails)))"
+          },
+          "t_mapping(t_uint256,t_mapping(t_uint256,t_struct(StakingDetails)3643_storage))": {
+            "label": "mapping(uint256 => mapping(uint256 => struct JCompoundStorageV2.StakingDetails))"
+          },
+          "t_mapping(t_uint256,t_struct(StakingDetails)3643_storage)": {
+            "label": "mapping(uint256 => struct JCompoundStorageV2.StakingDetails)"
+          },
+          "t_struct(StakingDetails)3643_storage": {
+            "label": "struct JCompoundStorageV2.StakingDetails",
+            "members": [
+              {
+                "label": "startTime",
+                "type": "t_uint256"
+              },
+              {
+                "label": "amount",
+                "type": "t_uint256"
+              }
+            ]
           },
           "t_uint32": {
             "label": "uint32"
@@ -169,10 +227,10 @@
           "t_mapping(t_address,t_address)": {
             "label": "mapping(address => address)"
           },
-          "t_mapping(t_uint256,t_struct(TrancheAddresses)3186_storage)": {
+          "t_mapping(t_uint256,t_struct(TrancheAddresses)3578_storage)": {
             "label": "mapping(uint256 => struct JCompoundStorage.TrancheAddresses)"
           },
-          "t_struct(TrancheAddresses)3186_storage": {
+          "t_struct(TrancheAddresses)3578_storage": {
             "label": "struct JCompoundStorage.TrancheAddresses",
             "members": [
               {
@@ -193,10 +251,10 @@
               }
             ]
           },
-          "t_mapping(t_uint256,t_struct(TrancheParameters)3201_storage)": {
+          "t_mapping(t_uint256,t_struct(TrancheParameters)3593_storage)": {
             "label": "mapping(uint256 => struct JCompoundStorage.TrancheParameters)"
           },
-          "t_struct(TrancheParameters)3201_storage": {
+          "t_struct(TrancheParameters)3593_storage": {
             "label": "struct JCompoundStorage.TrancheParameters",
             "members": [
               {
@@ -238,10 +296,10 @@
           "t_mapping(t_address,t_uint256)": {
             "label": "mapping(address => uint256)"
           },
-          "t_contract(ICEth)5190": {
+          "t_contract(ICEth)5620": {
             "label": "contract ICEth"
           },
-          "t_contract(IETHGateway)5303": {
+          "t_contract(IETHGateway)5733": {
             "label": "contract IETHGateway"
           },
           "t_mapping(t_uint256,t_bool)": {
