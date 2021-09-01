@@ -1,6 +1,7 @@
 {
   "manifestVersion": "3.2",
   "admin": {
+
     "address": "0xA183F2503AD698A16a6286623b67Cc7b36585Ec0",
     "txHash": "0x29cf9ee7324582ec2e3a52bdcfb4760867245b7d1d76eaeef5959b238e76111b"
   },
@@ -13,6 +14,7 @@
     {
       "address": "0xE739d3BF31D497FDc89484F66b5eD81d6de3F0F1",
       "txHash": "0x6b95be45ebadd97e8736e79b6833b7f82386d073dd24414b658f76f1458bd269",
+
       "kind": "transparent"
     }
   ],
@@ -840,6 +842,7 @@
           {
             "contract": "JCompoundStorage",
             "label": "ethGateway",
+
             "type": "t_contract(IETHGateway)5741",
             "src": "JCompoundStorage.sol:53"
           },
@@ -949,6 +952,7 @@
             "label": "mapping(uint256 => struct JCompoundStorage.TrancheAddresses)"
           },
           "t_struct(TrancheAddresses)3578_storage": {
+
             "label": "struct JCompoundStorage.TrancheAddresses",
             "members": [
               {
@@ -969,6 +973,7 @@
               }
             ]
           },
+
           "t_mapping(t_uint256,t_struct(TrancheParameters)3593_storage)": {
             "label": "mapping(uint256 => struct JCompoundStorage.TrancheParameters)"
           },
