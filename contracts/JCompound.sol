@@ -173,50 +173,6 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
         trancheParameters[_trancheNum].underlyingDecimals = _underlyingDec;
     }
 
-/*
-    /**
-     * @dev set how many blocks will be produced per year on the blockchain 
-     * @param _newValue new value (Compound blocksPerYear = 2102400)
-     */
-/*    function setBlocksPerYear(uint256 _newValue) external onlyAdmins {
-        totalBlocksPerYear = _newValue;
-    }
-
-    /**
-     * @dev set tranche redemption percentage
-     * @param _trancheNum tranche number
-     * @param _redeemPercent user redemption percent
-     */
-/*    function setTrancheRedemptionPercentage(uint256 _trancheNum, uint16 _redeemPercent) external onlyAdmins {
-        trancheParameters[_trancheNum].redemptionPercentage = _redeemPercent;
-    }
-
-    /**
-     * @dev set redemption timeout
-     * @param _blockNum timeout (in block numbers)
-     */
-/*    function setRedemptionTimeout(uint32 _blockNum) external onlyAdmins {
-        redeemTimeout = _blockNum;
-    }
-
-    /**
-     * @dev get Tranche A exchange rate
-     * @param _trancheNum tranche number
-     * @return tranche A token stored price
-     */
-/*    function getTrancheAExchangeRate(uint256 _trancheNum) public view returns (uint256) {
-        return trancheParameters[_trancheNum].storedTrancheAPrice;
-    }
-
-    /**
-     * @dev get RPB for a given percentage (expressed in 1e18)
-     * @param _trancheNum tranche number
-     * @return RPB for a fixed percentage
-     */
-/*    function getTrancheACurrentRPB(uint256 _trancheNum) external view returns (uint256) {
-        return trancheParameters[_trancheNum].trancheACurrentRPB;
-    }
-*/
     /**
      * @dev set tranche A fixed percentage (scaled by 1e18)
      * @param _trancheNum tranche number
@@ -257,7 +213,6 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
         trancheParameters[tranchePairsCounter].trancheALastActionBlock = block.number;
         // if we would like to have always 18 decimals
         trancheParameters[tranchePairsCounter].storedTrancheAPrice = 
-            // getCompoundPrice(tranchePairsCounter);
             IJCompoundHelper(jCompoundHelperAddress).getCompoundPriceHelper(cTokenContracts[_erc20Contract], _underlyingDec, _cTokenDec);
 
         trancheParameters[tranchePairsCounter].redemptionPercentage = 9950;  //default value 99.5%
@@ -287,10 +242,9 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
     function sendErc20ToCompound(address _erc20Contract, uint256 _numTokensToSupply) internal returns(uint256) {
         address cTokenAddress = cTokenContracts[_erc20Contract];
         require(cTokenAddress != address(0), "!Accept");
-        // i.e. DAI contract, on Kovan: 0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa
+
         IERC20Upgradeable underlying = IERC20Upgradeable(_erc20Contract);
 
-        // i.e. cDAI contract, on Kovan: 0xf0d0eb522cfa50b716b3b1604c4f0fa6f04376ad
         ICErc20 cToken = ICErc20(cTokenAddress);
 
         SafeERC20Upgradeable.safeApprove(underlying, cTokenAddress, _numTokensToSupply);
@@ -309,7 +263,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
     function redeemCErc20Tokens(address _erc20Contract, uint256 _amount, bool _redeemType) internal returns (uint256 redeemResult) {
         address cTokenAddress = cTokenContracts[_erc20Contract];
         require(cTokenAddress != address(0),  "!Accept");
-        // i.e. cDAI contract, on Kovan: 0xf0d0eb522cfa50b716b3b1604c4f0fa6f04376ad
+
         ICErc20 cToken = ICErc20(cTokenAddress);
 
         if (_redeemType) {
@@ -383,17 +337,14 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
      * @return tranche total value in underlying tokens
      */
     function getTotalValue(uint256 _trancheNum) public view returns (uint256) {
-        // uint256 compNormPrice = getCompoundPrice(_trancheNum);
         address cTokenAddress = trancheAddresses[_trancheNum].cTokenAddress;
         uint256 underDecs = uint256(trancheParameters[_trancheNum].underlyingDecimals);
         uint256 cTokenDecs = uint256(trancheParameters[_trancheNum].cTokenDecimals);
         uint256 compNormPrice = IJCompoundHelper(jCompoundHelperAddress).getCompoundPriceHelper(cTokenAddress, underDecs, cTokenDecs);
-        // uint256 mantissa = getMantissaHelper(_trancheNum);
         uint256 mantissa = IJCompoundHelper(jCompoundHelperAddress).getMantissaHelper(underDecs, cTokenDecs);
         if (mantissa < 18) {
             compNormPrice = compNormPrice.div(10 ** (uint256(18).sub(mantissa)));
         } else {
-            // compNormPrice = getCompoundPurePrice(_trancheNum);
             compNormPrice = IJCompoundHelper(jCompoundHelperAddress).getCompoundPurePriceHelper(cTokenAddress);
         }
         uint256 totProtSupply = getTokenBalance(trancheAddresses[_trancheNum].cTokenAddress);
@@ -867,9 +818,5 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
             SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(compTokenAddress), _receiver, amount);
         }
     }
-
-    // function emergencyRemoveTokensFromTranche(address _trancheAddress, address _token, address _receiver, uint256 _amount) external onlyAdmins nonReentrant {
-    //     IJTrancheTokens(_trancheAddress).emergencyTokenTransfer(_token, _receiver, _amount);
-    // } 
 
 }

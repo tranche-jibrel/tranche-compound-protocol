@@ -150,7 +150,7 @@ Tests performed on Kovan with the following already present contracts that can b
         </tr>
         <tr>
             <td>JCompoundStorageV2</td>
-            <td><code>2.30</code></td>
+            <td><code>2.20</code></td>
             <td>Core contract protocol V2 (storage)</td>
         </tr>
         <tr>
