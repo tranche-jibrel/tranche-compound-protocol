@@ -9,6 +9,11 @@
       "address": "0x3f8D803c230d15aEd9D00B1c08932064931B62A1",
       "txHash": "0x4b564d8142d9fe80aa4ebca3cb917f0844d13c303e53972636e19f933ec39bfa",
       "kind": "transparent"
+    },
+    {
+      "address": "0xE739d3BF31D497FDc89484F66b5eD81d6de3F0F1",
+      "txHash": "0x6b95be45ebadd97e8736e79b6833b7f82386d073dd24414b658f76f1458bd269",
+      "kind": "transparent"
     }
   ],
   "impls": {
@@ -313,6 +318,61 @@
           },
           "t_array(t_uint256)50_storage": {
             "label": "uint256[50]"
+          }
+        }
+      }
+    },
+    "8c722cf9e1e28d5aaf15021a38c150c4e5777b2f6025eb4a102555a3b5a9bfb9": {
+      "address": "0x0ED7EFdAc16475a34f5CE7EA2F90515aE3542572",
+      "txHash": "0xe94ecfe5c22f73b34a375089f53f81bd4e852820cf3109aee770306f3a75d005",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:25"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:30"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "../@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:20"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:74"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          },
+          "t_bool": {
+            "label": "bool"
           }
         }
       }
