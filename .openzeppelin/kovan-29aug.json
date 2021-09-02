@@ -1,322 +1,1368 @@
 {
-    "manifestVersion": "3.2",
-    "admin": {
-      "address": "0xA183F2503AD698A16a6286623b67Cc7b36585Ec0",
-      "txHash": "0x29cf9ee7324582ec2e3a52bdcfb4760867245b7d1d76eaeef5959b238e76111b"
+  "manifestVersion": "3.2",
+  "admin": {
+    "address": "0xA183F2503AD698A16a6286623b67Cc7b36585Ec0",
+    "txHash": "0x29cf9ee7324582ec2e3a52bdcfb4760867245b7d1d76eaeef5959b238e76111b"
+  },
+  "proxies": [
+    {
+      "address": "0x3f8D803c230d15aEd9D00B1c08932064931B62A1",
+      "txHash": "0x4b564d8142d9fe80aa4ebca3cb917f0844d13c303e53972636e19f933ec39bfa",
+      "kind": "transparent"
     },
-    "proxies": [
-      {
-        "address": "0x3f8D803c230d15aEd9D00B1c08932064931B62A1",
-        "txHash": "0x4b564d8142d9fe80aa4ebca3cb917f0844d13c303e53972636e19f933ec39bfa",
-        "kind": "transparent"
+    {
+      "address": "0xE739d3BF31D497FDc89484F66b5eD81d6de3F0F1",
+      "txHash": "0x6b95be45ebadd97e8736e79b6833b7f82386d073dd24414b658f76f1458bd269",
+      "kind": "transparent"
+    }
+  ],
+  "impls": {
+    "ce7e31274b1515a59490b3a48c204d1e0318c68f96c182ed3ba15687ffcc75ef": {
+      "address": "0xf7630bC18f9975c356173f9422B438EE3ab8BbFC",
+      "txHash": "0x24979e08207ec0f47ef3f239ef59017fc834672e6a023c95db29152cea4f17ad",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:25"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:30"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "../@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:20"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:74"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeable",
+            "label": "_status",
+            "type": "t_uint256",
+            "src": "../@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:37"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:67"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "adminToolsAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:35"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "feesCollectorAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:36"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "tranchesDeployerAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:37"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "compTokenAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:38"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "comptrollerAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:39"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "rewardsToken",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:40"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "tranchePairsCounter",
+            "type": "t_uint256",
+            "src": "JCompoundStorage.sol:42"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "totalBlocksPerYear",
+            "type": "t_uint256",
+            "src": "JCompoundStorage.sol:43"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "redeemTimeout",
+            "type": "t_uint32",
+            "src": "JCompoundStorage.sol:44"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "cTokenContracts",
+            "type": "t_mapping(t_address,t_address)",
+            "src": "JCompoundStorage.sol:46"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "trancheAddresses",
+            "type": "t_mapping(t_uint256,t_struct(TrancheAddresses)3578_storage)",
+            "src": "JCompoundStorage.sol:47"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "trancheParameters",
+            "type": "t_mapping(t_uint256,t_struct(TrancheParameters)3593_storage)",
+            "src": "JCompoundStorage.sol:48"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "lastActivity",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "JCompoundStorage.sol:50"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "cEthToken",
+            "type": "t_contract(ICEth)5620",
+            "src": "JCompoundStorage.sol:52"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "ethGateway",
+            "type": "t_contract(IETHGateway)5733",
+            "src": "JCompoundStorage.sol:53"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "trancheDepositEnabled",
+            "type": "t_mapping(t_uint256,t_bool)",
+            "src": "JCompoundStorage.sol:56"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "incentivesControllerAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:66"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "stakeCounterTrA",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_uint256))",
+            "src": "JCompoundStorage.sol:69"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "stakeCounterTrB",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_uint256))",
+            "src": "JCompoundStorage.sol:70"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "stakingDetailsTrancheA",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_mapping(t_uint256,t_struct(StakingDetails)3643_storage)))",
+            "src": "JCompoundStorage.sol:72"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "stakingDetailsTrancheB",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_mapping(t_uint256,t_struct(StakingDetails)3643_storage)))",
+            "src": "JCompoundStorage.sol:73"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_uint256))": {
+            "label": "mapping(address => mapping(uint256 => uint256))"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_mapping(t_uint256,t_struct(StakingDetails)3643_storage)))": {
+            "label": "mapping(address => mapping(uint256 => mapping(uint256 => struct JCompoundStorageV2.StakingDetails)))"
+          },
+          "t_mapping(t_uint256,t_mapping(t_uint256,t_struct(StakingDetails)3643_storage))": {
+            "label": "mapping(uint256 => mapping(uint256 => struct JCompoundStorageV2.StakingDetails))"
+          },
+          "t_mapping(t_uint256,t_struct(StakingDetails)3643_storage)": {
+            "label": "mapping(uint256 => struct JCompoundStorageV2.StakingDetails)"
+          },
+          "t_struct(StakingDetails)3643_storage": {
+            "label": "struct JCompoundStorageV2.StakingDetails",
+            "members": [
+              {
+                "label": "startTime",
+                "type": "t_uint256"
+              },
+              {
+                "label": "amount",
+                "type": "t_uint256"
+              }
+            ]
+          },
+          "t_uint32": {
+            "label": "uint32"
+          },
+          "t_mapping(t_address,t_address)": {
+            "label": "mapping(address => address)"
+          },
+          "t_mapping(t_uint256,t_struct(TrancheAddresses)3578_storage)": {
+            "label": "mapping(uint256 => struct JCompoundStorage.TrancheAddresses)"
+          },
+          "t_struct(TrancheAddresses)3578_storage": {
+            "label": "struct JCompoundStorage.TrancheAddresses",
+            "members": [
+              {
+                "label": "buyerCoinAddress",
+                "type": "t_address"
+              },
+              {
+                "label": "cTokenAddress",
+                "type": "t_address"
+              },
+              {
+                "label": "ATrancheAddress",
+                "type": "t_address"
+              },
+              {
+                "label": "BTrancheAddress",
+                "type": "t_address"
+              }
+            ]
+          },
+          "t_mapping(t_uint256,t_struct(TrancheParameters)3593_storage)": {
+            "label": "mapping(uint256 => struct JCompoundStorage.TrancheParameters)"
+          },
+          "t_struct(TrancheParameters)3593_storage": {
+            "label": "struct JCompoundStorage.TrancheParameters",
+            "members": [
+              {
+                "label": "trancheAFixedPercentage",
+                "type": "t_uint256"
+              },
+              {
+                "label": "trancheALastActionBlock",
+                "type": "t_uint256"
+              },
+              {
+                "label": "storedTrancheAPrice",
+                "type": "t_uint256"
+              },
+              {
+                "label": "trancheACurrentRPB",
+                "type": "t_uint256"
+              },
+              {
+                "label": "redemptionPercentage",
+                "type": "t_uint16"
+              },
+              {
+                "label": "cTokenDecimals",
+                "type": "t_uint8"
+              },
+              {
+                "label": "underlyingDecimals",
+                "type": "t_uint8"
+              }
+            ]
+          },
+          "t_uint16": {
+            "label": "uint16"
+          },
+          "t_uint8": {
+            "label": "uint8"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_contract(ICEth)5620": {
+            "label": "contract ICEth"
+          },
+          "t_contract(IETHGateway)5733": {
+            "label": "contract IETHGateway"
+          },
+          "t_mapping(t_uint256,t_bool)": {
+            "label": "mapping(uint256 => bool)"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
       }
-    ],
-    "impls": {
-      "ce7e31274b1515a59490b3a48c204d1e0318c68f96c182ed3ba15687ffcc75ef": {
-        "address": "0xf7630bC18f9975c356173f9422B438EE3ab8BbFC",
-        "txHash": "0x24979e08207ec0f47ef3f239ef59017fc834672e6a023c95db29152cea4f17ad",
-        "layout": {
-          "storage": [
-            {
-              "contract": "Initializable",
-              "label": "_initialized",
-              "type": "t_bool",
-              "src": "../@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:25"
-            },
-            {
-              "contract": "Initializable",
-              "label": "_initializing",
-              "type": "t_bool",
-              "src": "../@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:30"
-            },
-            {
-              "contract": "ContextUpgradeable",
-              "label": "__gap",
-              "type": "t_array(t_uint256)50_storage",
-              "src": "../@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
-            },
-            {
-              "contract": "OwnableUpgradeable",
-              "label": "_owner",
-              "type": "t_address",
-              "src": "../@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:20"
-            },
-            {
-              "contract": "OwnableUpgradeable",
-              "label": "__gap",
-              "type": "t_array(t_uint256)49_storage",
-              "src": "../@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:74"
-            },
-            {
-              "contract": "ReentrancyGuardUpgradeable",
-              "label": "_status",
-              "type": "t_uint256",
-              "src": "../@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:37"
-            },
-            {
-              "contract": "ReentrancyGuardUpgradeable",
-              "label": "__gap",
-              "type": "t_array(t_uint256)49_storage",
-              "src": "../@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:67"
-            },
-            {
-              "contract": "JCompoundStorage",
-              "label": "adminToolsAddress",
-              "type": "t_address",
-              "src": "JCompoundStorage.sol:35"
-            },
-            {
-              "contract": "JCompoundStorage",
-              "label": "feesCollectorAddress",
-              "type": "t_address",
-              "src": "JCompoundStorage.sol:36"
-            },
-            {
-              "contract": "JCompoundStorage",
-              "label": "tranchesDeployerAddress",
-              "type": "t_address",
-              "src": "JCompoundStorage.sol:37"
-            },
-            {
-              "contract": "JCompoundStorage",
-              "label": "compTokenAddress",
-              "type": "t_address",
-              "src": "JCompoundStorage.sol:38"
-            },
-            {
-              "contract": "JCompoundStorage",
-              "label": "comptrollerAddress",
-              "type": "t_address",
-              "src": "JCompoundStorage.sol:39"
-            },
-            {
-              "contract": "JCompoundStorage",
-              "label": "rewardsToken",
-              "type": "t_address",
-              "src": "JCompoundStorage.sol:40"
-            },
-            {
-              "contract": "JCompoundStorage",
-              "label": "tranchePairsCounter",
-              "type": "t_uint256",
-              "src": "JCompoundStorage.sol:42"
-            },
-            {
-              "contract": "JCompoundStorage",
-              "label": "totalBlocksPerYear",
-              "type": "t_uint256",
-              "src": "JCompoundStorage.sol:43"
-            },
-            {
-              "contract": "JCompoundStorage",
-              "label": "redeemTimeout",
-              "type": "t_uint32",
-              "src": "JCompoundStorage.sol:44"
-            },
-            {
-              "contract": "JCompoundStorage",
-              "label": "cTokenContracts",
-              "type": "t_mapping(t_address,t_address)",
-              "src": "JCompoundStorage.sol:46"
-            },
-            {
-              "contract": "JCompoundStorage",
-              "label": "trancheAddresses",
-              "type": "t_mapping(t_uint256,t_struct(TrancheAddresses)3578_storage)",
-              "src": "JCompoundStorage.sol:47"
-            },
-            {
-              "contract": "JCompoundStorage",
-              "label": "trancheParameters",
-              "type": "t_mapping(t_uint256,t_struct(TrancheParameters)3593_storage)",
-              "src": "JCompoundStorage.sol:48"
-            },
-            {
-              "contract": "JCompoundStorage",
-              "label": "lastActivity",
-              "type": "t_mapping(t_address,t_uint256)",
-              "src": "JCompoundStorage.sol:50"
-            },
-            {
-              "contract": "JCompoundStorage",
-              "label": "cEthToken",
-              "type": "t_contract(ICEth)5620",
-              "src": "JCompoundStorage.sol:52"
-            },
-            {
-              "contract": "JCompoundStorage",
-              "label": "ethGateway",
-              "type": "t_contract(IETHGateway)5733",
-              "src": "JCompoundStorage.sol:53"
-            },
-            {
-              "contract": "JCompoundStorage",
-              "label": "trancheDepositEnabled",
-              "type": "t_mapping(t_uint256,t_bool)",
-              "src": "JCompoundStorage.sol:56"
-            },
-            {
-              "contract": "JCompoundStorageV2",
-              "label": "incentivesControllerAddress",
-              "type": "t_address",
-              "src": "JCompoundStorage.sol:66"
-            },
-            {
-              "contract": "JCompoundStorageV2",
-              "label": "stakeCounterTrA",
-              "type": "t_mapping(t_address,t_mapping(t_uint256,t_uint256))",
-              "src": "JCompoundStorage.sol:69"
-            },
-            {
-              "contract": "JCompoundStorageV2",
-              "label": "stakeCounterTrB",
-              "type": "t_mapping(t_address,t_mapping(t_uint256,t_uint256))",
-              "src": "JCompoundStorage.sol:70"
-            },
-            {
-              "contract": "JCompoundStorageV2",
-              "label": "stakingDetailsTrancheA",
-              "type": "t_mapping(t_address,t_mapping(t_uint256,t_mapping(t_uint256,t_struct(StakingDetails)3643_storage)))",
-              "src": "JCompoundStorage.sol:72"
-            },
-            {
-              "contract": "JCompoundStorageV2",
-              "label": "stakingDetailsTrancheB",
-              "type": "t_mapping(t_address,t_mapping(t_uint256,t_mapping(t_uint256,t_struct(StakingDetails)3643_storage)))",
-              "src": "JCompoundStorage.sol:73"
-            }
-          ],
-          "types": {
-            "t_address": {
-              "label": "address"
-            },
-            "t_mapping(t_address,t_mapping(t_uint256,t_uint256))": {
-              "label": "mapping(address => mapping(uint256 => uint256))"
-            },
-            "t_mapping(t_uint256,t_uint256)": {
-              "label": "mapping(uint256 => uint256)"
-            },
-            "t_uint256": {
-              "label": "uint256"
-            },
-            "t_mapping(t_address,t_mapping(t_uint256,t_mapping(t_uint256,t_struct(StakingDetails)3643_storage)))": {
-              "label": "mapping(address => mapping(uint256 => mapping(uint256 => struct JCompoundStorageV2.StakingDetails)))"
-            },
-            "t_mapping(t_uint256,t_mapping(t_uint256,t_struct(StakingDetails)3643_storage))": {
-              "label": "mapping(uint256 => mapping(uint256 => struct JCompoundStorageV2.StakingDetails))"
-            },
-            "t_mapping(t_uint256,t_struct(StakingDetails)3643_storage)": {
-              "label": "mapping(uint256 => struct JCompoundStorageV2.StakingDetails)"
-            },
-            "t_struct(StakingDetails)3643_storage": {
-              "label": "struct JCompoundStorageV2.StakingDetails",
-              "members": [
-                {
-                  "label": "startTime",
-                  "type": "t_uint256"
-                },
-                {
-                  "label": "amount",
-                  "type": "t_uint256"
-                }
-              ]
-            },
-            "t_uint32": {
-              "label": "uint32"
-            },
-            "t_mapping(t_address,t_address)": {
-              "label": "mapping(address => address)"
-            },
-            "t_mapping(t_uint256,t_struct(TrancheAddresses)3578_storage)": {
-              "label": "mapping(uint256 => struct JCompoundStorage.TrancheAddresses)"
-            },
-            "t_struct(TrancheAddresses)3578_storage": {
-              "label": "struct JCompoundStorage.TrancheAddresses",
-              "members": [
-                {
-                  "label": "buyerCoinAddress",
-                  "type": "t_address"
-                },
-                {
-                  "label": "cTokenAddress",
-                  "type": "t_address"
-                },
-                {
-                  "label": "ATrancheAddress",
-                  "type": "t_address"
-                },
-                {
-                  "label": "BTrancheAddress",
-                  "type": "t_address"
-                }
-              ]
-            },
-            "t_mapping(t_uint256,t_struct(TrancheParameters)3593_storage)": {
-              "label": "mapping(uint256 => struct JCompoundStorage.TrancheParameters)"
-            },
-            "t_struct(TrancheParameters)3593_storage": {
-              "label": "struct JCompoundStorage.TrancheParameters",
-              "members": [
-                {
-                  "label": "trancheAFixedPercentage",
-                  "type": "t_uint256"
-                },
-                {
-                  "label": "trancheALastActionBlock",
-                  "type": "t_uint256"
-                },
-                {
-                  "label": "storedTrancheAPrice",
-                  "type": "t_uint256"
-                },
-                {
-                  "label": "trancheACurrentRPB",
-                  "type": "t_uint256"
-                },
-                {
-                  "label": "redemptionPercentage",
-                  "type": "t_uint16"
-                },
-                {
-                  "label": "cTokenDecimals",
-                  "type": "t_uint8"
-                },
-                {
-                  "label": "underlyingDecimals",
-                  "type": "t_uint8"
-                }
-              ]
-            },
-            "t_uint16": {
-              "label": "uint16"
-            },
-            "t_uint8": {
-              "label": "uint8"
-            },
-            "t_mapping(t_address,t_uint256)": {
-              "label": "mapping(address => uint256)"
-            },
-            "t_contract(ICEth)5620": {
-              "label": "contract ICEth"
-            },
-            "t_contract(IETHGateway)5733": {
-              "label": "contract IETHGateway"
-            },
-            "t_mapping(t_uint256,t_bool)": {
-              "label": "mapping(uint256 => bool)"
-            },
-            "t_bool": {
-              "label": "bool"
-            },
-            "t_array(t_uint256)49_storage": {
-              "label": "uint256[49]"
-            },
-            "t_array(t_uint256)50_storage": {
-              "label": "uint256[50]"
-            }
+    },
+    "8c722cf9e1e28d5aaf15021a38c150c4e5777b2f6025eb4a102555a3b5a9bfb9": {
+      "address": "0x0ED7EFdAc16475a34f5CE7EA2F90515aE3542572",
+      "txHash": "0xe94ecfe5c22f73b34a375089f53f81bd4e852820cf3109aee770306f3a75d005",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:25"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:30"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "../@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:20"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:74"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          },
+          "t_bool": {
+            "label": "bool"
+          }
+        }
+      }
+    },
+    "26ade54125c98023c55aef231872781b63a59ab591b47365be49fd547aebc583": {
+      "address": "0x30dDF23CAaD4CEb0EBaCDB906A34726bea15a359",
+      "txHash": "0x2d9d4270d5ae0d49671d14634b41403c99397bb5a1d5af9827f00bcb788ff2cc",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:25"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:30"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "../@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:20"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:74"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeable",
+            "label": "_status",
+            "type": "t_uint256",
+            "src": "../@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:37"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:67"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "adminToolsAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:35"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "feesCollectorAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:36"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "tranchesDeployerAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:37"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "compTokenAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:38"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "comptrollerAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:39"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "rewardsToken",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:40"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "tranchePairsCounter",
+            "type": "t_uint256",
+            "src": "JCompoundStorage.sol:42"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "totalBlocksPerYear",
+            "type": "t_uint256",
+            "src": "JCompoundStorage.sol:43"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "redeemTimeout",
+            "type": "t_uint32",
+            "src": "JCompoundStorage.sol:44"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "cTokenContracts",
+            "type": "t_mapping(t_address,t_address)",
+            "src": "JCompoundStorage.sol:46"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "trancheAddresses",
+            "type": "t_mapping(t_uint256,t_struct(TrancheAddresses)3553_storage)",
+            "src": "JCompoundStorage.sol:47"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "trancheParameters",
+            "type": "t_mapping(t_uint256,t_struct(TrancheParameters)3568_storage)",
+            "src": "JCompoundStorage.sol:48"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "lastActivity",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "JCompoundStorage.sol:50"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "cEthToken",
+            "type": "t_contract(ICEth)5603",
+            "src": "JCompoundStorage.sol:52"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "ethGateway",
+            "type": "t_contract(IETHGateway)5716",
+            "src": "JCompoundStorage.sol:53"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "trancheDepositEnabled",
+            "type": "t_mapping(t_uint256,t_bool)",
+            "src": "JCompoundStorage.sol:56"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "incentivesControllerAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:66"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "stakeCounterTrA",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_uint256))",
+            "src": "JCompoundStorage.sol:69"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "stakeCounterTrB",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_uint256))",
+            "src": "JCompoundStorage.sol:70"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "stakingDetailsTrancheA",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_mapping(t_uint256,t_struct(StakingDetails)3618_storage)))",
+            "src": "JCompoundStorage.sol:72"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "stakingDetailsTrancheB",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_mapping(t_uint256,t_struct(StakingDetails)3618_storage)))",
+            "src": "JCompoundStorage.sol:73"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "jCompoundHelperAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:75"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "REDEMPTION_PERCENT",
+            "type": "t_uint256",
+            "src": "JCompoundStorage.sol:76"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "REDEMPTION_TIMEOUT",
+            "type": "t_uint256",
+            "src": "JCompoundStorage.sol:77"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "BLOCKS_PER_YEAR",
+            "type": "t_uint256",
+            "src": "JCompoundStorage.sol:78"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_uint256))": {
+            "label": "mapping(address => mapping(uint256 => uint256))"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_mapping(t_uint256,t_struct(StakingDetails)3618_storage)))": {
+            "label": "mapping(address => mapping(uint256 => mapping(uint256 => struct JCompoundStorageV2.StakingDetails)))"
+          },
+          "t_mapping(t_uint256,t_mapping(t_uint256,t_struct(StakingDetails)3618_storage))": {
+            "label": "mapping(uint256 => mapping(uint256 => struct JCompoundStorageV2.StakingDetails))"
+          },
+          "t_mapping(t_uint256,t_struct(StakingDetails)3618_storage)": {
+            "label": "mapping(uint256 => struct JCompoundStorageV2.StakingDetails)"
+          },
+          "t_struct(StakingDetails)3618_storage": {
+            "label": "struct JCompoundStorageV2.StakingDetails",
+            "members": [
+              {
+                "label": "startTime",
+                "type": "t_uint256"
+              },
+              {
+                "label": "amount",
+                "type": "t_uint256"
+              }
+            ]
+          },
+          "t_uint32": {
+            "label": "uint32"
+          },
+          "t_mapping(t_address,t_address)": {
+            "label": "mapping(address => address)"
+          },
+          "t_mapping(t_uint256,t_struct(TrancheAddresses)3553_storage)": {
+            "label": "mapping(uint256 => struct JCompoundStorage.TrancheAddresses)"
+          },
+          "t_struct(TrancheAddresses)3553_storage": {
+            "label": "struct JCompoundStorage.TrancheAddresses",
+            "members": [
+              {
+                "label": "buyerCoinAddress",
+                "type": "t_address"
+              },
+              {
+                "label": "cTokenAddress",
+                "type": "t_address"
+              },
+              {
+                "label": "ATrancheAddress",
+                "type": "t_address"
+              },
+              {
+                "label": "BTrancheAddress",
+                "type": "t_address"
+              }
+            ]
+          },
+          "t_mapping(t_uint256,t_struct(TrancheParameters)3568_storage)": {
+            "label": "mapping(uint256 => struct JCompoundStorage.TrancheParameters)"
+          },
+          "t_struct(TrancheParameters)3568_storage": {
+            "label": "struct JCompoundStorage.TrancheParameters",
+            "members": [
+              {
+                "label": "trancheAFixedPercentage",
+                "type": "t_uint256"
+              },
+              {
+                "label": "trancheALastActionBlock",
+                "type": "t_uint256"
+              },
+              {
+                "label": "storedTrancheAPrice",
+                "type": "t_uint256"
+              },
+              {
+                "label": "trancheACurrentRPB",
+                "type": "t_uint256"
+              },
+              {
+                "label": "redemptionPercentage",
+                "type": "t_uint16"
+              },
+              {
+                "label": "cTokenDecimals",
+                "type": "t_uint8"
+              },
+              {
+                "label": "underlyingDecimals",
+                "type": "t_uint8"
+              }
+            ]
+          },
+          "t_uint16": {
+            "label": "uint16"
+          },
+          "t_uint8": {
+            "label": "uint8"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_contract(ICEth)5603": {
+            "label": "contract ICEth"
+          },
+          "t_contract(IETHGateway)5716": {
+            "label": "contract IETHGateway"
+          },
+          "t_mapping(t_uint256,t_bool)": {
+            "label": "mapping(uint256 => bool)"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    },
+    "a93dbe199a61457c679e6d9e12eab5f392070289b69099d0a73d9c266c31ac1a": {
+      "address": "0x7F30974c98eb6eab69790c878D49eE93FA7BaC1c",
+      "txHash": "0x2a7ea5a700d9ebcbee2911f910fa064296dbaf8be527b9d50672869c6882bfc4",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:25"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:30"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "../@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:20"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:74"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeable",
+            "label": "_status",
+            "type": "t_uint256",
+            "src": "../@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:37"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:67"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "adminToolsAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:35"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "feesCollectorAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:36"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "tranchesDeployerAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:37"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "compTokenAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:38"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "comptrollerAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:39"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "rewardsToken",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:40"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "tranchePairsCounter",
+            "type": "t_uint256",
+            "src": "JCompoundStorage.sol:42"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "totalBlocksPerYear",
+            "type": "t_uint256",
+            "src": "JCompoundStorage.sol:43"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "redeemTimeout",
+            "type": "t_uint32",
+            "src": "JCompoundStorage.sol:44"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "cTokenContracts",
+            "type": "t_mapping(t_address,t_address)",
+            "src": "JCompoundStorage.sol:46"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "trancheAddresses",
+            "type": "t_mapping(t_uint256,t_struct(TrancheAddresses)3578_storage)",
+            "src": "JCompoundStorage.sol:47"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "trancheParameters",
+            "type": "t_mapping(t_uint256,t_struct(TrancheParameters)3593_storage)",
+            "src": "JCompoundStorage.sol:48"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "lastActivity",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "JCompoundStorage.sol:50"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "cEthToken",
+            "type": "t_contract(ICEth)5628",
+            "src": "JCompoundStorage.sol:52"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "ethGateway",
+            "type": "t_contract(IETHGateway)5741",
+            "src": "JCompoundStorage.sol:53"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "trancheDepositEnabled",
+            "type": "t_mapping(t_uint256,t_bool)",
+            "src": "JCompoundStorage.sol:56"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "incentivesControllerAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:66"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "stakeCounterTrA",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_uint256))",
+            "src": "JCompoundStorage.sol:69"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "stakeCounterTrB",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_uint256))",
+            "src": "JCompoundStorage.sol:70"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "stakingDetailsTrancheA",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_mapping(t_uint256,t_struct(StakingDetails)3643_storage)))",
+            "src": "JCompoundStorage.sol:72"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "stakingDetailsTrancheB",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_mapping(t_uint256,t_struct(StakingDetails)3643_storage)))",
+            "src": "JCompoundStorage.sol:73"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "jCompoundHelperAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:75"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "REDEMPTION_PERCENT",
+            "type": "t_uint256",
+            "src": "JCompoundStorage.sol:76"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "REDEMPTION_TIMEOUT",
+            "type": "t_uint256",
+            "src": "JCompoundStorage.sol:77"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "BLOCKS_PER_YEAR",
+            "type": "t_uint256",
+            "src": "JCompoundStorage.sol:78"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_uint256))": {
+            "label": "mapping(address => mapping(uint256 => uint256))"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_mapping(t_uint256,t_struct(StakingDetails)3643_storage)))": {
+            "label": "mapping(address => mapping(uint256 => mapping(uint256 => struct JCompoundStorageV2.StakingDetails)))"
+          },
+          "t_mapping(t_uint256,t_mapping(t_uint256,t_struct(StakingDetails)3643_storage))": {
+            "label": "mapping(uint256 => mapping(uint256 => struct JCompoundStorageV2.StakingDetails))"
+          },
+          "t_mapping(t_uint256,t_struct(StakingDetails)3643_storage)": {
+            "label": "mapping(uint256 => struct JCompoundStorageV2.StakingDetails)"
+          },
+          "t_struct(StakingDetails)3643_storage": {
+            "label": "struct JCompoundStorageV2.StakingDetails",
+            "members": [
+              {
+                "label": "startTime",
+                "type": "t_uint256"
+              },
+              {
+                "label": "amount",
+                "type": "t_uint256"
+              }
+            ]
+          },
+          "t_uint32": {
+            "label": "uint32"
+          },
+          "t_mapping(t_address,t_address)": {
+            "label": "mapping(address => address)"
+          },
+          "t_mapping(t_uint256,t_struct(TrancheAddresses)3578_storage)": {
+            "label": "mapping(uint256 => struct JCompoundStorage.TrancheAddresses)"
+          },
+          "t_struct(TrancheAddresses)3578_storage": {
+            "label": "struct JCompoundStorage.TrancheAddresses",
+            "members": [
+              {
+                "label": "buyerCoinAddress",
+                "type": "t_address"
+              },
+              {
+                "label": "cTokenAddress",
+                "type": "t_address"
+              },
+              {
+                "label": "ATrancheAddress",
+                "type": "t_address"
+              },
+              {
+                "label": "BTrancheAddress",
+                "type": "t_address"
+              }
+            ]
+          },
+          "t_mapping(t_uint256,t_struct(TrancheParameters)3593_storage)": {
+            "label": "mapping(uint256 => struct JCompoundStorage.TrancheParameters)"
+          },
+          "t_struct(TrancheParameters)3593_storage": {
+            "label": "struct JCompoundStorage.TrancheParameters",
+            "members": [
+              {
+                "label": "trancheAFixedPercentage",
+                "type": "t_uint256"
+              },
+              {
+                "label": "trancheALastActionBlock",
+                "type": "t_uint256"
+              },
+              {
+                "label": "storedTrancheAPrice",
+                "type": "t_uint256"
+              },
+              {
+                "label": "trancheACurrentRPB",
+                "type": "t_uint256"
+              },
+              {
+                "label": "redemptionPercentage",
+                "type": "t_uint16"
+              },
+              {
+                "label": "cTokenDecimals",
+                "type": "t_uint8"
+              },
+              {
+                "label": "underlyingDecimals",
+                "type": "t_uint8"
+              }
+            ]
+          },
+          "t_uint16": {
+            "label": "uint16"
+          },
+          "t_uint8": {
+            "label": "uint8"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_contract(ICEth)5628": {
+            "label": "contract ICEth"
+          },
+          "t_contract(IETHGateway)5741": {
+            "label": "contract IETHGateway"
+          },
+          "t_mapping(t_uint256,t_bool)": {
+            "label": "mapping(uint256 => bool)"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    },
+    "848fe60b3fef93ebd9f58c2023dc522668f46b54c8aceb381cc6904827ff521f": {
+      "address": "0xB8441F21BeD1DBc87A34D568b65d6b5fcF188668",
+      "txHash": "0x823d7696d537a651ca8bb8200acaf0d49bbddc5f4fbff80f970db7302b989605",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:25"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:30"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "../@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:20"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:74"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeable",
+            "label": "_status",
+            "type": "t_uint256",
+            "src": "../@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:37"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:67"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "adminToolsAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:35"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "feesCollectorAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:36"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "tranchesDeployerAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:37"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "compTokenAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:38"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "comptrollerAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:39"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "rewardsToken",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:40"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "tranchePairsCounter",
+            "type": "t_uint256",
+            "src": "JCompoundStorage.sol:42"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "totalBlocksPerYear",
+            "type": "t_uint256",
+            "src": "JCompoundStorage.sol:43"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "redeemTimeout",
+            "type": "t_uint32",
+            "src": "JCompoundStorage.sol:44"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "cTokenContracts",
+            "type": "t_mapping(t_address,t_address)",
+            "src": "JCompoundStorage.sol:46"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "trancheAddresses",
+            "type": "t_mapping(t_uint256,t_struct(TrancheAddresses)3624_storage)",
+            "src": "JCompoundStorage.sol:47"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "trancheParameters",
+            "type": "t_mapping(t_uint256,t_struct(TrancheParameters)3639_storage)",
+            "src": "JCompoundStorage.sol:48"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "lastActivity",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "JCompoundStorage.sol:50"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "cEthToken",
+            "type": "t_contract(ICEth)5674",
+            "src": "JCompoundStorage.sol:52"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "ethGateway",
+            "type": "t_contract(IETHGateway)5787",
+            "src": "JCompoundStorage.sol:53"
+          },
+          {
+            "contract": "JCompoundStorage",
+            "label": "trancheDepositEnabled",
+            "type": "t_mapping(t_uint256,t_bool)",
+            "src": "JCompoundStorage.sol:56"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "incentivesControllerAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:66"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "stakeCounterTrA",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_uint256))",
+            "src": "JCompoundStorage.sol:69"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "stakeCounterTrB",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_uint256))",
+            "src": "JCompoundStorage.sol:70"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "stakingDetailsTrancheA",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_mapping(t_uint256,t_struct(StakingDetails)3689_storage)))",
+            "src": "JCompoundStorage.sol:72"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "stakingDetailsTrancheB",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_mapping(t_uint256,t_struct(StakingDetails)3689_storage)))",
+            "src": "JCompoundStorage.sol:73"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "jCompoundHelperAddress",
+            "type": "t_address",
+            "src": "JCompoundStorage.sol:75"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "REDEMPTION_PERCENT",
+            "type": "t_uint256",
+            "src": "JCompoundStorage.sol:76"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "REDEMPTION_TIMEOUT",
+            "type": "t_uint256",
+            "src": "JCompoundStorage.sol:77"
+          },
+          {
+            "contract": "JCompoundStorageV2",
+            "label": "BLOCKS_PER_YEAR",
+            "type": "t_uint256",
+            "src": "JCompoundStorage.sol:78"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_uint256))": {
+            "label": "mapping(address => mapping(uint256 => uint256))"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_mapping(t_uint256,t_struct(StakingDetails)3689_storage)))": {
+            "label": "mapping(address => mapping(uint256 => mapping(uint256 => struct JCompoundStorageV2.StakingDetails)))"
+          },
+          "t_mapping(t_uint256,t_mapping(t_uint256,t_struct(StakingDetails)3689_storage))": {
+            "label": "mapping(uint256 => mapping(uint256 => struct JCompoundStorageV2.StakingDetails))"
+          },
+          "t_mapping(t_uint256,t_struct(StakingDetails)3689_storage)": {
+            "label": "mapping(uint256 => struct JCompoundStorageV2.StakingDetails)"
+          },
+          "t_struct(StakingDetails)3689_storage": {
+            "label": "struct JCompoundStorageV2.StakingDetails",
+            "members": [
+              {
+                "label": "startTime",
+                "type": "t_uint256"
+              },
+              {
+                "label": "amount",
+                "type": "t_uint256"
+              }
+            ]
+          },
+          "t_uint32": {
+            "label": "uint32"
+          },
+          "t_mapping(t_address,t_address)": {
+            "label": "mapping(address => address)"
+          },
+          "t_mapping(t_uint256,t_struct(TrancheAddresses)3624_storage)": {
+            "label": "mapping(uint256 => struct JCompoundStorage.TrancheAddresses)"
+          },
+          "t_struct(TrancheAddresses)3624_storage": {
+            "label": "struct JCompoundStorage.TrancheAddresses",
+            "members": [
+              {
+                "label": "buyerCoinAddress",
+                "type": "t_address"
+              },
+              {
+                "label": "cTokenAddress",
+                "type": "t_address"
+              },
+              {
+                "label": "ATrancheAddress",
+                "type": "t_address"
+              },
+              {
+                "label": "BTrancheAddress",
+                "type": "t_address"
+              }
+            ]
+          },
+          "t_mapping(t_uint256,t_struct(TrancheParameters)3639_storage)": {
+            "label": "mapping(uint256 => struct JCompoundStorage.TrancheParameters)"
+          },
+          "t_struct(TrancheParameters)3639_storage": {
+            "label": "struct JCompoundStorage.TrancheParameters",
+            "members": [
+              {
+                "label": "trancheAFixedPercentage",
+                "type": "t_uint256"
+              },
+              {
+                "label": "trancheALastActionBlock",
+                "type": "t_uint256"
+              },
+              {
+                "label": "storedTrancheAPrice",
+                "type": "t_uint256"
+              },
+              {
+                "label": "trancheACurrentRPB",
+                "type": "t_uint256"
+              },
+              {
+                "label": "redemptionPercentage",
+                "type": "t_uint16"
+              },
+              {
+                "label": "cTokenDecimals",
+                "type": "t_uint8"
+              },
+              {
+                "label": "underlyingDecimals",
+                "type": "t_uint8"
+              }
+            ]
+          },
+          "t_uint16": {
+            "label": "uint16"
+          },
+          "t_uint8": {
+            "label": "uint8"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_contract(ICEth)5674": {
+            "label": "contract ICEth"
+          },
+          "t_contract(IETHGateway)5787": {
+            "label": "contract IETHGateway"
+          },
+          "t_mapping(t_uint256,t_bool)": {
+            "label": "mapping(uint256 => bool)"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
           }
         }
       }
     }
   }
-  
+}

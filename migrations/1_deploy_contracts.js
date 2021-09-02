@@ -110,13 +110,13 @@ module.exports = async (deployer, network, accounts) => {
     } else {
       // deployed new contract
       try {
-        const JATinstance = await deployProxy(JAdminTools, [], { from: factoryOwner });
+        const JATinstance = await JAdminTools.at("0xb1c8993C9C8Fb4bCBFA07a7688f0BDd3Ad6775C0");
         console.log('JAdminTools Deployed: ', JATinstance.address);
 
-        const JFCinstance = await deployProxy(JFeesCollector, [JATinstance.address], { from: factoryOwner });
+        const JFCinstance = await  JFeesCollector.at("0xC0c7EFB8d45dC65ed343FC6e6433812cB43315b1");
         console.log('JFeesCollector Deployed: ', JFCinstance.address);
 
-        const compoundDeployer = await deployProxy(JTranchesDeployer, [], { from: factoryOwner, unsafeAllowCustomTypes: true });
+        const compoundDeployer = await JTranchesDeployer.at("0x19f792fBA533D5fa9b30da496fA4Cb06CBCdD1cc")
         console.log(`COMPOUND_DEPLOYER=${compoundDeployer.address}`);
 
         // Source: https://github.com/compound-finance/compound-config/blob/master/networks/kovan.json
@@ -126,6 +126,12 @@ module.exports = async (deployer, network, accounts) => {
         console.log(`COMPOUND_TRANCHE_ADDRESS=${JCompoundInstance.address}`);
         compoundDeployer.setJCompoundAddress(JCompoundInstance.address);
         console.log('compound deployer 1');
+
+        const JCHelper = await deployProxy(JCompoundHelper, [], { from: factoryOwner });
+        console.log("JC Helper: " + JCHelper.address);
+    
+        await JCompoundInstance.setJCompoundHelperAddress(JCHelper.address)
+    
 
         await JCompoundInstance.setCTokenContract(TRANCHE_ONE_TOKEN_ADDRESS, TRANCHE_ONE_CTOKEN_ADDRESS, { from: factoryOwner });
         console.log('compound deployer 2');
