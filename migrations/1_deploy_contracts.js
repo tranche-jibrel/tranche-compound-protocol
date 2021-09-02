@@ -105,7 +105,7 @@ module.exports = async (deployer, network, accounts) => {
     const factoryOwner = accounts[0];
     if (IS_UPGRADE == 'true') {
       console.log('contracts are being upgraded');
-      const JFCinstance = await upgradeProxy(FEE_COLLECTOR_ADDRESS, JFeesCollector, { from: factoryOwner });
+      const JFCinstance = await upgradeProxy("0xc5639ad2431BBf031f70501c70b47C321867367E", JCompound, { from: factoryOwner });
       console.log(`FEE_COLLECTOR_ADDRESS=${JFCinstance.address}`)
     } else {
       // deployed new contract
