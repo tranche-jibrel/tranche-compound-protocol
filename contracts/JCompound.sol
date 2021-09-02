@@ -277,6 +277,24 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
     }
 
     /**
+     * @dev get Tranche A exchange rate
+     * @param _trancheNum tranche number
+     * @return tranche A token stored price
+     */
+    function getTrancheAExchangeRate(uint256 _trancheNum) public view returns (uint256) {
+        return trancheParameters[_trancheNum].storedTrancheAPrice;
+    }
+
+    /**
+     * @dev get RPB for a given percentage (expressed in 1e18)
+     * @param _trancheNum tranche number
+     * @return RPB for a fixed percentage
+     */
+    function getTrancheACurrentRPB(uint256 _trancheNum) external view returns (uint256) {
+        return trancheParameters[_trancheNum].trancheACurrentRPB;
+    }
+
+    /**
      * @dev set Tranche A exchange rate
      * @param _trancheNum tranche number
      * @return tranche A token stored price
