@@ -281,7 +281,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
      * @param _trancheNum tranche number
      * @return tranche A token stored price
      */
-    function getTrancheAExchangeRate(uint256 _trancheNum) public view returns (uint256) {
+    function getTrancheAExchangeRate(uint256 _trancheNum) public view override returns (uint256) {
         return trancheParameters[_trancheNum].storedTrancheAPrice;
     }
 
@@ -290,7 +290,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
      * @param _trancheNum tranche number
      * @return RPB for a fixed percentage
      */
-    function getTrancheACurrentRPB(uint256 _trancheNum) external view returns (uint256) {
+    function getTrancheACurrentRPB(uint256 _trancheNum) external view override returns (uint256) {
         return trancheParameters[_trancheNum].trancheACurrentRPB;
     }
 
@@ -327,7 +327,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
      * @param _trancheNum tranche number
      * @return trANormValue tranche A value in underlying tokens
      */
-    function getTrAValue(uint256 _trancheNum) public view returns (uint256 trANormValue) {
+    function getTrAValue(uint256 _trancheNum) public view override returns (uint256 trANormValue) {
         uint256 totASupply = IERC20Upgradeable(trancheAddresses[_trancheNum].ATrancheAddress).totalSupply();
         uint256 diffDec = uint256(18).sub(uint256(trancheParameters[_trancheNum].underlyingDecimals));
         uint256 storedAPrice = trancheParameters[_trancheNum].storedTrancheAPrice;
@@ -340,7 +340,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
      * @param _trancheNum tranche number
      * @return tranche B valuein underlying tokens
      */
-    function getTrBValue(uint256 _trancheNum) external view returns (uint256) {
+    function getTrBValue(uint256 _trancheNum) external view override returns (uint256) {
         uint256 totProtValue = getTotalValue(_trancheNum);
         uint256 totTrAValue = getTrAValue(_trancheNum);
         if (totProtValue > totTrAValue) {
@@ -354,7 +354,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
      * @param _trancheNum tranche number
      * @return tranche total value in underlying tokens
      */
-    function getTotalValue(uint256 _trancheNum) public view returns (uint256) {
+    function getTotalValue(uint256 _trancheNum) public view override returns (uint256) {
         address cTokenAddress = trancheAddresses[_trancheNum].cTokenAddress;
         uint256 underDecs = uint256(trancheParameters[_trancheNum].underlyingDecimals);
         uint256 cTokenDecs = uint256(trancheParameters[_trancheNum].cTokenDecimals);
@@ -375,7 +375,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
      * @param _newAmount new amount entering tranche B (in underlying tokens)
      * @return tbPrice tranche B token current price
      */
-    function getTrancheBExchangeRate(uint256 _trancheNum, uint256 _newAmount) public view returns (uint256 tbPrice) {
+    function getTrancheBExchangeRate(uint256 _trancheNum, uint256 _newAmount) public view override returns (uint256 tbPrice) {
         // set amount of tokens to be minted via taToken price
         // Current tbDai price = (((cDai X cPrice)-(aSupply X taPrice)) / bSupply)
         // where: cDai = How much cDai we hold in the protocol
@@ -624,15 +624,17 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
             }
         }
 
-        IIncentivesController(incentivesControllerAddress).claimRewardsAllMarkets(msg.sender);
+        // claim and transfer rewards to msg.sender. Be sure to wait for this function to be completed! 
+        bool rewClaimCompleted = IIncentivesController(incentivesControllerAddress).claimRewardsAllMarkets(msg.sender);
 
-        if (_amount > 0)
+        // decrease tokens after claiming rewards
+        if (rewClaimCompleted && _amount > 0)
             decreaseTrancheATokenFromStake(_trancheNum, _amount);
      
         IJTrancheTokens(aTrancheAddress).burn(_amount);
 
         lastActivity[msg.sender] = block.number;
-        emit TrancheATokenRedemption(_trancheNum, msg.sender, _amount, userAmount, feesAmount);
+        emit TrancheATokenRedemption(_trancheNum, msg.sender, 0, userAmount, feesAmount);
     }
 
     /**
@@ -745,16 +747,17 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
             }   
         }
 
-        // claim and transfer rewards to msg.sender
-        IIncentivesController(incentivesControllerAddress).claimRewardsAllMarkets(msg.sender);
+        // claim and transfer rewards to msg.sender. Be sure to wait for this function to be completed! 
+        bool rewClaimCompleted = IIncentivesController(incentivesControllerAddress).claimRewardsAllMarkets(msg.sender);
 
-        if (_amount > 0)
+        // decrease tokens after claiming rewards
+        if (rewClaimCompleted && _amount > 0)
             decreaseTrancheBTokenFromStake(_trancheNum, _amount);
 
         IJTrancheTokens(bTrancheAddress).burn(_amount);
 
         lastActivity[msg.sender] = block.number;
-        emit TrancheBTokenRedemption(_trancheNum, msg.sender, _amount,  userAmount, feesAmount);
+        emit TrancheBTokenRedemption(_trancheNum, msg.sender, 0, userAmount, feesAmount);
     }
 
     /**
