@@ -1,6 +1,5 @@
 require('dotenv').config();
 const { deployProxy, upgradeProxy } = require('@openzeppelin/truffle-upgrades');
-var { abi } = require('../build/contracts/myERC20.json');
 
 var myERC20 = artifacts.require("./mocks/myERC20.sol");
 var CErc20 = artifacts.require('./mocks/CErc20.sol');
