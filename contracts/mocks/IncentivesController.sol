@@ -16,9 +16,10 @@ contract IncentivesController is OwnableUpgradeable {
     /**
      * @dev claim all rewards from all markets for a single user
      */
-    function claimRewardsAllMarkets(address _account) external pure {
+    function claimRewardsAllMarkets(address _account) external returns (bool){
         claimRewardSingleMarketTrA(0, _account);
         claimRewardSingleMarketTrB(0, _account);
+        return true;
     }
 
     /**
