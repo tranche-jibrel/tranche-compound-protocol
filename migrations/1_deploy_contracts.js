@@ -1,6 +1,5 @@
 require('dotenv').config();
 const { deployProxy, upgradeProxy } = require('@openzeppelin/truffle-upgrades');
-var { abi } = require('../build/contracts/myERC20.json');
 
 var myERC20 = artifacts.require("./mocks/myERC20.sol");
 var CErc20 = artifacts.require('./mocks/CErc20.sol');
@@ -29,7 +28,7 @@ module.exports = async (deployer, network, accounts) => {
   //const ethRpb = 1 * Math.pow(10, 9);
   //const ETH_RPB_HEX = "0x" + ethRpb.toString(16);
 
-  if (network == "development") {
+  if (network == "development1") {
     const tokenOwner = accounts[0];
 
     const mySLICEinstance = await deployProxy(myERC20, [MYERC20_TOKEN_SUPPLY], { from: tokenOwner });
