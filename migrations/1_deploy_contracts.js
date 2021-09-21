@@ -160,14 +160,19 @@ module.exports = async (deployer, network, accounts) => {
     }
   } else if (network == "mainnet") {
     let { 
-      IS_UPGRADE, TRANCHE_ONE_TOKEN_ADDRESS, TRANCHE_ONE_CTOKEN_ADDRESS, TRANCHE_TWO_TOKEN_ADDRESS, TRANCHE_TWO_CTOKEN_ADDRESS, COMP_ADDRESS, COMP_CONTROLLER, SLICE_ADDRESS, FEE_COLLECTOR_ADDRESS
+      IS_UPGRADE, TRANCHE_ONE_TOKEN_ADDRESS, TRANCHE_ONE_CTOKEN_ADDRESS, TRANCHE_TWO_TOKEN_ADDRESS, TRANCHE_TWO_CTOKEN_ADDRESS, COMP_ADDRESS, COMP_CONTROLLER, SLICE_ADDRESS, 
+      FEE_COLLECTOR_ADDRESS, COMPOUND_TRANCHE_ADDRESS
     } = process.env;
     const accounts = await web3.eth.getAccounts();
     const factoryOwner = accounts[0];
     if (IS_UPGRADE == 'true') {
       console.log('contracts are being upgraded');
-      const JFCinstance = await upgradeProxy(FEE_COLLECTOR_ADDRESS, JFeesCollector, { from: factoryOwner });
-      console.log(`FEE_COLLECTOR_ADDRESS=${JFCinstance.address}`)
+      const JCompoundInstance = await upgradeProxy(COMPOUND_TRANCHE_ADDRESS, JCompound, { from: factoryOwner });
+      console.log(`COMPOUND_TRANCHE_ADDRESS=${JCompoundInstance.address}`)
+      const JCHelper = await deployProxy(JCompoundHelper, [], { from: factoryOwner });
+      console.log("JC Helper: " + JCHelper.address);
+      await JcompoundInstance.setJCompoundHelperAddress(JCHelper.address)
+      console.log('set helper in jcompound');
     } else {
       try {
         const JATinstance = await deployProxy(JAdminTools, [], { from: factoryOwner });
