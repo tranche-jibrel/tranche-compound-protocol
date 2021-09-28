@@ -13,7 +13,7 @@ import "./interfaces/IETHGateway.sol";
 contract JCompoundStorage is OwnableUpgradeable {
 /* WARNING: NEVER RE-ORDER VARIABLES! Always double-check that new variables are added APPEND-ONLY. Re-ordering variables can permanently BREAK the deployed proxy contract.*/
 
-    uint256 public constant PERCENT_DIVIDER = 10000;  // percentage divider
+    uint256 public constant PERCENT_DIVIDER = 10000;  // percentage divider for redemption
 
     struct TrancheAddresses {
         address buyerCoinAddress;       // ETH (ZERO_ADDRESS) or DAI
@@ -51,4 +51,26 @@ contract JCompoundStorage is OwnableUpgradeable {
 
     ICEth public cEthToken;
     IETHGateway public ethGateway;
+
+    // enabling / disabling tranches for fund deposit
+    mapping(uint256 => bool) public trancheDepositEnabled;
+}
+
+
+contract JCompoundStorageV2 is JCompoundStorage {
+    struct StakingDetails {
+        uint256 startTime;
+        uint256 amount;
+    }
+
+    address public incentivesControllerAddress;
+
+    // user => trancheNum => counter
+    mapping (address => mapping(uint256 => uint256)) public stakeCounterTrA;
+    mapping (address => mapping(uint256 => uint256)) public stakeCounterTrB;
+    // user => trancheNum => stakeCounter => struct
+    mapping (address => mapping (uint256 => mapping (uint256 => StakingDetails))) public stakingDetailsTrancheA;
+    mapping (address => mapping (uint256 => mapping (uint256 => StakingDetails))) public stakingDetailsTrancheB;
+
+    address public jCompoundHelperAddress;
 }

@@ -35,9 +35,13 @@ module.exports = {
       skipDryRun: true
     },
   },
-  plugins: ['truffle-contract-size'],
+  plugins: ['truffle-contract-size', 
+    'solidity-coverage',
+    'truffle-plugin-verify',
+  ],
   // Set default mocha options here, use special reporters etc.
   mocha: {
+    reporter: 'eth-gas-reporter',
     timeout: 100000
   },
   // Configure your compilers

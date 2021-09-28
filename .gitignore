@@ -10,3 +10,5 @@ package-lock.json
 *.txt
 .openzeppelin/dev*.json
 .openzeppelin/unknown*.json
+coverage
+coverage.json
