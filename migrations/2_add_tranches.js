@@ -117,7 +117,7 @@ module.exports = async (deployer, network, accounts) => {
 
         // Usdt - CUsdt
         await JCompoundInstance.setCTokenContract("0xdAC17F958D2ee523a2206206994597C13D831ec7", "0xf650c3d88d12db855b8bf7d11be6c55a4e07dcc9", { from: factoryOwner });
-        await JCompoundInstance.addTrancheToProtocol("0xdAC17F958D2ee523a2206206994597C13D831ec7", "Tranche A - Compound UNI", "ACUNI", "Tranche B - Compound UNI", "BCUNI", web3.utils.toWei("0", "ether"), 8, 6, { from: factoryOwner });
+        await JCompoundInstance.addTrancheToProtocol("0xdAC17F958D2ee523a2206206994597C13D831ec7", "Tranche A - Compound USDT", "ACUSDT", "Tranche B - Compound USDT", "BCUSDT", web3.utils.toWei("0", "ether"), 8, 6, { from: factoryOwner });
         console.log('compound Usdt - CUsdt added');
         let trancheCounter = await JCompoundInstance.JCompoundInstance();
         trParams = await JCompoundInstance.trancheAddresses(trancheCounter - 1);
