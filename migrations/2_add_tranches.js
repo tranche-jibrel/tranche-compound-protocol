@@ -14,8 +14,8 @@ module.exports = async (deployer, network, accounts) => {
 
   } else if (network == "mainnet") {
 
-    let { 
-      IS_UPGRADE, TRANCHE_ONE_TOKEN_ADDRESS, TRANCHE_ONE_CTOKEN_ADDRESS, TRANCHE_TWO_TOKEN_ADDRESS, TRANCHE_TWO_CTOKEN_ADDRESS, COMP_ADDRESS, COMP_CONTROLLER, SLICE_ADDRESS, 
+    let {
+      IS_UPGRADE, TRANCHE_ONE_TOKEN_ADDRESS, TRANCHE_ONE_CTOKEN_ADDRESS, TRANCHE_TWO_TOKEN_ADDRESS, TRANCHE_TWO_CTOKEN_ADDRESS, COMP_ADDRESS, COMP_CONTROLLER, SLICE_ADDRESS,
       FEE_COLLECTOR_ADDRESS, COMPOUND_TRANCHE_ADDRESS
     } = process.env;
     const accounts = await web3.eth.getAccounts();
@@ -95,7 +95,7 @@ module.exports = async (deployer, network, accounts) => {
         let trancheCounter = await JCompoundInstance.JCompoundInstance();
         trParams = await JCompoundInstance.trancheAddresses(trancheCounter - 1);
         console.log("TrancheA: " + trParams.ATrancheAddress + ", TrancheB: " + trParams.BTrancheAddress)
-        await JCinstance.setTrancheDeposit(trancheCounter - 1, true); // enabling deposit
+        await JCinstance.setTrancheDeposit(trancheCounter - 1, true); // enabling deposit*/
 
         // Tusd - CTusd
         await JCompoundInstance.setCTokenContract("0x0000000000085d4780B73119b644AE5ecd22b376", "0x12392F67bdf24faE0AF363c24aC620a2f67DAd86", { from: factoryOwner });
@@ -107,13 +107,13 @@ module.exports = async (deployer, network, accounts) => {
         await JCinstance.setTrancheDeposit(trancheCounter - 1, true); // enabling deposit
 
         // Uni - CUni
-        await JCompoundInstance.setCTokenContract("0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984", "0x35A18000230DA775CAc24873d00Ff85BccdeD550", { from: factoryOwner });
+        /*await JCompoundInstance.setCTokenContract("0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984", "0x35A18000230DA775CAc24873d00Ff85BccdeD550", { from: factoryOwner });
         await JCompoundInstance.addTrancheToProtocol("0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984", "Tranche A - Compound UNI", "ACUNI", "Tranche B - Compound UNI", "BCUNI", web3.utils.toWei("0.0011", "ether"), 8, 18, { from: factoryOwner });
         console.log('compound Uni - CUni added');
         let trancheCounter = await JCompoundInstance.JCompoundInstance();
         trParams = await JCompoundInstance.trancheAddresses(trancheCounter - 1);
         console.log("TrancheA: " + trParams.ATrancheAddress + ", TrancheB: " + trParams.BTrancheAddress)
-        await JCinstance.setTrancheDeposit(trancheCounter - 1, true); // enabling deposit */
+        await JCinstance.setTrancheDeposit(trancheCounter - 1, true); // enabling deposit 
 
         // Usdt - CUsdt
         await JCompoundInstance.setCTokenContract("0xdAC17F958D2ee523a2206206994597C13D831ec7", "0xf650c3d88d12db855b8bf7d11be6c55a4e07dcc9", { from: factoryOwner });
@@ -125,7 +125,7 @@ module.exports = async (deployer, network, accounts) => {
         await JCinstance.setTrancheDeposit(trancheCounter - 1, true); // enabling deposit
 
         // Yfi - Cyfi
-        /*await JCompoundInstance.setCTokenContract("0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984", "0x35A18000230DA775CAc24873d00Ff85BccdeD550", { from: factoryOwner });
+        await JCompoundInstance.setCTokenContract("0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984", "0x35A18000230DA775CAc24873d00Ff85BccdeD550", { from: factoryOwner });
         await JCompoundInstance.addTrancheToProtocol("0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984", "Tranche A - Compound YFI", "ACYFI", "Tranche B - Compound YFI", "BCYFI", web3.utils.toWei("0.0024", "ether"), 8, 18, { from: factoryOwner });
         console.log('compound Yfi - Cyfi added');
         let trancheCounter = await JCompoundInstance.JCompoundInstance();
