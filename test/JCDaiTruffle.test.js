@@ -119,6 +119,12 @@ contract("JCompound", function (accounts) {
     console.log(daiTrBContract.address);
   });
 
+  it('deploy 2 other tranches, just to have an estimation on costs', async function () {
+    await jCompContract.addTrancheToProtocol(ZERO_ADDRESS, "jEthTrancheAToken", "JEA", "jEthTrancheBToken", "JEB", web3.utils.toWei("0.04", "ether"), 18, 18, { from: tokenOwner });
+    await jCompContract.addTrancheToProtocol(daiContract.address, "jEthTrancheAToken", "JEA", "jEthTrancheBToken", "JEB", web3.utils.toWei("0.04", "ether"), 18, 18, { from: tokenOwner });
+
+  });
+
   it('changing reward token address', async function () {
     rewTok = await jCompContract.rewardsToken()
     console.log(rewTok)

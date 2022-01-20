@@ -46,10 +46,10 @@ contract JTrancheAToken is IFDTBasic, ERC20Upgradeable, AccessControlUpgradeable
 	 *     and try to distribute it in the next distribution ....... todo implement  
 	 */
 	function _distributeFunds(uint256 value) internal {
-		require(totalSupply() > 0, "JTrancheA: supply is zero");
+		require(totalSupply() > 0, "!supply");
 		if (value > 0) {
 			pointsPerShare = pointsPerShare.add(value.mul(pointsMultiplier) / totalSupply());
-			emit FundsDistributed(msg.sender, value);
+			// emit FundsDistributed(msg.sender, value);
 		}
 	}
 
@@ -60,7 +60,7 @@ contract JTrancheAToken is IFDTBasic, ERC20Upgradeable, AccessControlUpgradeable
 	function _prepareWithdraw() internal returns (uint256) {
 		uint256 _withdrawableDividend = withdrawableFundsOf(msg.sender);
 		withdrawnFunds[msg.sender] = withdrawnFunds[msg.sender].add(_withdrawableDividend);
-		emit FundsWithdrawn(msg.sender, _withdrawableDividend);
+		// emit FundsWithdrawn(msg.sender, _withdrawableDividend);
 		return _withdrawableDividend;
 	}
 
@@ -114,8 +114,8 @@ contract JTrancheAToken is IFDTBasic, ERC20Upgradeable, AccessControlUpgradeable
 	 * @param value The amount that will be created.
 	 */
 	function mint(address account, uint256 value) external override {
-		require(hasRole(MINTER_ROLE, msg.sender), "JTrancheA:  Caller is not a minter");
-		require(value > 0, "JTrancheA: value is zero");
+		require(hasRole(MINTER_ROLE, msg.sender), "!minter");
+		require(value > 0, "!value");
         super._mint(account, value);
         pointsCorrection[account] = pointsCorrection[account].sub((pointsPerShare.mul(value)).toInt256Safe());
     }
@@ -126,7 +126,7 @@ contract JTrancheAToken is IFDTBasic, ERC20Upgradeable, AccessControlUpgradeable
 	 * @param value The amount that will be burnt.
 	 */
 	function burn(uint256 value) external override {
-		require(value > 0, "JTrancheA: value is zero");
+		require(value > 0, "!value");
 		super._burn(msg.sender, value);
 		pointsCorrection[msg.sender] = pointsCorrection[msg.sender].add( (pointsPerShare.mul(value)).toInt256Safe() );
 	}
@@ -136,7 +136,7 @@ contract JTrancheAToken is IFDTBasic, ERC20Upgradeable, AccessControlUpgradeable
 	 */
 	function withdrawFunds() external {
 		uint256 withdrawableFunds = _prepareWithdraw();
-		require(rewardsToken.transfer(msg.sender, withdrawableFunds), "JTrancheA: withdraw funds transfer failed");
+		require(rewardsToken.transfer(msg.sender, withdrawableFunds), "!withdrawFunds");
 		_updateFundsTokenBalance();
 	}
 
@@ -170,12 +170,13 @@ contract JTrancheAToken is IFDTBasic, ERC20Upgradeable, AccessControlUpgradeable
 	 * @param _amount token amount
 	 */
 	function emergencyTokenTransfer(address _token, address _to, uint256 _amount) public override {
-		require(hasRole(MINTER_ROLE, msg.sender), "JTrancheA:  Caller is not protocol");
-        if(_token != address(0))
-			IERC20Upgradeable(_token).transfer(_to, _amount);
-		else {
-			bool sent = payable(_to).send(_amount);
-			require(sent, "Failed to send Ether");
+		require(hasRole(MINTER_ROLE, msg.sender), "!protocol");
+		bool sent;
+        if(_token != address(0)){
+			sent = IERC20Upgradeable(_token).transfer(_to, _amount);
+		} else {
+			(sent, ) = payable(_to).call{value: _amount}("");
 		}
+		require(sent, "!sent");
     }
 }

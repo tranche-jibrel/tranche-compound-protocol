@@ -28,22 +28,21 @@ module.exports = async (deployer, network, accounts) => {
   //const ethRpb = 1 * Math.pow(10, 9);
   //const ETH_RPB_HEX = "0x" + ethRpb.toString(16);
 
-  if (network == "development1") {
-    const tokenOwner = accounts[0];
+  if (network == "development") {
+    const factoryOwner = accounts[0];
 
-    const mySLICEinstance = await deployProxy(myERC20, [MYERC20_TOKEN_SUPPLY], { from: tokenOwner });
+    const mySLICEinstance = await deployProxy(myERC20, [MYERC20_TOKEN_SUPPLY], { from: factoryOwner });
     console.log('mySLICE Deployed: ', mySLICEinstance.address);
 
-    const myDAIinstance = await deployProxy(myERC20, [MYERC20_TOKEN_SUPPLY], { from: tokenOwner });
+    const myDAIinstance = await deployProxy(myERC20, [MYERC20_TOKEN_SUPPLY], { from: factoryOwner });
     console.log('myDAI Deployed: ', myDAIinstance.address);
 
-    const mycEthinstance = await deployProxy(CEther, [], { from: tokenOwner });
+    const mycEthinstance = await deployProxy(CEther, [], { from: factoryOwner });
     console.log('myCEth Deployed: ', mycEthinstance.address);
 
-    const mycDaiinstance = await deployProxy(CErc20, [], { from: tokenOwner });
+    const mycDaiinstance = await deployProxy(CErc20, [], { from: factoryOwner });
     console.log('myCErc20 Deployed: ', mycDaiinstance.address);
 
-    const factoryOwner = accounts[0];
     const JATinstance = await deployProxy(JAdminTools, [], { from: factoryOwner });
     console.log('JAdminTools Deployed: ', JATinstance.address);
 
@@ -65,14 +64,12 @@ module.exports = async (deployer, network, accounts) => {
 
     await JCinstance.setETHGateway(JEGinstance.address, { from: factoryOwner });
 
-    await JCinstance.setCEtherContract(mycEthinstance.address, { from: factoryOwner });
-    await JCinstance.setCTokenContract(myDAIinstance.address, mycDaiinstance.address, { from: factoryOwner });
-
     const JCHelper = await deployProxy(JCompoundHelper, [/*JCinstance.address*/], { from: factoryOwner });
     console.log("JC Helper: " + JCHelper.address);
 
     await JCinstance.setJCompoundHelperAddress(JCHelper.address)
 
+    await JCinstance.setCEtherContract(mycEthinstance.address, { from: factoryOwner });
     await JCinstance.addTrancheToProtocol(ZERO_ADDRESS, "jEthTrancheAToken", "JEA", "jEthTrancheBToken", "JEB", web3.utils.toWei("0.04", "ether"), 18, 18, { from: factoryOwner });
     trParams = await JCinstance.trancheAddresses(0);
     let EthTrA = await JTrancheAToken.at(trParams.ATrancheAddress);
@@ -82,6 +79,7 @@ module.exports = async (deployer, network, accounts) => {
 
     await JCinstance.setTrancheDeposit(0, true); // enabling deposit
 
+    await JCinstance.setCTokenContract(myDAIinstance.address, mycDaiinstance.address, { from: factoryOwner });
     await JCinstance.addTrancheToProtocol(myDAIinstance.address, "jDaiTrancheAToken", "JDA", "jDaiTrancheBToken", "JDB", web3.utils.toWei("0.02", "ether"), 18, 18, { from: factoryOwner });
     trParams = await JCinstance.trancheAddresses(1);
     let DaiTrA = await JTrancheAToken.at(trParams.ATrancheAddress);

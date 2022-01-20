@@ -3,7 +3,7 @@ pragma solidity 0.6.12;
 pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import './interfaces/IETHGateway.sol';
 import "./TransferETHHelper.sol";
@@ -78,7 +78,7 @@ contract ETHGateway is IETHGateway, Ownable {
     }
     uint256 newcEthBal = getTokenBalance(address(cEthToken));
     if (newcEthBal > 0)
-       IERC20(address(cEthToken)).transfer(_to, newcEthBal);
+       SafeERC20.safeTransfer(IERC20(address(cEthToken)), _to, newcEthBal);
   }
 
   /**
@@ -89,7 +89,7 @@ contract ETHGateway is IETHGateway, Ownable {
    * @param _amount amount to send
    */
   function emergencyTokenTransfer(address _token, address _to, uint256 _amount) external onlyOwner {
-    IERC20(_token).transfer(_to, _amount);
+    SafeERC20.safeTransfer(IERC20(_token), _to, _amount);
   }
 
   /**

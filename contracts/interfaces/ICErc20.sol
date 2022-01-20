@@ -9,4 +9,8 @@ interface ICErc20 {
     function redeemUnderlying(uint) external returns (uint);
     function exchangeRateStored() external view returns (uint);
     function setExchangeRateStored(uint256 rate) external;
+    function borrow(uint256) external returns (uint256);
+    function borrowRatePerBlock() external view returns (uint256);
+    function borrowBalanceCurrent(address) external returns (uint256);
+    function repayBorrow(uint256) external returns (uint256);
 }

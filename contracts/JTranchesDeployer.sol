@@ -26,7 +26,7 @@ contract JTranchesDeployer is OwnableUpgradeable, JTranchesDeployerStorage, IJTr
     }
 
     modifier onlyProtocol() {
-        require(msg.sender == jCompoundAddress, "TrancheDeployer: caller is not jCompound");
+        require(msg.sender == jCompoundAddress, "!jCompound");
         _;
     }
 

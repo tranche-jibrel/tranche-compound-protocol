@@ -14,7 +14,8 @@ import "./interfaces/IJTrancheTokens.sol";
 import "./interfaces/IJTranchesDeployer.sol";
 import "./interfaces/IJCompound.sol";
 import "./interfaces/ICErc20.sol";
-import "./interfaces/IComptrollerLensInterface.sol";
+// import "./interfaces/IComptrollerLensInterface.sol";
+import "./interfaces/IComptroller.sol";
 import "./JCompoundStorage.sol";
 import "./TransferETHHelper.sol";
 import "./interfaces/IIncentivesController.sol";
@@ -162,7 +163,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
     }
 
     /**
-     * @dev check if a cToken is allowed or not
+     * @dev set decimals for tranche tokens
      * @param _trancheNum tranche number
      * @param _cTokenDec cToken decimals
      * @param _underlyingDec underlying token decimals
@@ -190,12 +191,12 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
      * @param _symbolA tranche A token symbol
      * @param _nameB tranche B token name
      * @param _symbolB tranche B token symbol
-     * @param _fixedRpb tranche A percentage fixed compounded interest per year
+     * @param _fixPercentage tranche A percentage fixed compounded interest per year
      * @param _cTokenDec cToken decimals
      * @param _underlyingDec underlying token decimals
      */
     function addTrancheToProtocol(address _erc20Contract, string memory _nameA, string memory _symbolA, string memory _nameB, 
-                string memory _symbolB, uint256 _fixedRpb, uint8 _cTokenDec, uint8 _underlyingDec) external onlyAdmins nonReentrant {
+                string memory _symbolB, uint256 _fixPercentage, uint8 _cTokenDec, uint8 _underlyingDec) external onlyAdmins nonReentrant {
         require(tranchesDeployerAddress != address(0), "!TrDepl");
         require(isCTokenAllowed(_erc20Contract), "!Allow");
 
@@ -209,7 +210,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
         
         trancheParameters[tranchePairsCounter].cTokenDecimals = _cTokenDec;
         trancheParameters[tranchePairsCounter].underlyingDecimals = _underlyingDec;
-        trancheParameters[tranchePairsCounter].trancheAFixedPercentage = _fixedRpb;
+        trancheParameters[tranchePairsCounter].trancheAFixedPercentage = _fixPercentage;
         trancheParameters[tranchePairsCounter].trancheALastActionBlock = block.number;
         // if we would like to have always 18 decimals
         trancheParameters[tranchePairsCounter].storedTrancheAPrice = 
@@ -317,8 +318,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
      */
     function calcRPBFromPercentage(uint256 _trancheNum) public returns (uint256) {
         // if normalized price in tranche A price, everything should be scaled to 1e18 
-        trancheParameters[_trancheNum].trancheACurrentRPB = trancheParameters[_trancheNum].storedTrancheAPrice
-            .mul(trancheParameters[_trancheNum].trancheAFixedPercentage).div(totalBlocksPerYear).div(1e18);
+        trancheParameters[_trancheNum].trancheACurrentRPB = (trancheParameters[_trancheNum].trancheAFixedPercentage).div(totalBlocksPerYear).div(1e18);
         return trancheParameters[_trancheNum].trancheACurrentRPB;
     }
 
@@ -356,16 +356,16 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
      */
     function getTotalValue(uint256 _trancheNum) public view override returns (uint256) {
         address cTokenAddress = trancheAddresses[_trancheNum].cTokenAddress;
-        uint256 underDecs = uint256(trancheParameters[_trancheNum].underlyingDecimals);
-        uint256 cTokenDecs = uint256(trancheParameters[_trancheNum].cTokenDecimals);
-        uint256 compNormPrice = IJCompoundHelper(jCompoundHelperAddress).getCompoundPriceHelper(cTokenAddress, underDecs, cTokenDecs);
-        uint256 mantissa = IJCompoundHelper(jCompoundHelperAddress).getMantissaHelper(underDecs, cTokenDecs);
-        if (mantissa < 18) {
-            compNormPrice = compNormPrice.div(10 ** (uint256(18).sub(mantissa)));
-        } else {
-            compNormPrice = IJCompoundHelper(jCompoundHelperAddress).getCompoundPurePriceHelper(cTokenAddress);
-        }
-        uint256 totProtSupply = getTokenBalance(trancheAddresses[_trancheNum].cTokenAddress);
+        // uint256 underDecs = uint256(trancheParameters[_trancheNum].underlyingDecimals);
+        // uint256 cTokenDecs = uint256(trancheParameters[_trancheNum].cTokenDecimals);
+        // uint256 compNormPrice = IJCompoundHelper(jCompoundHelperAddress).getCompoundPriceHelper(cTokenAddress, underDecs, cTokenDecs);
+        // uint256 mantissa = IJCompoundHelper(jCompoundHelperAddress).getMantissaHelper(underDecs, cTokenDecs);
+        // if (mantissa < 18) {
+        //     compNormPrice = compNormPrice.div(10 ** (uint256(18).sub(mantissa)));
+        // } else {
+        uint256 compNormPrice = IJCompoundHelper(jCompoundHelperAddress).getCompoundPurePriceHelper(cTokenAddress);
+        // }
+        uint256 totProtSupply = getTokenBalance(cTokenAddress);
         return totProtSupply.mul(compNormPrice).div(1e18);
     }
 
@@ -824,7 +824,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
      * @return comp amount accrued
      */
     function getTotalCompAccrued() public view onlyAdmins returns (uint256) {
-        return IComptrollerLensInterface(comptrollerAddress).compAccrued(address(this));
+        return IComptroller(comptrollerAddress).compAccrued(address(this));
     }
 
     /**
@@ -834,7 +834,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
     function claimTotalCompAccruedToReceiver(address _receiver) external onlyAdmins nonReentrant {
         uint256 totAccruedAmount = getTotalCompAccrued();
         if (totAccruedAmount > 0) {
-            IComptrollerLensInterface(comptrollerAddress).claimComp(address(this));
+            IComptroller(comptrollerAddress).claimComp(address(this));
             uint256 amount = IERC20Upgradeable(compTokenAddress).balanceOf(address(this));
             SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(compTokenAddress), _receiver, amount);
         }
