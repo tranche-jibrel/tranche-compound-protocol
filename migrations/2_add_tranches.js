@@ -28,8 +28,8 @@ module.exports = async (deployer, network, accounts) => {
 
   } else if (network == "mainnet") {
 
-    let { 
-      IS_UPGRADE, TRANCHE_ONE_TOKEN_ADDRESS, TRANCHE_ONE_CTOKEN_ADDRESS, TRANCHE_TWO_TOKEN_ADDRESS, TRANCHE_TWO_CTOKEN_ADDRESS, COMP_ADDRESS, COMP_CONTROLLER, SLICE_ADDRESS, 
+    let {
+      IS_UPGRADE, TRANCHE_ONE_TOKEN_ADDRESS, TRANCHE_ONE_CTOKEN_ADDRESS, TRANCHE_TWO_TOKEN_ADDRESS, TRANCHE_TWO_CTOKEN_ADDRESS, COMP_ADDRESS, COMP_CONTROLLER, SLICE_ADDRESS,
       FEE_COLLECTOR_ADDRESS, COMPOUND_TRANCHE_ADDRESS
     } = process.env;
     const accounts = await web3.eth.getAccounts();
@@ -59,7 +59,7 @@ module.exports = async (deployer, network, accounts) => {
 */
         const JCompoundInstance = compInst;
         // Aave - cAave
-        await JCompoundInstance.setCTokenContract("0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9", "0xe65cdB6479BaC1e22340E4E755fAE7E509EcD06c", { from: factoryOwner });
+        /*await JCompoundInstance.setCTokenContract("0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9", "0xe65cdB6479BaC1e22340E4E755fAE7E509EcD06c", { from: factoryOwner });
         await JCompoundInstance.addTrancheToProtocol("0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9", "Tranche A - Compound AAVE", "ACAAVE", "Tranche B - Compound AAVE", "BCAAVE", web3.utils.toWei("0", "ether"), 8, 18, { from: factoryOwner });
         console.log('compound Aave - cAave added');
         let trancheCounter = await JCompoundInstance.JCompoundInstance();
@@ -122,7 +122,7 @@ module.exports = async (deployer, network, accounts) => {
         await JCompoundInstance.setTrancheDeposit(trancheCounter - 1, true); // enabling deposit
 
         // Uni - CUni
-        await JCompoundInstance.setCTokenContract("0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984", "0x35A18000230DA775CAc24873d00Ff85BccdeD550", { from: factoryOwner });
+        /*await JCompoundInstance.setCTokenContract("0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984", "0x35A18000230DA775CAc24873d00Ff85BccdeD550", { from: factoryOwner });
         await JCompoundInstance.addTrancheToProtocol("0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984", "Tranche A - Compound UNI", "ACUNI", "Tranche B - Compound UNI", "BCUNI", web3.utils.toWei("0.0011", "ether"), 8, 18, { from: factoryOwner });
         console.log('compound Uni - CUni added');
         trancheCounter = await JCompoundInstance.JCompoundInstance();
