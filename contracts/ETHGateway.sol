@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.6.12;
+pragma solidity 0.8.10;
 pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import './interfaces/IETHGateway.sol';
 import "./TransferETHHelper.sol";
 import "./interfaces/ICEth.sol";
@@ -20,7 +20,7 @@ contract ETHGateway is IETHGateway, Ownable {
    * @param _ceth Address of the Wrapped Ether contract
    * @param _jCompoundAddress Address of the JCompound contract
    **/
-  constructor(address _ceth, address _jCompoundAddress) public {
+  constructor(address _ceth, address _jCompoundAddress) {
     cEthToken = ICEth(_ceth);
     jCompoundAddress = _jCompoundAddress;
   }

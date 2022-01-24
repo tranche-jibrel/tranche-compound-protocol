@@ -4,9 +4,9 @@
  * @summary: JProtocol Interface
  * @author: Jibrel Team
  */
-pragma solidity 0.6.12;
+pragma solidity 0.8.10;
 
 interface IJTranchesDeployer {
-    function deployNewTrancheATokens(string calldata _nameA, string calldata _symbolA, address _sender, address _rewardToken) external returns (address);
-    function deployNewTrancheBTokens(string calldata _nameB, string calldata _symbolB, address _sender, address _rewardToken) external returns (address);
+    function deployNewTrancheATokens(string memory _nameA, string memory _symbolA, uint256 _trNum) external returns (address);
+    function deployNewTrancheBTokens(string memory _nameB, string memory _symbolB, uint256 _trNum) external returns (address);
 }

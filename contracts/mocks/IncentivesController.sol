@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.6.12;
+pragma solidity 0.8.10;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
@@ -16,7 +16,7 @@ contract IncentivesController is OwnableUpgradeable {
     /**
      * @dev claim all rewards from all markets for a single user
      */
-    function claimRewardsAllMarkets(address _account) external returns (bool){
+    function claimRewardsAllMarkets(address _account) external pure returns (bool){
         claimRewardSingleMarketTrA(0, _account);
         claimRewardSingleMarketTrB(0, _account);
         return true;

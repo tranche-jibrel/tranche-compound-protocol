@@ -4,7 +4,7 @@
  * @summary: Jibrel Protocol Storage
  * @author: Jibrel Team
  */
-pragma solidity 0.6.12;
+pragma solidity 0.8.10;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "./interfaces/ICEth.sol";
@@ -73,4 +73,9 @@ contract JCompoundStorageV2 is JCompoundStorage {
     mapping (address => mapping (uint256 => mapping (uint256 => StakingDetails))) public stakingDetailsTrancheB;
 
     address public jCompoundHelperAddress;
+}
+
+contract JCompoundStorageV3 is JCompoundStorageV2 {
+    mapping (address => bool) public tokenLoopEnabled;
+    mapping (address => uint256) public tokenAllowedLoops;
 }

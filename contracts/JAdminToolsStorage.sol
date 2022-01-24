@@ -4,7 +4,7 @@
  * @summary: Admin Tools storage
  * @author: Jibrel Team
  */
-pragma solidity 0.6.12;
+pragma solidity 0.8.10;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 

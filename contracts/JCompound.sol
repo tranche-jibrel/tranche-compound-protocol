@@ -4,17 +4,16 @@
  * @summary: Jibrel Compound Tranche Protocol
  * @author: Jibrel Team
  */
-pragma solidity 0.6.12;
+pragma solidity 0.8.10;
 
-import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/SafeERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "./interfaces/IJAdminTools.sol";
 import "./interfaces/IJTrancheTokens.sol";
 import "./interfaces/IJTranchesDeployer.sol";
 import "./interfaces/IJCompound.sol";
 import "./interfaces/ICErc20.sol";
-// import "./interfaces/IComptrollerLensInterface.sol";
 import "./interfaces/IComptroller.sol";
 import "./JCompoundStorage.sol";
 import "./TransferETHHelper.sol";
@@ -22,7 +21,7 @@ import "./interfaces/IIncentivesController.sol";
 import "./interfaces/IJCompoundHelper.sol";
 
 
-contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundStorageV2, IJCompound {
+contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundStorageV3, IJCompound {
     using SafeMathUpgradeable for uint256;
 
     /**
@@ -76,8 +75,15 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
      * @dev set incentive rewards address
      * @param _incentivesController incentives controller contract address
      */
-    function setincentivesControllerAddress(address _incentivesController) external onlyAdmins {
+    function setIncentivesControllerAddress(address _incentivesController) external override onlyAdmins {
         incentivesControllerAddress = _incentivesController;
+    }
+
+    /**
+     * @dev get incentive rewards address
+     */
+    function getIncentivesControllerAddress() external view override returns (address) {
+        return incentivesControllerAddress;
     }
 
     /**
@@ -86,6 +92,21 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
      */
     function setJCompoundHelperAddress(address _helper) external onlyAdmins {
         jCompoundHelperAddress = _helper;
+    }
+
+    /**
+     * @dev set loop enable and loop number for every token 
+     * @param _token token address
+     * @param _loopNum lopp number
+     */
+    function setTokenLoops(address _token, bool _switch, uint256 _loopNum) external onlyAdmins {
+        require(isCTokenAllowed(_token) || _token == address(0), "!cToken");
+        tokenLoopEnabled[_token] = _switch;
+        if (_switch) {
+            tokenAllowedLoops[_token] = _loopNum;
+        } else {
+            tokenAllowedLoops[_token] = 0;
+        }
     }
 
     /**
@@ -204,9 +225,9 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
         trancheAddresses[tranchePairsCounter].cTokenAddress = cTokenContracts[_erc20Contract];
         // our tokens always with 18 decimals
         trancheAddresses[tranchePairsCounter].ATrancheAddress = 
-                IJTranchesDeployer(tranchesDeployerAddress).deployNewTrancheATokens(_nameA, _symbolA, msg.sender, rewardsToken);
+                IJTranchesDeployer(tranchesDeployerAddress).deployNewTrancheATokens(_nameA, _symbolA, tranchePairsCounter);
         trancheAddresses[tranchePairsCounter].BTrancheAddress = 
-                IJTranchesDeployer(tranchesDeployerAddress).deployNewTrancheBTokens(_nameB, _symbolB, msg.sender, rewardsToken);
+                IJTranchesDeployer(tranchesDeployerAddress).deployNewTrancheBTokens(_nameB, _symbolB, tranchePairsCounter);
         
         trancheParameters[tranchePairsCounter].cTokenDecimals = _cTokenDec;
         trancheParameters[tranchePairsCounter].underlyingDecimals = _underlyingDec;
@@ -511,6 +532,68 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
 
     function getSingleTrancheUserSingleStakeDetailsTrB(address _user, uint256 _trancheNum, uint256 _num) external view override returns (uint256, uint256) {
         return (stakingDetailsTrancheB[_user][_trancheNum][_num].startTime, stakingDetailsTrancheB[_user][_trancheNum][_num].amount);
+    }
+
+    function borrowingAssets(uint256 _trancheNum, uint256 _amount2Borrow) internal returns (uint256) {
+        // Enter the market so you can borrow another type of asset
+        address cTokenAddress = trancheAddresses[_trancheNum].cTokenAddress;
+        address[] memory cTokens = new address[](1);
+        cTokens[0] = cTokenAddress;
+        IComptroller comptroller = IComptroller(comptrollerAddress);
+        uint256[] memory errors = comptroller.enterMarkets(cTokens);
+        if (errors[0] != 0) {
+            revert("Comptroller.enterMarkets failed.");
+        }
+            
+        // Get my account's total liquidity value in Compound
+        (uint256 error2, uint256 liquidity, uint256 shortfall) = comptroller.getAccountLiquidity(address(this));
+        if (error2 != 0) {
+            revert("Comptroller.getAccountLiquidity failed.");
+        }
+        require(shortfall == 0, "account underwater");
+        require(liquidity > 0, "account has excess collateral");
+
+        // Borrowing near the max amount will result
+        // in your account being liquidated instantly
+        // emit MyLog("Maximum ETH Borrow (borrow far less!)", liquidity);
+
+        // Get the collateral factor for our collateral
+        (bool isListed, /*uint collateralFactorMantissa*/) = comptroller.markets(cTokenAddress);
+        // emit MyLog('Collateral Factor', collateralFactorMantissa);
+
+        // Get the amount of ETH added to your borrow each block
+        uint borrowRateMantissa = cEthToken.borrowRatePerBlock();
+        // emit MyLog('Current ETH Borrow Rate', borrowRateMantissa);
+
+        // Borrow a fixed amount of ETH below our maximum borrow amount
+        uint256 numWeiToBorrow = _amount2Borrow; //2000000000000000; // 0.002 ETH
+
+        // Borrow, then check the underlying balance for this contract's address
+        cEthToken.borrow(numWeiToBorrow);
+
+        uint256 borrows = cEthToken.borrowBalanceCurrent(address(this));
+        // emit MyLog("Current ETH borrow amount", borrows);
+
+        return borrows;
+    }
+
+    // function myEthRepayBorrow(uint256 amount) public returns (bool) {
+    //     uint256 _error = cEthToken.repayBorrow{ value: amount}("");
+    //     require(_error == 0, "CErc20.repayBorrow Error");
+    //     return true;
+    // }
+
+    function myErc20RepayBorrow(uint256 _trancheNum, uint256 amount) public returns (bool) {
+        address tokenAddress = trancheAddresses[_trancheNum].buyerCoinAddress;
+        address cTokenAddress = trancheAddresses[_trancheNum].cTokenAddress;
+        IERC20Upgradeable underlying = IERC20Upgradeable(tokenAddress);
+        ICErc20 cToken = ICErc20(cTokenAddress);
+
+        underlying.approve(tokenAddress, amount);
+        uint256 _error = cToken.repayBorrow(amount);
+
+        require(_error == 0, "CErc20.repayBorrow Error");
+        return true;
     }
 
     /**

@@ -18,7 +18,6 @@ const UniswapV2Factory = contract.fromArtifact("UniswapV2Factory");
 const UniswapV2Pair = contract.fromArtifact("UniswapV2Pair");
 const UniswapV2Router02 = contract.fromArtifact("UniswapV2Router02");
 
-const weth = contract.fromArtifact("myWETH");
 const token1 = contract.fromArtifact("myERC20");
 const token2 = contract.fromArtifact("myERC20");
 

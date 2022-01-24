@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.6.12;
+pragma solidity 0.8.10;
 
 interface IJCompound {
     event TrancheAddedToProtocol(uint256 trancheNum, address trancheA, address trancheB);
@@ -18,4 +18,8 @@ interface IJCompound {
     function getTrancheACurrentRPB(uint256 _trancheNum) external view returns (uint256);
     function getTrancheAExchangeRate(uint256 _trancheNum) external view returns (uint256);
     function getTrancheBExchangeRate(uint256 _trancheNum, uint256 _newAmount) external view returns (uint256 tbPrice);
+    function getIncentivesControllerAddress() external view returns (address);
+    function setIncentivesControllerAddress(address _incentivesController) external;
+    function setTrAStakingDetails(uint256 _trancheNum, address _account, uint256 _stkNum, uint256 _amount, uint256 _time) external;
+    function setTrBStakingDetails(uint256 _trancheNum, address _account, uint256 _stkNum, uint256 _amount, uint256 _time) external;
 }

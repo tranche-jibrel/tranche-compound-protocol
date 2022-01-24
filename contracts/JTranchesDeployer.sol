@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: MIT
 /**
  * Created on 2021-02-11
- * @summary: Jibrel Compound Tranche Deployer
+ * @summary: Jibrel Aave Tranche Deployer
  * @author: Jibrel Team
  */
-pragma solidity 0.6.12;
+pragma solidity 0.8.10;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "./interfaces/IJTranchesDeployer.sol";
+import "./interfaces/IJAdminTools.sol";
 import "./JTrancheAToken.sol";
 import "./JTrancheBToken.sol";
 import "./JTranchesDeployerStorage.sol";
-
 
 contract JTranchesDeployer is OwnableUpgradeable, JTranchesDeployerStorage, IJTranchesDeployer {
     using SafeMathUpgradeable for uint256;
@@ -21,36 +21,33 @@ contract JTranchesDeployer is OwnableUpgradeable, JTranchesDeployerStorage, IJTr
         OwnableUpgradeable.__Ownable_init();
     }
 
-    function setJCompoundAddress(address _jCompound) external onlyOwner {
-        jCompoundAddress = _jCompound;
+    function setJCompoundAddresses(address _jCompoundAddress, address _jATAddress) external onlyOwner {
+        jCompoundAddress = _jCompoundAddress;
+        jAdminToolsAddress = _jATAddress;
     }
 
     modifier onlyProtocol() {
-        require(msg.sender == jCompoundAddress, "!jCompound");
+        require(msg.sender == jCompoundAddress, "TrancheDeployer: caller is not JAave");
         _;
     }
 
     function deployNewTrancheATokens(string memory _nameA, 
             string memory _symbolA, 
-            address _sender, 
-            address _rewardToken) external override onlyProtocol returns (address) {
-        JTrancheAToken jTrancheA = new JTrancheAToken();
-        jTrancheA.initialize(_nameA, _symbolA);
+            uint256 _trNum) external override onlyProtocol returns (address) {
+        JTrancheAToken jTrancheA = new JTrancheAToken(_nameA, _symbolA, _trNum);
         jTrancheA.setJCompoundMinter(msg.sender); 
-        jTrancheA.setRewardTokenAddress(_rewardToken);
-        jTrancheA.transferOwnership(_sender);
+        // add tranche address to admins!
+        IJAdminTools(jAdminToolsAddress).addAdmin(address(jTrancheA));
         return address(jTrancheA);
     }
 
     function deployNewTrancheBTokens(string memory _nameB, 
             string memory _symbolB, 
-            address _sender, 
-            address _rewardToken) external override onlyProtocol returns (address) {
-        JTrancheBToken jTrancheB = new JTrancheBToken();
-        jTrancheB.initialize(_nameB, _symbolB);
+            uint256 _trNum) external override onlyProtocol returns (address) {
+        JTrancheBToken jTrancheB = new JTrancheBToken(_nameB, _symbolB, _trNum);
         jTrancheB.setJCompoundMinter(msg.sender);
-        jTrancheB.setRewardTokenAddress(_rewardToken);
-        jTrancheB.transferOwnership(_sender);
+        // add tranche address to admins!
+        IJAdminTools(jAdminToolsAddress).addAdmin(address(jTrancheB));
         return address(jTrancheB);
     }
 

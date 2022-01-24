@@ -4,7 +4,7 @@
  * @summary: Admin Tools Interface
  * @author: Jibrel Team
  */
-pragma solidity 0.6.12;
+pragma solidity 0.8.10;
 
 interface IJAdminTools {
     function isAdmin(address account) external view returns (bool);

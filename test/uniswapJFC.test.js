@@ -17,7 +17,6 @@ const UniswapV2Factory = contract.fromArtifact("UniswapV2Factory");
 const UniswapV2Pair = contract.fromArtifact("UniswapV2Pair");
 const UniswapV2Router02 = contract.fromArtifact("UniswapV2Router02");
 
-const weth = contract.fromArtifact("myWETH");
 const token1 = contract.fromArtifact("myERC20");
 const token2 = contract.fromArtifact("myERC20");
 
@@ -36,6 +35,8 @@ const kovanExchange = '0xFD5c5DAB526dB1Ea1c351f67b6CE99C9e6E304F4'
 // ROUTER02 on all networks
 const KovanRouter02 = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D'
 
+const WETH_ADDRESS = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+
 const STABLE_COIN_AMOUNT1 = 150000;
 
 const STABLE_COIN_AMOUNT2 = 50;
@@ -45,9 +46,6 @@ describe('Uniswap JFeesCollector', function () {
   const [ tokenOwner, factoryOwner, factoryAdmin, feeSetter, jfcOwner ] = accounts;
 
     it('deploy', async () => {
-      this.weth = await weth.new({ from: tokenOwner });
-      console.log("myWETH address: " + this.weth.address);
-
       this.AT = await JAdminTools.new({ from: jfcOwner });
       console.log("myAT address: " + this.AT.address);
       await this.AT.initialize({ from: jfcOwner })
@@ -56,7 +54,7 @@ describe('Uniswap JFeesCollector', function () {
       tx = await this.JFeesCollector.initialize(this.AT.address, { from: jfcOwner })
 
 			this.uniswapV2Factory = await UniswapV2Factory.new(this.JFeesCollector.address, { from: factoryOwner });
-			this.uniswapV2Router02 = await UniswapV2Router02.new(this.uniswapV2Factory.address, this.weth.address, { from: factoryOwner });
+			this.uniswapV2Router02 = await UniswapV2Router02.new(this.uniswapV2Factory.address, WETH_ADDRESS, { from: factoryOwner });
       console.log("init code hash pair for Uniswap library: " + await this.uniswapV2Factory.getInitCodeHashPair())
 
       this.token1 = await token1.new({ from: tokenOwner });
@@ -158,11 +156,11 @@ describe('Uniswap JFeesCollector', function () {
     });
 
     it('set a new pair of tokens and ETH and add liquidity', async () => {
-      this.uniswapV2Factory.createPair(this.weth.address, this.token1.address, { from: factoryAdmin });
+      this.uniswapV2Factory.createPair(WETH_ADDRESS, this.token1.address, { from: factoryAdmin });
       console.log('Total Pairs: ' + await this.uniswapV2Factory.allPairsLength());
       pair1 = await this.uniswapV2Factory.allPairs(1);
       console.log('Pairs1 address: ' + pair1);
-      pair1 = await this.uniswapV2Factory.getPair(this.weth.address, this.token1.address);
+      pair1 = await this.uniswapV2Factory.getPair(WETH_ADDRESS, this.token1.address);
       console.log('Pairs1 get pair: ' + pair1);
       this.uniV2EthPair = await UniswapV2Pair.at(pair1);
       fact = await this.uniV2EthPair.factory();
@@ -173,7 +171,7 @@ describe('Uniswap JFeesCollector', function () {
       
       console.log('Pairs1 total supply: ' + await this.uniV2EthPair.totalSupply());
       console.log('Pairs1 reserves: ' + JSON.stringify(await this.uniV2EthPair.getReserves()));
-      console.log('Pair liquidity: ' + JSON.stringify(await this.JFeesCollector.pairInfo(this.weth.address, this.token1.address)));
+      console.log('Pair liquidity: ' + JSON.stringify(await this.JFeesCollector.pairInfo(WETH_ADDRESS, this.token1.address)));
 
       console.log('tokenOwner TK1 balance: ' + web3.utils.fromWei(await this.token1.balanceOf(tokenOwner)))
       console.log('tokenOwner eth balance: ' + web3.utils.fromWei(await web3.eth.getBalance(tokenOwner)));
@@ -190,7 +188,7 @@ describe('Uniswap JFeesCollector', function () {
 
       console.log('Pairs1 total supply: ' + web3.utils.fromWei(await this.uniV2EthPair.totalSupply()))
       //console.log('Pairs0 reserves: ' + JSON.stringify(await this.uniV2TokensPair.getReserves()));
-      console.log('Pair liquidity: ' + JSON.stringify(await this.JFeesCollector.pairInfo(this.weth.address, this.token1.address)));
+      console.log('Pair liquidity: ' + JSON.stringify(await this.JFeesCollector.pairInfo(WETH_ADDRESS, this.token1.address)));
     });
 
     it('exchange eth for tokens from LP1', async () => {
@@ -200,7 +198,7 @@ describe('Uniswap JFeesCollector', function () {
 
       let deadline = block.timestamp + 15; // using 'now' for convenience, for mainnet pass deadline from frontend!
 
-      path = [this.weth.address, this.token1.address]
+      path = [WETH_ADDRESS, this.token1.address]
       amounts = await this.uniswapV2Router02.getAmountsIn(web3.utils.toWei("1.5",'ether'), path)
       console.log(web3.utils.fromWei(amounts[0].toString()))
       console.log(web3.utils.fromWei(amounts[1].toString()))
@@ -213,7 +211,7 @@ describe('Uniswap JFeesCollector', function () {
 
       console.log('Pairs1 total supply: ' + web3.utils.fromWei(await this.uniV2EthPair.totalSupply()))
       //console.log('Pairs0 reserves: ' + JSON.stringify(await this.uniV2TokensPair.getReserves()));
-      console.log('Pair liquidity: ' + JSON.stringify(await this.JFeesCollector.pairInfo(this.weth.address, this.token1.address)));;
+      console.log('Pair liquidity: ' + JSON.stringify(await this.JFeesCollector.pairInfo(WETH_ADDRESS, this.token1.address)));;
     });
 
     it('exchange tokens for eth from LP1', async () => {
@@ -223,7 +221,7 @@ describe('Uniswap JFeesCollector', function () {
 
       let deadline = block.timestamp + 15; // using 'now' for convenience, for mainnet pass deadline from frontend!
 
-      path = [this.token1.address, this.weth.address]
+      path = [this.token1.address, WETH_ADDRESS]
       amounts = await this.uniswapV2Router02.getAmountsOut(web3.utils.toWei("1.5",'ether'), path)
       console.log(web3.utils.fromWei(amounts[0].toString()))
       console.log(web3.utils.fromWei(amounts[1].toString()))
@@ -237,7 +235,7 @@ describe('Uniswap JFeesCollector', function () {
 
       console.log('Pairs1 total supply: ' + web3.utils.fromWei(await this.uniV2EthPair.totalSupply()))
       //console.log('Pairs0 reserves: ' + JSON.stringify(await this.uniV2TokensPair.getReserves()));
-      infoPair = await this.JFeesCollector.pairInfo(this.weth.address, this.token1.address)
+      infoPair = await this.JFeesCollector.pairInfo(WETH_ADDRESS, this.token1.address)
       console.log('Pair liquidity - reserveA: ' + web3.utils.fromWei(infoPair[0].toString()) + 
           ", reserveB: " + web3.utils.fromWei(infoPair[1].toString()) + ", totalSupply: " + web3.utils.fromWei(infoPair[2].toString()));
     });
@@ -286,7 +284,7 @@ describe('Uniswap JFeesCollector', function () {
     it('Fees collector sends eth for token1 in LP1', async () => {
       bal = await web3.eth.getBalance(this.JFeesCollector.address)
       console.log(web3.utils.fromWei(bal.toString()))
-      path = [this.weth.address, this.token1.address]
+      path = [WETH_ADDRESS, this.token1.address]
       amounts = await this.uniswapV2Router02.getAmountsOut(web3.utils.toWei("5",'ether'), path)
       console.log(web3.utils.fromWei(amounts[0].toString()))
       console.log(web3.utils.fromWei(amounts[1].toString()))
@@ -302,7 +300,7 @@ describe('Uniswap JFeesCollector', function () {
     it('Fees collector sends token1 for eth in LP1', async () => {
       bal = await this.JFeesCollector.getTokenBalance(this.token1.address)
       console.log(web3.utils.fromWei(bal.toString()))
-      path = [this.token1.address, this.weth.address]
+      path = [this.token1.address, WETH_ADDRESS]
       amounts = await this.uniswapV2Router02.getAmountsOut(bal, path)
       console.log(web3.utils.fromWei(amounts[0].toString()))
       console.log(web3.utils.fromWei(amounts[1].toString()))
