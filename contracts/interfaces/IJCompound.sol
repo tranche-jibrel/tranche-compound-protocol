@@ -22,4 +22,8 @@ interface IJCompound {
     function setIncentivesControllerAddress(address _incentivesController) external;
     function setTrAStakingDetails(uint256 _trancheNum, address _account, uint256 _stkNum, uint256 _amount, uint256 _time) external;
     function setTrBStakingDetails(uint256 _trancheNum, address _account, uint256 _stkNum, uint256 _amount, uint256 _time) external;
+    function buyTrancheAToken(uint256 _trancheNum, uint256 _amount) external payable;
+    function redeemTrancheAToken(uint256 _trancheNum, uint256 _amount) external;
+    function buyTrancheBToken(uint256 _trancheNum, uint256 _amount) external payable;
+    function redeemTrancheBToken(uint256 _trancheNum, uint256 _amount) external;
 }

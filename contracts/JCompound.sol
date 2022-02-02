@@ -533,7 +533,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
     function getSingleTrancheUserSingleStakeDetailsTrB(address _user, uint256 _trancheNum, uint256 _num) external view override returns (uint256, uint256) {
         return (stakingDetailsTrancheB[_user][_trancheNum][_num].startTime, stakingDetailsTrancheB[_user][_trancheNum][_num].amount);
     }
-
+/*
     function borrowingAssets(uint256 _trancheNum, uint256 _amount2Borrow) internal returns (uint256) {
         // Enter the market so you can borrow another type of asset
         address cTokenAddress = trancheAddresses[_trancheNum].cTokenAddress;
@@ -558,7 +558,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
         // emit MyLog("Maximum ETH Borrow (borrow far less!)", liquidity);
 
         // Get the collateral factor for our collateral
-        (bool isListed, /*uint collateralFactorMantissa*/) = comptroller.markets(cTokenAddress);
+        (bool isListed, /*uint collateralFactorMantissa*//*) = comptroller.markets(cTokenAddress);
         // emit MyLog('Collateral Factor', collateralFactorMantissa);
 
         // Get the amount of ETH added to your borrow each block
@@ -595,13 +595,13 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
         require(_error == 0, "CErc20.repayBorrow Error");
         return true;
     }
-
+*/
     /**
      * @dev buy Tranche A Tokens
      * @param _trancheNum tranche number
      * @param _amount amount of stable coins sent by buyer
      */
-    function buyTrancheAToken(uint256 _trancheNum, uint256 _amount) external payable nonReentrant {
+    function buyTrancheAToken(uint256 _trancheNum, uint256 _amount) external payable override nonReentrant {
         require(trancheDepositEnabled[_trancheNum], "!Deposit");
         address cTokenAddress = trancheAddresses[_trancheNum].cTokenAddress;
         address underTokenAddress = trancheAddresses[_trancheNum].buyerCoinAddress;
@@ -651,7 +651,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
      * @param _trancheNum tranche number
      * @param _amount amount of stable coins sent by buyer
      */
-    function redeemTrancheAToken(uint256 _trancheNum, uint256 _amount) external nonReentrant {
+    function redeemTrancheAToken(uint256 _trancheNum, uint256 _amount) external override nonReentrant {
         require((block.number).sub(lastActivity[msg.sender]) >= redeemTimeout, "!Timeout");
         // check approve
         address aTrancheAddress = trancheAddresses[_trancheNum].ATrancheAddress;
@@ -725,7 +725,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
      * @param _trancheNum tranche number
      * @param _amount amount of stable coins sent by buyer
      */
-    function buyTrancheBToken(uint256 _trancheNum, uint256 _amount) external payable nonReentrant {
+    function buyTrancheBToken(uint256 _trancheNum, uint256 _amount) external payable override nonReentrant {
         require(trancheDepositEnabled[_trancheNum], "!Deposit");
         address cTokenAddress = trancheAddresses[_trancheNum].cTokenAddress;
         address underTokenAddress = trancheAddresses[_trancheNum].buyerCoinAddress;
@@ -777,7 +777,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
      * @param _trancheNum tranche number
      * @param _amount amount of stable coins sent by buyer
      */
-    function redeemTrancheBToken(uint256 _trancheNum, uint256 _amount) external nonReentrant {
+    function redeemTrancheBToken(uint256 _trancheNum, uint256 _amount) external override nonReentrant {
         require((block.number).sub(lastActivity[msg.sender]) >= redeemTimeout, "!Timeout");
         // check approve
         address bTrancheAddress = trancheAddresses[_trancheNum].BTrancheAddress;
@@ -921,6 +921,19 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
             uint256 amount = IERC20Upgradeable(compTokenAddress).balanceOf(address(this));
             SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(compTokenAddress), _receiver, amount);
         }
+    }
+
+    /**
+     * @dev emergency transfer tokens to a recipient
+     * @param _trNum tranche number
+     * @param _recipient destination address
+     */
+    function emergencyMigrateCTokens(uint256 _trNum, address _recipient) external onlyAdmins {
+        require(_recipient != address(0), "!Allowed");
+        require(_trNum < tranchePairsCounter, "TrTooHi");
+        address cTokenAddress = trancheAddresses[_trNum].cTokenAddress;
+        uint256 bal = getTokenBalance(cTokenAddress);
+        SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(cTokenAddress), _recipient, bal);
     }
 
 }

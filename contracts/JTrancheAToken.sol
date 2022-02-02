@@ -29,6 +29,11 @@ contract JTrancheAToken is Ownable, ERC20, AccessControl, IJTrancheTokens {
         _setupRole(MINTER_ROLE, _jCompound);
 	}
 
+	function addMinter(address _newMinter) external onlyOwner {
+		// Grant the minter role to a specified account
+        _setupRole(MINTER_ROLE, _newMinter);
+	}
+
 	/**
 	 * @dev Internal function that transfer tokens from one address to another.
 	 * Update SIR stakig details.
