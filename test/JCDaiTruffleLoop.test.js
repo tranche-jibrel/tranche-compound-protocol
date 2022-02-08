@@ -32,7 +32,17 @@ const JTrancheAToken = artifacts.require('JTrancheAToken');
 const JTrancheBToken = artifacts.require('JTrancheBToken');
 
 const MYERC20_TOKEN_SUPPLY = 5000000;
-const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+const {ZERO_ADDRESS} = constants;
+
+CDAI_ADDRESS=0xf0d0eb522cfa50b716b3b1604c4f0fa6f04376ad
+DAI_ADDRESS=0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa
+CETH_ADDRESS=0x41b5844f4680a8c38fbb695b7f9cfd1f64474a72
+
+const COMP_ADDRESS = "0xc00e94cb662c3520282e6f5717214004a7f26888";
+      const COMP_CONTROLLER = "0x3d9819210A31b4961b30EF54bE2aeD79B9c9Cd3B";
+      const SLICE_ADDRESS = "0x0aee8703d34dd9ae107386d3eff22ae75dd616d1";
+      const TRANCHE_ONE_TOKEN_ADDRESS = "0x6b175474e89094c44da98b954eedeac495271d0f"
+      const TRANCHE_ONE_CTOKEN_ADDRESS = "0x5d3a536e4d6dbd6114cc1ead35777bab948e3643"
 
 let daiContract, cEtherContract, cERC20Contract, jFCContract, jATContract, jTrDeplContract, jCompContract;
 let ethTrAContract, ethTrBContract, daiTrAContract, daiTrBContract;
