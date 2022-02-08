@@ -113,7 +113,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
      * @dev admins modifiers
      */
     modifier onlyAdmins() {
-        require(IJAdminTools(adminToolsAddress).isAdmin(msg.sender), "!Admin");
+        require(IJAdminTools(adminToolsAddress).isAdmin(msg.sender), "!AdminJC");
         _;
     }
 
@@ -533,7 +533,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
     function getSingleTrancheUserSingleStakeDetailsTrB(address _user, uint256 _trancheNum, uint256 _num) external view override returns (uint256, uint256) {
         return (stakingDetailsTrancheB[_user][_trancheNum][_num].startTime, stakingDetailsTrancheB[_user][_trancheNum][_num].amount);
     }
-/*
+
     function borrowingAssets(uint256 _trancheNum, uint256 _amount2Borrow) internal returns (uint256) {
         // Enter the market so you can borrow another type of asset
         address cTokenAddress = trancheAddresses[_trancheNum].cTokenAddress;
@@ -558,7 +558,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
         // emit MyLog("Maximum ETH Borrow (borrow far less!)", liquidity);
 
         // Get the collateral factor for our collateral
-        (bool isListed, /*uint collateralFactorMantissa*//*) = comptroller.markets(cTokenAddress);
+        (bool isListed, /*uint collateralFactorMantissa*/) = comptroller.markets(cTokenAddress);
         // emit MyLog('Collateral Factor', collateralFactorMantissa);
 
         // Get the amount of ETH added to your borrow each block
@@ -595,7 +595,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
         require(_error == 0, "CErc20.repayBorrow Error");
         return true;
     }
-*/
+
     /**
      * @dev buy Tranche A Tokens
      * @param _trancheNum tranche number

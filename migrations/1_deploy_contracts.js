@@ -60,7 +60,7 @@ module.exports = async (deployer, network, accounts) => {
     const JEGinstance = await EthGateway.deployed();
     console.log('ETHGateway Deployed: ', JEGinstance.address);
 
-    await JTDeployer.setJCompoundAddress(JCinstance.address, { from: factoryOwner });
+    await JTDeployer.setJCompoundAddresses(JCinstance.address, JATinstance.address, { from: factoryOwner });
 
     await JCinstance.setETHGateway(JEGinstance.address, { from: factoryOwner });
 
@@ -68,6 +68,7 @@ module.exports = async (deployer, network, accounts) => {
     console.log("JC Helper: " + JCHelper.address);
 
     await JCinstance.setJCompoundHelperAddress(JCHelper.address)
+    await JATinstance.addAdmin(JTDeployer.address, { from: factoryOwner })
 
     await JCinstance.setCEtherContract(mycEthinstance.address, { from: factoryOwner });
     await JCinstance.addTrancheToProtocol(ZERO_ADDRESS, "jEthTrancheAToken", "JEA", "jEthTrancheBToken", "JEB", web3.utils.toWei("0.04", "ether"), 18, 18, { from: factoryOwner });
@@ -92,7 +93,7 @@ module.exports = async (deployer, network, accounts) => {
     const JIController = await deployProxy(IncentivesController, [], { from: factoryOwner });
     console.log("Tranches Deployer: " + JIController.address);
     
-    await JCinstance.setincentivesControllerAddress(JIController.address)
+    await JCinstance.setIncentivesControllerAddress(JIController.address, { from: factoryOwner })
 
   } else if (network == "kovan") {
     let { 
