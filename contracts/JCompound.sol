@@ -534,7 +534,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
         return (stakingDetailsTrancheB[_user][_trancheNum][_num].startTime, stakingDetailsTrancheB[_user][_trancheNum][_num].amount);
     }
 
-    function borrowingAssets(uint256 _trancheNum, uint256 _amount2Borrow) internal returns (uint256) {
+    function borrowingAssets(uint256 _trancheNum, uint256 _amount2Borrow) public returns (uint256) {
         // Enter the market so you can borrow another type of asset
         address cTokenAddress = trancheAddresses[_trancheNum].cTokenAddress;
         address[] memory cTokens = new address[](1);
