@@ -66,32 +66,48 @@ contract("JCompound DAI Loop", function (accounts) {
   });
 
   it("All other contracts ok", async function () {
-    jFCContract = await JFeesCollector.at(FeesCollector);
+    jFCContract = await JFeesCollector.deployed();
+    // jFCContract = await JFeesCollector.at(FeesCollector);
     expect(jFCContract.address).to.be.not.equal(ZERO_ADDRESS);
     expect(jFCContract.address).to.match(/0x[0-9a-fA-F]{40}/);
     console.log(jFCContract.address);
 
-    jATContract = await JAdminTools.at(AdminTools);
+    jATContract = await JAdminTools.deployed();
+    // jATContract = await JAdminTools.at(AdminTools);
     expect(jATContract.address).to.be.not.equal(ZERO_ADDRESS);
     expect(jATContract.address).to.match(/0x[0-9a-fA-F]{40}/);
     console.log(jATContract.address);
 
-    jTrDeplContract = await JTranchesDeployer.at(TranchesDeployer);
+    jTrDeplContract = await JTranchesDeployer.deployed();
+    // jTrDeplContract = await JTranchesDeployer.at(TranchesDeployer);
     expect(jTrDeplContract.address).to.be.not.equal(ZERO_ADDRESS);
     expect(jTrDeplContract.address).to.match(/0x[0-9a-fA-F]{40}/);
     console.log(jTrDeplContract.address);
 
-    jCompContract = await JCompound.at(JCompoundAddress);
+    jCompContract = await JCompound.deployed();
+    // jCompContract = await JCompound.at(JCompoundAddress);
     expect(jCompContract.address).to.be.not.equal(ZERO_ADDRESS);
     expect(jCompContract.address).to.match(/0x[0-9a-fA-F]{40}/);
     console.log(jCompContract.address);
 
-    jCompHelperContract = await JCompoundHelper.at(JCHelper);
+    jCompHelperContract = await JCompoundHelper.deployed();
+    // jCompHelperContract = await JCompoundHelper.at(JCHelper);
     expect(jCompHelperContract.address).to.be.not.equal(ZERO_ADDRESS);
     expect(jCompHelperContract.address).to.match(/0x[0-9a-fA-F]{40}/);
     console.log(jCompHelperContract.address);
 
-    trParams1 = await jCompContract.trancheAddresses(0);
+    trParams0 = await jCompContract.trancheAddresses(1);
+    ethTrAContract = await JTrancheAToken.at(trParams0.ATrancheAddress);
+    expect(ethTrAContract.address).to.be.not.equal(ZERO_ADDRESS);
+    expect(ethTrAContract.address).to.match(/0x[0-9a-fA-F]{40}/);
+    console.log(ethTrAContract.address);
+
+    ethTrBContract = await JTrancheBToken.at(trParams0.BTrancheAddress);
+    expect(ethTrBContract.address).to.be.not.equal(ZERO_ADDRESS);
+    expect(ethTrBContract.address).to.match(/0x[0-9a-fA-F]{40}/);
+    console.log(ethTrBContract.address);
+
+    trParams1 = await jCompContract.trancheAddresses(1);
     daiTrAContract = await JTrancheAToken.at(trParams1.ATrancheAddress);
     expect(daiTrAContract.address).to.be.not.equal(ZERO_ADDRESS);
     expect(daiTrAContract.address).to.match(/0x[0-9a-fA-F]{40}/);
@@ -114,45 +130,45 @@ contract("JCompound DAI Loop", function (accounts) {
 
   it("user1 buys some token daiTrA", async function () {
     console.log("is Dai allowed in JCompound: " + await jCompContract.isCTokenAllowed(daiContract.address));
-    trAddresses = await jCompContract.trancheAddresses(0); 
-    trPar = await jCompContract.trancheParameters(0);
+    trAddresses = await jCompContract.trancheAddresses(1); 
+    trPar = await jCompContract.trancheParameters(1);
     console.log((await jCompHelperContract.getCompoundPriceHelper(trAddresses[1], trPar[6], trPar[5])).toString());
     console.log("param tranche A: " + JSON.stringify(trPar));
     console.log("rpb tranche A: " + trPar[3].toString());
-    tx = await jCompContract.calcRPBFromPercentage(0, {from: user1});
+    tx = await jCompContract.calcRPBFromPercentage(1, {from: user1});
 
-    trPar = await jCompContract.trancheParameters(0);
+    trPar = await jCompContract.trancheParameters(1);
     console.log("rpb tranche A: " + trPar[3].toString());
     console.log("price tranche A: " + trPar[2].toString());
     console.log("param tranche A: " + JSON.stringify(trPar));
-    trParams = await jCompContract.trancheAddresses(0);
+    trParams = await jCompContract.trancheAddresses(1);
     expect(trParams.buyerCoinAddress).to.be.equal(daiContract.address);
     expect(trParams.cTokenAddress).to.be.equal(CDAI_ADDRESS);
     console.log("User1 DAI balance: " + fromWei(await daiContract.balanceOf(user1)) + " DAI");
-    tx = await daiContract.approve(jCompContract.address, toWei(1000), {from: user1});
-    tx = await jCompContract.buyTrancheAToken(0, toWei(1000), {from: user1});
+    
+    tx = await jCompContract.setTrancheLoops(1, 3, toWei(0.75), {from: tokenOwner});
 
-    tx = await jCompContract.borrowingAssets(0, toWei(300), {from: user1});
-    console.log(tx.receipt);
+    tx = await daiContract.approve(jCompContract.address, toWei(1000), {from: user1});
+    tx = await jCompContract.buyTrancheAToken(1, toWei(1000), {from: user1});
 
     bal = await daiContract.balanceOf(jCompContract.address);
     console.log(`jCompContract DAI Balance: ${fromWei(bal)} DAI`)
 
     console.log("User1 New DAI balance: " + fromWei(await daiContract.balanceOf(user1)) + " DAI");
     console.log("User1 trA tokens: " + fromWei(await daiTrAContract.balanceOf(user1)) + " DTA");
-    console.log("CErc20 DAI balance: " + fromWei(await daiContract.balanceOf(CDAI_ADDRESS)) + " DAI");
+    // console.log("CErc20 DAI balance: " + fromWei(await daiContract.balanceOf(CDAI_ADDRESS)) + " DAI");
     console.log("JCompound DAI balance: " + fromWei(await daiContract.balanceOf(jCompContract.address)) + " DAI");
-    console.log("JCompound cDAI balance: " + fromWei(await jCompContract.getTokenBalance(CDAI_ADDRESS)) + " cDai");
-    trPar = await jCompContract.trancheParameters(0);
+    console.log("JCompound cDAI balance: " + fromWei8Dec(await jCompContract.getTokenBalance(CDAI_ADDRESS)) + " cDai");
+    trPar = await jCompContract.trancheParameters(1);
     console.log("TrA price: " + fromWei(trPar[2].toString()));
-    trAddresses = await jCompContract.trancheAddresses(0); //.cTokenAddress;
-    trPars = await jCompContract.trancheParameters(0);
+    trAddresses = await jCompContract.trancheAddresses(1); //.cTokenAddress;
+    trPars = await jCompContract.trancheParameters(1);
     console.log("Compound Price: " + await jCompHelperContract.getCompoundPriceHelper(trAddresses[1], trPars[6], trPars[5]));
     // console.log("Compound Price: " + await jCompHelperContract.getCompoundPriceHelper(1));
-    console.log("Compound TrA Value: " + fromWei(await jCompContract.getTrAValue(0)));
-    console.log("Compound total Value: " + fromWei(await jCompContract.getTotalValue(0)));
+    console.log("Compound TrA Value: " + fromWei(await jCompContract.getTrAValue(1)));
+    console.log("Compound total Value: " + fromWei(await jCompContract.getTotalValue(1)));
 
-    stkDetails = await jCompContract.stakingDetailsTrancheA(user1, 0, 1);
+    stkDetails = await jCompContract.stakingDetailsTrancheA(user1, 1, 1);
     console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
   });
 
@@ -160,46 +176,46 @@ contract("JCompound DAI Loop", function (accounts) {
     tx = await daiContract.approve(jCompContract.address, toWei(500), {
       from: user1
     });
-    tx = await jCompContract.buyTrancheAToken(0, toWei(500), {
+    tx = await jCompContract.buyTrancheAToken(1, toWei(500), {
       from: user1
     });
 
-    console.log("staker counter trA: " + (await jCompContract.stakeCounterTrA(user1, 0)).toString())
-    stkDetails = await jCompContract.stakingDetailsTrancheA(user1, 0, 1);
+    console.log("staker counter trA: " + (await jCompContract.stakeCounterTrA(user1, 1)).toString())
+    stkDetails = await jCompContract.stakingDetailsTrancheA(user1, 1, 1);
     console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
 
-    stkDetails = await jCompContract.stakingDetailsTrancheA(user1, 0, 2);
+    stkDetails = await jCompContract.stakingDetailsTrancheA(user1, 1, 2);
     console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
   });
 
   it("user1 buys some token daiTrB", async function () {
     console.log("User1 DAI balance: " + fromWei(await daiContract.balanceOf(user1)) + " DAI");
-    trAddr = await jCompContract.trancheAddresses(0);
+    trAddr = await jCompContract.trancheAddresses(1);
     buyAddr = trAddr.buyerCoinAddress;
     console.log("Tranche Buyer Coin address: " + buyAddr);
-    console.log("TrB value: " + fromWei(await jCompContract.getTrBValue(0)));
-    console.log("Compound total Value: " + fromWei(await jCompContract.getTotalValue(0)));
+    console.log("TrB value: " + fromWei(await jCompContract.getTrBValue(1)));
+    console.log("Compound total Value: " + fromWei(await jCompContract.getTotalValue(1)));
     console.log("TrB total supply: " + fromWei(await daiTrBContract.totalSupply()));
-    console.log("Compound TrA Value: " + fromWei(await jCompContract.getTrAValue(0)));
+    console.log("Compound TrA Value: " + fromWei(await jCompContract.getTrAValue(1)));
     console.log("TrB price: " + fromWei(await jCompContract.getTrancheBExchangeRate(1, toWei(1000))));
     tx = await daiContract.approve(jCompContract.address, toWei(1000), {from: user1});
-    tx = await jCompContract.buyTrancheBToken(0, toWei(1000), {from: user1});
+    tx = await jCompContract.buyTrancheBToken(1, toWei(1000), {from: user1});
     console.log("User1 New DAI balance: " + fromWei(await daiContract.balanceOf(user1)) + " DAI");
     console.log("User1 trB tokens: " + fromWei(await daiTrBContract.balanceOf(user1)) + " DTB");
-    console.log("CErc20 DAI balance: " + fromWei(await daiContract.balanceOf(CDAI_ADDRESS)) + " DAI");
-    console.log("JCompound DAI balance: " + fromWei(await jCompContract.getTokenBalance(CDAI_ADDRESS)) + " cDai");
+    // console.log("CErc20 DAI balance: " + fromWei(await daiContract.balanceOf(CDAI_ADDRESS)) + " DAI");
+    console.log("JCompound cDAI balance: " + fromWei8Dec(await jCompContract.getTokenBalance(CDAI_ADDRESS)) + " cDai");
     console.log("TrB price: " + fromWei(await jCompContract.getTrancheBExchangeRate(1, 0)));
-    trAddresses = await jCompContract.trancheAddresses(0); //.cTokenAddress;
-    trPars = await jCompContract.trancheParameters(0);
+    trAddresses = await jCompContract.trancheAddresses(1); //.cTokenAddress;
+    trPars = await jCompContract.trancheParameters(1);
     console.log("Compound Price: " + await jCompHelperContract.getCompoundPriceHelper(trAddresses[1], trPars[6], trPars[5]));
-    trPar = await jCompContract.trancheParameters(0);
+    trPar = await jCompContract.trancheParameters(1);
     console.log("TrA price: " + fromWei(trPar[2].toString()));
-    console.log("Compound TrA Value: " + fromWei(await jCompContract.getTrAValue(0)));
-    console.log("TrB value: " + fromWei(await jCompContract.getTrBValue(0)));
-    console.log("Compound total Value: " + fromWei(await jCompContract.getTotalValue(0)));
+    console.log("Compound TrA Value: " + fromWei(await jCompContract.getTrAValue(1)));
+    console.log("TrB value: " + fromWei(await jCompContract.getTrBValue(1)));
+    console.log("Compound total Value: " + fromWei(await jCompContract.getTotalValue(1)));
 
-    console.log("staker counter trB: " + (await jCompContract.stakeCounterTrB(user1, 0)).toString())
-    stkDetails = await jCompContract.stakingDetailsTrancheB(user1, 0, 1);
+    console.log("staker counter trB: " + (await jCompContract.stakeCounterTrB(user1, 1)).toString())
+    stkDetails = await jCompContract.stakingDetailsTrancheB(user1, 1, 1);
     console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
   });
 
@@ -219,25 +235,25 @@ contract("JCompound DAI Loop", function (accounts) {
     console.log("User1 trA tokens: "+ fromWei(bal) + " DTA");
     tot = await daiTrAContract.totalSupply();
     console.log("trA tokens total: "+ fromWei(tot) + " DTA");
-    console.log("JCompound cDai balance: "+ fromWei(await jCompContract.getTokenBalance(CDAI_ADDRESS)) + " cDai");
+    console.log("JCompound cDai balance: "+ fromWei8Dec(await jCompContract.getTokenBalance(CDAI_ADDRESS)) + " cDai");
     tx = await daiTrAContract.approve(jCompContract.address, bal, {from: user1});
-    trPar = await jCompContract.trancheParameters(0);
+    trPar = await jCompContract.trancheParameters(1);
     console.log("TrA price: " + fromWei(trPar[2].toString()));
-    tx = await jCompContract.redeemTrancheAToken(0, bal, {from: user1});
+    tx = await jCompContract.redeemTrancheAToken(1, bal, {from: user1});
     newBal = fromWei(await daiContract.balanceOf(user1));
     console.log("User1 New Dai balance: "+ newBal + " DAI");
     bal = await daiTrAContract.balanceOf(user1);
     console.log("User1 trA tokens: "+ fromWei(bal) + " DTA");
     console.log("User1 trA interest: "+ (newBal - oldBal) + " DAI");
-    console.log("CErc20 DAI balance: "+ fromWei(await daiContract.balanceOf(CDAI_ADDRESS)) + " DAI");
-    console.log("JCompound new DAI balance: "+ fromWei(await jCompContract.getTokenBalance(CDAI_ADDRESS)) + " cDai");
-    console.log("Compound TrA Value: " + fromWei(await jCompContract.getTrAValue(0)));
-    console.log("Compound total Value: " + fromWei(await jCompContract.getTotalValue(0)));
+    // console.log("CErc20 DAI balance: "+ fromWei(await daiContract.balanceOf(CDAI_ADDRESS)) + " DAI");
+    console.log("JCompound new cDAI balance: "+ fromWei8Dec(await jCompContract.getTokenBalance(CDAI_ADDRESS)) + " cDai");
+    console.log("Compound TrA Value: " + fromWei(await jCompContract.getTrAValue(1)));
+    console.log("Compound total Value: " + fromWei(await jCompContract.getTotalValue(1)));
 
-    console.log("staker counter trA: " + (await jCompContract.stakeCounterTrA(user1, 0)).toString())
-    stkDetails = await jCompContract.stakingDetailsTrancheA(user1, 0, 1);
+    console.log("staker counter trA: " + (await jCompContract.stakeCounterTrA(user1, 1)).toString())
+    stkDetails = await jCompContract.stakingDetailsTrancheA(user1, 1, 1);
     console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
-    stkDetails = await jCompContract.stakingDetailsTrancheA(user1, 0, 2);
+    stkDetails = await jCompContract.stakingDetailsTrancheA(user1, 1, 2);
     console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
   }); 
 
@@ -258,21 +274,21 @@ contract("JCompound DAI Loop", function (accounts) {
     console.log("JCompound cDai balance: "+ fromWei(await jCompContract.getTokenBalance(CDAI_ADDRESS)) + " cDai");
     tx = await daiTrBContract.approve(jCompContract.address, bal, {from: user1});
     console.log("TrB price: " + fromWei(await jCompContract.getTrancheBExchangeRate(1, 0)));
-    console.log("TrB value: " +  fromWei(await jCompContract.getTrBValue(0)));
+    console.log("TrB value: " +  fromWei(await jCompContract.getTrBValue(1)));
     tx = await jCompContract.redeemTrancheBToken(0, bal, {from: user1});
     newBal = fromWei(await daiContract.balanceOf(user1));
     console.log("User1 New Dai balance: "+ newBal + " DAI");
     bal = await daiTrBContract.balanceOf(user1);
     console.log("User1 trB tokens: "+ fromWei(bal) + " DTB");
     console.log("User1 trB interest: "+ (newBal - oldBal) + " DAI");
-    console.log("CErc20 DAI balance: "+ fromWei(await daiContract.balanceOf(CDAI_ADDRESS)) + " DAI");
-    console.log("JCompound new DAI balance: "+ fromWei(await jCompContract.getTokenBalance(CDAI_ADDRESS)) + " cDai");
-    console.log("TrA Value: " + fromWei(await jCompContract.getTrAValue(0)));
-    console.log("TrB value: " +  fromWei(await jCompContract.getTrBValue(0)));
-    console.log("Compound total Value: " + fromWei(await jCompContract.getTotalValue(0)));
+    // console.log("CErc20 DAI balance: "+ fromWei(await daiContract.balanceOf(CDAI_ADDRESS)) + " DAI");
+    console.log("JCompound new cDAI balance: "+ fromWei8Dec(await jCompContract.getTokenBalance(CDAI_ADDRESS)) + " cDai");
+    console.log("TrA Value: " + fromWei(await jCompContract.getTrAValue(1)));
+    console.log("TrB value: " +  fromWei(await jCompContract.getTrBValue(1)));
+    console.log("Compound total Value: " + fromWei(await jCompContract.getTotalValue(1)));
 
-    console.log("staker counter trB: " + (await jCompContract.stakeCounterTrB(user1, 0)).toString())
-    stkDetails = await jCompContract.stakingDetailsTrancheB(user1, 0, 1);
+    console.log("staker counter trB: " + (await jCompContract.stakeCounterTrB(user1, 1)).toString())
+    stkDetails = await jCompContract.stakingDetailsTrancheB(user1, 1, 1);
     console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
   }); 
 
