@@ -241,9 +241,6 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
 
         calcRPBFromPercentage(tranchePairsCounter); // initialize tranche A RPB
 
-        trancheLoops[tranchePairsCounter] = 0; // default loops for tranche = 0;
-        trancheBorrowLoopPercentage[tranchePairsCounter] = 0; // default percentage borrowed every loop
-
         emit TrancheAddedToProtocol(tranchePairsCounter, trancheAddresses[tranchePairsCounter].ATrancheAddress, trancheAddresses[tranchePairsCounter].BTrancheAddress);
 
         tranchePairsCounter = tranchePairsCounter.add(1);
@@ -299,11 +296,6 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
             redeemResult = cToken.redeemUnderlying(_amount);
         }
         return redeemResult;
-    }
-
-    function setTrancheLoops(uint256 _trNum, uint256 _nLoops, uint256 _loopBorrowPercent) external onlyAdmins {
-        trancheLoops[_trNum] = _nLoops;
-        trancheBorrowLoopPercentage[_trNum] = _loopBorrowPercent;
     }
 
     /**
@@ -542,71 +534,6 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
         return (stakingDetailsTrancheB[_user][_trancheNum][_num].startTime, stakingDetailsTrancheB[_user][_trancheNum][_num].amount);
     }
 
-    // function isMarketListed(address cTokenAddress) public view returns (bool, uint, bool) { 
-    //     // address cTokenAddress = trancheAddresses[_trancheNum].cTokenAddress;
-    //     IComptroller comptroller = IComptroller(comptrollerAddress);
-    //     // Get the collateral factor for our collateral
-    //     (bool isListed, uint collateralFactorMantissa, bool isComped) = comptroller.markets(cTokenAddress);
-    //     return (isListed, collateralFactorMantissa, isComped);
-    // }
-
-    function borrowingAssets(uint256 _trancheNum, uint256 _amount2Borrow) internal returns (bool) {
-        // Enter the market so you can borrow another type of asset
-        address cTokenAddress = trancheAddresses[_trancheNum].cTokenAddress;
-        address[] memory cTokens = new address[](1);
-        cTokens[0] = cTokenAddress;
-        IComptroller comptroller = IComptroller(comptrollerAddress);
-        uint256[] memory errors = comptroller.enterMarkets(cTokens);
-        if (errors[0] != 0) {
-            revert("Comptroller.enterMarkets failed.");
-        }
-            
-        // Get my account's total liquidity value in Compound
-        (uint256 error2, uint256 liquidity, uint256 shortfall) = comptroller.getAccountLiquidity(address(this));
-        if (error2 != 0) {
-            revert("Comptroller.getAccountLiquidity failed.");
-        }
-        require(shortfall == 0, "account underwater");
-        require(liquidity > 0, "account has excess collateral");
-
-        // Borrowing near the max amount will result
-        // in your account being liquidated instantly
-
-        // Get the collateral factor for our collateral
-        (bool isListed, uint256 collateralFactorMantissa, bool isComped) = comptroller.markets(cTokenAddress);
-
-        // Get the amount of tokens added to your borrow each block
-        uint256 borrowRateMantissa = ICErc20(cTokenAddress).borrowRatePerBlock();
-
-        // Borrow a fixed amount of ETH below our maximum borrow amount
-        uint256 numWeiToBorrow = _amount2Borrow; //2000000000000000; // 0.002 ETH
-
-        // Borrow, then check the underlying balance for this contract's address
-        ICErc20(cTokenAddress).borrow(numWeiToBorrow);
-        // uint256 borrows = ICErc20(cTokenAddress).borrowBalanceCurrent(address(this));
-        // return borrows;
-        return true;
-    }
-
-    // function myEthRepayBorrow(uint256 amount) public returns (bool) {
-    //     uint256 _error = cEthToken.repayBorrow{ value: amount}("");
-    //     require(_error == 0, "CErc20.repayBorrow Error");
-    //     return true;
-    // }
-
-    function myErc20RepayBorrow(uint256 _trancheNum, uint256 amount) public returns (bool) {
-        address tokenAddress = trancheAddresses[_trancheNum].buyerCoinAddress;
-        address cTokenAddress = trancheAddresses[_trancheNum].cTokenAddress;
-        IERC20Upgradeable underlying = IERC20Upgradeable(tokenAddress);
-        ICErc20 cToken = ICErc20(cTokenAddress);
-
-        underlying.approve(tokenAddress, amount);
-        uint256 _error = cToken.repayBorrow(amount);
-
-        require(_error == 0, "CErc20.repayBorrow Error");
-        return true;
-    }
-
     /**
      * @dev buy Tranche A Tokens
      * @param _trancheNum tranche number
@@ -622,27 +549,15 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
             require(msg.value == _amount, "!Amount");
             //Transfer ETH from msg.sender to protocol;
             TransferETHHelper.safeTransferETH(address(this), _amount);
-            // transfer ETH to Coompound receiving cETH
+            // transfer ETH to Compound receiving cETH
             cEthToken.mint{value: _amount}();
         } else {
             // check approve
             require(IERC20Upgradeable(underTokenAddress).allowance(msg.sender, address(this)) >= _amount, "!Allowance");
             //Transfer DAI from msg.sender to protocol;
             SafeERC20Upgradeable.safeTransferFrom(IERC20Upgradeable(underTokenAddress), msg.sender, address(this), _amount);
-            // transfer DAI to Coompound receiving cDai
+            // transfer DAI to Compound receiving cDai
             sendErc20ToCompound(underTokenAddress, _amount);
-            
-            if (trancheLoops[_trancheNum] > 0) {
-                uint256 loopAmount = _amount;
-                for(uint256 ll = 0; ll < trancheLoops[_trancheNum]; ll++ ) {
-                    loopAmount = loopAmount.mul(trancheBorrowLoopPercentage[_trancheNum]).div(1e18);
-                    totBorrowAmountPerTranche[msg.sender][_trancheNum] = totBorrowAmountPerTranche[msg.sender][_trancheNum].add(loopAmount);
-                    borrowingAssets(_trancheNum, loopAmount);
-                    // transfer DAI to Coompound receiving cDai
-                    sendErc20ToCompound(underTokenAddress, loopAmount);
-                    sentAmount = sentAmount.add(loopAmount);
-                }
-            }
             // IJCompoundHelper(jCompoundHelperAddress).sendErc20ToCompoundHelper(underTokenAddress, cTokenAddress, _amount);
         }
         uint256 newCompTokenBalance = getTokenBalance(cTokenAddress);
@@ -697,7 +612,6 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
         uint256 cTokenBal = getTokenBalance(cTokenAddress); // needed for emergency
         address underTokenAddress = trancheAddresses[_trancheNum].buyerCoinAddress;
         uint256 redeemPerc = uint256(trancheParameters[_trancheNum].redemptionPercentage);
-        uint256 totDebt = totBorrowAmountPerTranche[msg.sender][_trancheNum];
         if (underTokenAddress == address(0)) {
             SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(cTokenAddress), address(ethGateway), cTokenBal);
             // calculate taAmount via cETH price
@@ -713,19 +627,6 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
             }   
         } else {
             uint256 totAmount = normAmount;
-            if (totDebt > 0) {
-                // M = C * (1 + p + p^2 + p^3 + ...)  ==>  C = M / (1 + p + p^2 + p^3 + ...)
-                uint256 divider = 1e18; // >= 1
-                for (uint256 ll = 0; ll < trancheLoops[_trancheNum]; ll++) {
-                    divider = divider.add(trancheBorrowLoopPercentage[_trancheNum]);
-                }
-                uint256 capital = totAmount.mul(1e18).div(divider);
-                totDebt = totDebt.sub(capital);
-
-                // reapy borrow
-                myErc20RepayBorrow(_trancheNum, capital);
-                totAmount = totAmount.sub(capital);
-            }
             // calculate taAmount via cToken price
             oldBal = getTokenBalance(underTokenAddress);
             uint256 compoundRetCode = redeemCErc20Tokens(underTokenAddress, totAmount, false);
@@ -752,8 +653,6 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
             decreaseTrancheATokenFromStake(_trancheNum, _amount);
      
         IJTrancheTokens(aTrancheAddress).burn(_amount);
-
-        totBorrowAmountPerTranche[msg.sender][_trancheNum] = totDebt;
 
         lastActivity[msg.sender] = block.number;
         emit TrancheATokenRedemption(_trancheNum, msg.sender, 0, userAmount, feesAmount);
@@ -783,7 +682,7 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
         uint256 tbAmount = normAmount.mul(1e18).div(getTrancheBExchangeRate(_trancheNum, _amount));
         if (underTokenAddress == address(0)) {
             TransferETHHelper.safeTransferETH(address(this), _amount);
-            // transfer ETH to Coompound receiving cETH
+            // transfer ETH to Compound receiving cETH
             cEthToken.mint{value: _amount}();
         } else {
             // check approve

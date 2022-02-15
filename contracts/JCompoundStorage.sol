@@ -78,8 +78,4 @@ contract JCompoundStorageV2 is JCompoundStorage {
 contract JCompoundStorageV3 is JCompoundStorageV2 {
     mapping (address => bool) public tokenLoopEnabled;
     mapping (address => uint256) public tokenAllowedLoops;
-
-    mapping (uint256 => uint256) public trancheLoops;
-    mapping (uint256 => uint256) public trancheBorrowLoopPercentage;
-    mapping (address => mapping (uint256 => uint256)) public totBorrowAmountPerTranche;
 }
