@@ -19,8 +19,6 @@ const {
 } = require('@openzeppelin/test-helpers');
 
 const myERC20 = artifacts.require("myERC20");
-const CEther = artifacts.require("CEther");
-const CErc20 = artifacts.require("CErc20");
 const JAdminTools = artifacts.require('JAdminTools');
 const JFeesCollector = artifacts.require('JFeesCollector');
 
@@ -31,10 +29,24 @@ const JTranchesDeployer = artifacts.require('JTranchesDeployer');
 const JTrancheAToken = artifacts.require('JTrancheAToken');
 const JTrancheBToken = artifacts.require('JTrancheBToken');
 
-const MYERC20_TOKEN_SUPPLY = 5000000;
-const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+const MultiRewards = artifacts.require('MultiRewards');
 
-let daiContract, cEtherContract, cERC20Contract, jFCContract, jATContract, jTrDeplContract, jCompContract;
+const {ZERO_ADDRESS} = constants;
+
+const COMP_ADDRESS = "0xc00e94cb662c3520282e6f5717214004a7f26888";  // COMP TOKEN
+const COMP_CONTROLLER = "0x3d9819210A31b4961b30EF54bE2aeD79B9c9Cd3B";
+const SLICE_ADDRESS = "0x0aee8703d34dd9ae107386d3eff22ae75dd616d1";
+const DAI_ADDRESS = "0x6B175474E89094C44Da98b954EedeAC495271d0F";  // dai - cDai is tranche 1 in JCompound
+const CDAI_ADDRESS = "0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643";
+
+const unblockedAccount = "0x38720D56899d46cAD253d08f7cD6CC89d2c83190";
+
+const fromWei = (x) => web3.utils.fromWei(x.toString());
+const toWei = (x) => web3.utils.toWei(x.toString());
+const fromWei8Dec = (x) => x / Math.pow(10, 8);
+const toWei8Dec = (x) => x * Math.pow(10, 8);
+
+let daiContract, jFCContract, jATContract, jTrDeplContract, jCompContract, jMultiRewardsContract;
 let ethTrAContract, ethTrBContract, daiTrAContract, daiTrBContract;
 let tokenOwner, user1;
 
@@ -50,21 +62,9 @@ contract("JCompound", function (accounts) {
   });
 
   it("DAI total Supply", async function () {
-    daiContract = await myERC20.deployed();
+    daiContract = await myERC20.at(DAI_ADDRESS);
     result = await daiContract.totalSupply();
-    expect(web3.utils.fromWei(result.toString(), "ether")).to.be.equal(MYERC20_TOKEN_SUPPLY.toString());
-  });
-
-  it("Mockups ok", async function () {
-    cEtherContract = await CEther.deployed();
-    expect(cEtherContract.address).to.be.not.equal(ZERO_ADDRESS);
-    expect(cEtherContract.address).to.match(/0x[0-9a-fA-F]{40}/);
-    console.log(cEtherContract.address);
-    cERC20Contract = await CErc20.deployed();
-    expect(cERC20Contract.address).to.be.not.equal(ZERO_ADDRESS);
-    expect(cERC20Contract.address).to.match(/0x[0-9a-fA-F]{40}/);
-    console.log(cERC20Contract.address);
-    tx = await cERC20Contract.setToken(daiContract.address); // just for mockup!!!
+    console.log(fromWei(result))
   });
 
   it("All other contracts ok", async function () {
@@ -87,9 +87,6 @@ contract("JCompound", function (accounts) {
     expect(jCompContract.address).to.be.not.equal(ZERO_ADDRESS);
     expect(jCompContract.address).to.match(/0x[0-9a-fA-F]{40}/);
     console.log(jCompContract.address);
-    // await jCompContract.setRedemptionTimeout(0, {
-    //   from: accounts[0]
-    // });
 
     jCompHelperContract = await JCompoundHelper.deployed();
     expect(jCompHelperContract.address).to.be.not.equal(ZERO_ADDRESS);
@@ -117,38 +114,25 @@ contract("JCompound", function (accounts) {
     expect(daiTrBContract.address).to.be.not.equal(ZERO_ADDRESS);
     expect(daiTrBContract.address).to.match(/0x[0-9a-fA-F]{40}/);
     console.log(daiTrBContract.address);
-  });
 
-  it('deploy 2 other tranches, just to have an estimation on costs', async function () {
-    await jCompContract.addTrancheToProtocol(ZERO_ADDRESS, "jEthTrancheAToken", "JEA", "jEthTrancheBToken", "JEB", web3.utils.toWei("0.04", "ether"), 18, 18, { from: tokenOwner });
-    await jCompContract.addTrancheToProtocol(daiContract.address, "jEthTrancheAToken", "JEA", "jEthTrancheBToken", "JEB", web3.utils.toWei("0.04", "ether"), 18, 18, { from: tokenOwner });
-
-  });
-
-  it('changing reward token address', async function () {
-    rewTok = await jCompContract.rewardsToken()
-    console.log(rewTok)
-    await ethTrAContract.setRewardTokenAddress("0xc00e94cb662c3520282e6f5717214004a7f26888", {from: tokenOwner})
-    await ethTrAContract.setRewardTokenAddress(rewTok, {from: tokenOwner})
-  });
-
-  it('send some DAI to CErc20', async function () {
-    tx = await daiContract.transfer(cERC20Contract.address, web3.utils.toWei('1000', 'ether'), {
-      from: tokenOwner
-    });
-    protBal = await daiContract.balanceOf(cERC20Contract.address);
-    console.log(`protocol DAI Balance: ${web3.utils.fromWei(protBal, "ether")} DAI`)
-    expect(web3.utils.fromWei(protBal, "ether")).to.be.equal(new BN(1000).toString());
+    jMultiRewardsContract = await MultiRewards.at(trParams1.BTrancheAddress);
+    expect(jMultiRewardsContract.address).to.be.not.equal(ZERO_ADDRESS);
+    expect(jMultiRewardsContract.address).to.match(/0x[0-9a-fA-F]{40}/);
+    console.log(jMultiRewardsContract.address);
   });
 
   it('send some DAI to user1', async function () {
-    tx = await daiContract.transfer(user1, web3.utils.toWei('200000', 'ether'), {
-      from: tokenOwner
-    });
-    console.log("Gas to transfer DAI to user1: " + tx.receipt.gasUsed);
+    userBal = await daiContract.balanceOf(unblockedAccount);
+    console.log(`user1 DAI Balance: ${fromWei(userBal)} DAI`)
+    tx = await daiContract.transfer(user1, toWei(20000), {from: unblockedAccount});
     userBal = await daiContract.balanceOf(user1);
-    console.log(`user1 DAI Balance: ${web3.utils.fromWei(userBal, "ether")} DAI`)
-    expect(web3.utils.fromWei(userBal, "ether")).to.be.equal(new BN(200000).toString());
+    console.log(`user1 DAI Balance: ${fromWei(userBal)} DAI`)
+    // expect(fromWei(userBal)).to.be.equal(new BN(20000).toString());
+  });
+
+  it('deploy 2 other tranches, just to have an estimation on costs', async function () {
+    await jCompContract.addTrancheToProtocol(ZERO_ADDRESS, "jEthTrancheAToken", "JEA", "jEthTrancheBToken", "JEB", toWei("0.04"), 8, 18, { from: tokenOwner });
+    await jCompContract.addTrancheToProtocol(daiContract.address, "jEthTrancheAToken", "JEA", "jEthTrancheBToken", "JEB", toWei("0.04"), 8, 18, { from: tokenOwner });
   });
 
   it("user1 buys some token daiTrA", async function () {
@@ -170,81 +154,64 @@ contract("JCompound", function (accounts) {
     console.log("param tranche A: " + JSON.stringify(trPar));
     trParams = await jCompContract.trancheAddresses(1);
     expect(trParams.buyerCoinAddress).to.be.equal(daiContract.address);
-    expect(trParams.cTokenAddress).to.be.equal(cERC20Contract.address);
-    console.log("User1 DAI balance: " + web3.utils.fromWei(await daiContract.balanceOf(user1), "ether") + " DAI");
-    tx = await daiContract.approve(jCompContract.address, web3.utils.toWei("10000", "ether"), {
+    console.log("User1 DAI balance: " + fromWei(await daiContract.balanceOf(user1)) + " DAI");
+    tx = await daiContract.approve(jCompContract.address, toWei("2000"), {
       from: user1
     });
-    tx = await jCompContract.buyTrancheAToken(1, web3.utils.toWei("10000", "ether"), {
+    tx = await jCompContract.buyTrancheAToken(1, toWei("2000"), {
       from: user1
     });
-    console.log("User1 New DAI balance: " + web3.utils.fromWei(await daiContract.balanceOf(user1), "ether") + " DAI");
-    console.log("User1 trA tokens: " + web3.utils.fromWei(await daiTrAContract.balanceOf(user1), "ether") + " DTA");
-    console.log("CErc20 DAI balance: " + web3.utils.fromWei(await daiContract.balanceOf(cERC20Contract.address), "ether") + " DAI");
-    console.log("JCompound DAI balance: " + web3.utils.fromWei(await daiContract.balanceOf(jCompContract.address), "ether") + " DAI");
-    console.log("JCompound cDAI balance: " + web3.utils.fromWei(await jCompContract.getTokenBalance(cERC20Contract.address), "ether") + " cDai");
+    console.log("User1 New DAI balance: " + fromWei(await daiContract.balanceOf(user1)) + " DAI");
+    console.log("User1 trA tokens: " + fromWei(await daiTrAContract.balanceOf(user1)) + " DTA");
+    console.log("JCompound DAI balance: " + fromWei(await daiContract.balanceOf(jCompContract.address)) + " DAI");
+    console.log("JCompound cDAI balance: " + fromWei8Dec(await jCompContract.getTokenBalance(CDAI_ADDRESS)) + " cDai");
     trPar = await jCompContract.trancheParameters(1);
-    console.log("TrA price: " + web3.utils.fromWei(trPar[2].toString()));
+    console.log("TrA price: " + fromWei(trPar[2].toString()));
     trAddresses = await jCompContract.trancheAddresses(1); //.cTokenAddress;
     trPars = await jCompContract.trancheParameters(1);
     console.log("Compound Price: " + await jCompHelperContract.getCompoundPriceHelper(trAddresses[1], trPars[6], trPars[5]));
     // console.log("Compound Price: " + await jCompHelperContract.getCompoundPriceHelper(1));
-    console.log("Compound TrA Value: " + web3.utils.fromWei(await jCompContract.getTrAValue(1), "ether"));
-    console.log("Compound total Value: " + web3.utils.fromWei(await jCompContract.getTotalValue(1), "ether"));
-
-    stkDetails = await jCompContract.stakingDetailsTrancheA(user1, 1, 1);
-    console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
+    console.log("Compound TrA Value: " + fromWei(await jCompContract.getTrAValue(1)));
+    console.log("Compound total Value: " + fromWei(await jCompContract.getTotalValue(1)));
   });
 
   it("user1 buys some other token daiTrA", async function () {
-    tx = await daiContract.approve(jCompContract.address, web3.utils.toWei("5000", "ether"), {
+    tx = await daiContract.approve(jCompContract.address, toWei("5000"), {
       from: user1
     });
-    tx = await jCompContract.buyTrancheAToken(1, web3.utils.toWei("5000", "ether"), {
+    tx = await jCompContract.buyTrancheAToken(1, toWei("5000"), {
       from: user1
     });
-
-    console.log("staker counter trA: " + (await jCompContract.stakeCounterTrA(user1, 1)).toString())
-    stkDetails = await jCompContract.stakingDetailsTrancheA(user1, 1, 1);
-    console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
-
-    stkDetails = await jCompContract.stakingDetailsTrancheA(user1, 1, 2);
-    console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
   });
 
   it("user1 buys some token daiTrB", async function () {
-    console.log("User1 DAI balance: " + web3.utils.fromWei(await daiContract.balanceOf(user1), "ether") + " DAI");
+    console.log("User1 DAI balance: " + fromWei(await daiContract.balanceOf(user1)) + " DAI");
     trAddr = await jCompContract.trancheAddresses(1);
     buyAddr = trAddr.buyerCoinAddress;
     console.log("Tranche Buyer Coin address: " + buyAddr);
-    console.log("TrB value: " + web3.utils.fromWei(await jCompContract.getTrBValue(1), "ether"));
-    console.log("Compound total Value: " + web3.utils.fromWei(await jCompContract.getTotalValue(1), "ether"));
-    console.log("TrB total supply: " + web3.utils.fromWei(await daiTrBContract.totalSupply(), "ether"));
-    console.log("Compound TrA Value: " + web3.utils.fromWei(await jCompContract.getTrAValue(1), "ether"));
-    console.log("TrB price: " + web3.utils.fromWei(await jCompContract.getTrancheBExchangeRate(1, web3.utils.toWei("10000", "ether")), "ether"));
-    tx = await daiContract.approve(jCompContract.address, web3.utils.toWei("10000", "ether"), {
+    console.log("TrB value: " + fromWei(await jCompContract.getTrBValue(1)));
+    console.log("Compound total Value: " + fromWei(await jCompContract.getTotalValue(1)));
+    console.log("TrB total supply: " + fromWei(await daiTrBContract.totalSupply()));
+    console.log("Compound TrA Value: " + fromWei(await jCompContract.getTrAValue(1)));
+    console.log("TrB price: " + fromWei(await jCompContract.getTrancheBExchangeRate(1, toWei("10000"))));
+    tx = await daiContract.approve(jCompContract.address, toWei("10000"), {
       from: user1
     });
-    tx = await jCompContract.buyTrancheBToken(1, web3.utils.toWei("10000", "ether"), {
+    tx = await jCompContract.buyTrancheBToken(1, toWei("10000"), {
       from: user1
     });
-    console.log("User1 New DAI balance: " + web3.utils.fromWei(await daiContract.balanceOf(user1), "ether") + " DAI");
-    console.log("User1 trB tokens: " + web3.utils.fromWei(await daiTrBContract.balanceOf(user1), "ether") + " DTB");
-    console.log("CErc20 DAI balance: " + web3.utils.fromWei(await daiContract.balanceOf(cERC20Contract.address), "ether") + " DAI");
-    console.log("JCompound DAI balance: " + web3.utils.fromWei(await jCompContract.getTokenBalance(cERC20Contract.address), "ether") + " cDai");
-    console.log("TrB price: " + web3.utils.fromWei(await jCompContract.getTrancheBExchangeRate(1, 0), "ether"));
+    console.log("User1 New DAI balance: " + fromWei(await daiContract.balanceOf(user1)) + " DAI");
+    console.log("User1 trB tokens: " + fromWei(await daiTrBContract.balanceOf(user1)) + " DTB");
+    console.log("JCompound DAI balance: " + fromWei8Dec(await jCompContract.getTokenBalance(CDAI_ADDRESS)) + " cDai");
+    console.log("TrB price: " + fromWei(await jCompContract.getTrancheBExchangeRate(1, 0)));
     trAddresses = await jCompContract.trancheAddresses(1); //.cTokenAddress;
     trPars = await jCompContract.trancheParameters(1);
     console.log("Compound Price: " + await jCompHelperContract.getCompoundPriceHelper(trAddresses[1], trPars[6], trPars[5]));
     trPar = await jCompContract.trancheParameters(1);
-    console.log("TrA price: " + web3.utils.fromWei(trPar[2].toString()));
-    console.log("Compound TrA Value: " + web3.utils.fromWei(await jCompContract.getTrAValue(1), "ether"));
-    console.log("TrB value: " + web3.utils.fromWei(await jCompContract.getTrBValue(1), "ether"));
-    console.log("Compound total Value: " + web3.utils.fromWei(await jCompContract.getTotalValue(1), "ether"));
-
-    console.log("staker counter trB: " + (await jCompContract.stakeCounterTrB(user1, 1)).toString())
-    stkDetails = await jCompContract.stakingDetailsTrancheB(user1, 1, 1);
-    console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
+    console.log("TrA price: " + fromWei(trPar[2].toString()));
+    console.log("Compound TrA Value: " + fromWei(await jCompContract.getTrAValue(1)));
+    console.log("TrB value: " + fromWei(await jCompContract.getTrBValue(1)));
+    console.log("Compound total Value: " + fromWei(await jCompContract.getTotalValue(1)));
   });
 
   it('time passes...', async function () {
@@ -254,38 +221,28 @@ contract("JCompound", function (accounts) {
     await time.advanceBlockTo(newBlock);
     block = await web3.eth.getBlock("latest");
     console.log("New Actual Block: " + block.number);
-
-    await cERC20Contract.setExchangeRateStored(new BN("21065567570282878")); //21061567570282878
-    console.log("Compound New price: " + await cEtherContract.exchangeRateStored());
   });
 
   it("user1 redeems token daiTrA", async function () {
-    oldBal = web3.utils.fromWei(await daiContract.balanceOf(user1), "ether");
+    oldBal = fromWei(await daiContract.balanceOf(user1));
     console.log("User1 Dai balance: "+ oldBal + " DAI");
     bal = await daiTrAContract.balanceOf(user1);
-    console.log("User1 trA tokens: "+ web3.utils.fromWei(bal, "ether") + " DTA");
+    console.log("User1 trA tokens: "+ fromWei(bal) + " DTA");
     tot = await daiTrAContract.totalSupply();
-    console.log("trA tokens total: "+ web3.utils.fromWei(tot, "ether") + " DTA");
-    console.log("JCompound cDai balance: "+ web3.utils.fromWei(await jCompContract.getTokenBalance(cERC20Contract.address), "ether") + " cDai");
+    console.log("trA tokens total: "+ fromWei(tot) + " DTA");
+    console.log("JCompound cDai balance: "+ fromWei8Dec(await jCompContract.getTokenBalance(CDAI_ADDRESS)) + " cDai");
     tx = await daiTrAContract.approve(jCompContract.address, bal, {from: user1});
     trPar = await jCompContract.trancheParameters(1);
-    console.log("TrA price: " + web3.utils.fromWei(trPar[2].toString()));
+    console.log("TrA price: " + fromWei(trPar[2].toString()));
     tx = await jCompContract.redeemTrancheAToken(1, bal, {from: user1});
-    newBal = web3.utils.fromWei(await daiContract.balanceOf(user1), "ether");
+    newBal = fromWei(await daiContract.balanceOf(user1));
     console.log("User1 New Dai balance: "+ newBal + " DAI");
     bal = await daiTrAContract.balanceOf(user1);
-    console.log("User1 trA tokens: "+ web3.utils.fromWei(bal, "ether") + " DTA");
+    console.log("User1 trA tokens: "+ fromWei(bal) + " DTA");
     console.log("User1 trA interest: "+ (newBal - oldBal) + " DAI");
-    console.log("CErc20 DAI balance: "+ web3.utils.fromWei(await daiContract.balanceOf(cERC20Contract.address), "ether") + " DAI");
-    console.log("JCompound new DAI balance: "+ web3.utils.fromWei(await jCompContract.getTokenBalance(cERC20Contract.address), "ether") + " cDai");
-    console.log("Compound TrA Value: " + web3.utils.fromWei(await jCompContract.getTrAValue(1), "ether"));
-    console.log("Compound total Value: " + web3.utils.fromWei(await jCompContract.getTotalValue(1), "ether"));
-
-    console.log("staker counter trA: " + (await jCompContract.stakeCounterTrA(user1, 1)).toString())
-    stkDetails = await jCompContract.stakingDetailsTrancheA(user1, 1, 1);
-    console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
-    stkDetails = await jCompContract.stakingDetailsTrancheA(user1, 1, 2);
-    console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
+    console.log("JCompound new DAI balance: "+ fromWei8Dec(await jCompContract.getTokenBalance(CDAI_ADDRESS)) + " cDai");
+    console.log("Compound TrA Value: " + fromWei(await jCompContract.getTrAValue(1)));
+    console.log("Compound total Value: " + fromWei(await jCompContract.getTotalValue(1)));
   }); 
 
   it('time passes...', async function () {
@@ -295,31 +252,27 @@ contract("JCompound", function (accounts) {
     await time.advanceBlockTo(newBlock);
     block = await web3.eth.getBlock("latest");
     console.log("New Actual Block: " + block.number);
-
-    await cERC20Contract.setExchangeRateStored(new BN("21067567570282878")); //21062567570282878
-    console.log("Compound New price: " + await cEtherContract.exchangeRateStored());
   });
 
   it("user1 redeems token daiTrB", async function () {
-    oldBal = web3.utils.fromWei(await daiContract.balanceOf(user1), "ether");
+    oldBal = fromWei(await daiContract.balanceOf(user1));
     console.log("User1 Dai balance: "+ oldBal + " DAI");
     bal = await daiTrBContract.balanceOf(user1);
-    console.log("User1 trB tokens: "+ web3.utils.fromWei(bal, "ether") + " DTB");
-    console.log("JCompound cDai balance: "+ web3.utils.fromWei(await jCompContract.getTokenBalance(cERC20Contract.address), "ether") + " cDai");
+    console.log("User1 trB tokens: "+ fromWei(bal) + " DTB");
+    console.log("JCompound cDai balance: "+ fromWei8Dec(await jCompContract.getTokenBalance(CDAI_ADDRESS)) + " cDai");
     tx = await daiTrBContract.approve(jCompContract.address, bal, {from: user1});
-    console.log("TrB price: " + web3.utils.fromWei(await jCompContract.getTrancheBExchangeRate(1, 0), "ether"));
-    console.log("TrB value: " +  web3.utils.fromWei(await jCompContract.getTrBValue(1), "ether"));
+    console.log("TrB price: " + fromWei(await jCompContract.getTrancheBExchangeRate(1, 0)));
+    console.log("TrB value: " +  fromWei(await jCompContract.getTrBValue(1)));
     tx = await jCompContract.redeemTrancheBToken(1, bal, {from: user1});
-    newBal = web3.utils.fromWei(await daiContract.balanceOf(user1), "ether");
+    newBal = fromWei(await daiContract.balanceOf(user1));
     console.log("User1 New Dai balance: "+ newBal + " DAI");
     bal = await daiTrBContract.balanceOf(user1);
-    console.log("User1 trB tokens: "+ web3.utils.fromWei(bal, "ether") + " DTB");
+    console.log("User1 trB tokens: "+ fromWei(bal) + " DTB");
     console.log("User1 trB interest: "+ (newBal - oldBal) + " DAI");
-    console.log("CErc20 DAI balance: "+ web3.utils.fromWei(await daiContract.balanceOf(cERC20Contract.address), "ether") + " DAI");
-    console.log("JCompound new DAI balance: "+ web3.utils.fromWei(await jCompContract.getTokenBalance(cERC20Contract.address), "ether") + " cDai");
-    console.log("TrA Value: " + web3.utils.fromWei(await jCompContract.getTrAValue(1), "ether"));
-    console.log("TrB value: " +  web3.utils.fromWei(await jCompContract.getTrBValue(1), "ether"));
-    console.log("Compound total Value: " + web3.utils.fromWei(await jCompContract.getTotalValue(1), "ether"));
+    console.log("JCompound new DAI balance: "+ fromWei8Dec(await jCompContract.getTokenBalance(CDAI_ADDRESS)) + " cDai");
+    console.log("TrA Value: " + fromWei(await jCompContract.getTrAValue(1)));
+    console.log("TrB value: " +  fromWei(await jCompContract.getTrBValue(1)));
+    console.log("Compound total Value: " + fromWei(await jCompContract.getTotalValue(1)));
 
     console.log("staker counter trB: " + (await jCompContract.stakeCounterTrB(user1, 1)).toString())
     stkDetails = await jCompContract.stakingDetailsTrancheB(user1, 1, 1);

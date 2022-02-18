@@ -1,5 +1,9 @@
 const HDWalletProvider = require('@truffle/hdwallet-provider');
 require('dotenv').config();
+const ganache = require("ganache");
+const options = {};
+const provider = ganache.provider(options);
+// const accounts = await provider.request({ method: "eth_accounts", params: [] });
 
 module.exports = {
   networks: {

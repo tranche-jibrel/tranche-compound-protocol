@@ -7,7 +7,6 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "./interfaces/IJTrancheTokens.sol";
 import "./interfaces/IJCompound.sol";
-import "./interfaces/IIncentivesController.sol";
 
 
 contract JTrancheBToken is Ownable, ERC20, AccessControl, IJTrancheTokens {
@@ -32,45 +31,6 @@ contract JTrancheBToken is Ownable, ERC20, AccessControl, IJTrancheTokens {
 	function addMinter(address _newMinter) external onlyOwner {
 		// Grant the minter role to a specified account
         _setupRole(MINTER_ROLE, _newMinter);
-	}
-
-	/**
-	 * @dev Internal function that transfer tokens from one address to another.
-	 * Update SIR stakig details.
-	 * @param from The address to transfer from.
-	 * @param to The address to transfer to.
-	 * @param value The amount to be transferred.
-	 */
-	function _transfer(address from, address to, uint256 value) internal override {
-		// moving SIR rewards in protocol
-		// claim and transfer rewards before transfer tokens. Be sure to wait for this function to be completed! 
-		address incentivesControllerAddress = IJCompound(jCompoundAddress).getIncentivesControllerAddress();
-        bool rewClaimCompleted = IIncentivesController(incentivesControllerAddress).claimRewardsAllMarkets(from);
-		// decrease tokens after claiming rewards
-        if (rewClaimCompleted && value > 0) {
-			uint256 tempTime;
-			uint256 tempAmount;
-			uint256 tempValue = value;
-			uint256 stkDetNum = IJCompound(jCompoundAddress).getSingleTrancheUserStakeCounterTrB(from, protTrancheNum);
-			for (uint256 i = 1; i <= stkDetNum; i++){
-				(tempTime, tempAmount) = IJCompound(jCompoundAddress).getSingleTrancheUserSingleStakeDetailsTrB(from, protTrancheNum, i);
-				if (tempAmount > 0) {
-					if (tempAmount <= tempValue) {
-						IJCompound(jCompoundAddress).setTrBStakingDetails(protTrancheNum, from, i, 0, tempTime);
-						IJCompound(jCompoundAddress).setTrBStakingDetails(protTrancheNum, to, i, tempAmount, block.timestamp);
-						tempValue = tempValue.sub(tempAmount);
-					} else {
-						uint256 remainingAmount = tempAmount.sub(tempValue);
-						IJCompound(jCompoundAddress).setTrBStakingDetails(protTrancheNum, from, i, remainingAmount, tempTime);
-						IJCompound(jCompoundAddress).setTrBStakingDetails(protTrancheNum, to, i, tempValue, block.timestamp);
-						tempValue = 0;
-					}
-				}
-				if (tempValue == 0)
-                break;
-			}
-		}
-		super._transfer(from, to, value);
 	}
 
     /**

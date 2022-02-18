@@ -8,6 +8,7 @@
   },
   "scripts": {
     "compile": "npx truffle compile --all",
+    "ganache": "ganache --wallet.seed myCustomSeed",
     "test": "mocha --exit --recursive --timeout 20000"
   },
   "repository": {
@@ -41,7 +42,7 @@
     "chai": "4.2.0",
     "chai-bn": "0.2.1",
     "eth-gas-reporter": "^0.2.22",
-    "ganache-cli": "6.12.1",
+    "ganache": "^7.0.2",
     "solidity-coverage": "^0.7.16",
     "truffle-plugin-verify": "^0.5.20"
   }

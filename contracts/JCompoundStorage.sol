@@ -74,8 +74,3 @@ contract JCompoundStorageV2 is JCompoundStorage {
 
     address public jCompoundHelperAddress;
 }
-
-contract JCompoundStorageV3 is JCompoundStorageV2 {
-    mapping (address => bool) public tokenLoopEnabled;
-    mapping (address => uint256) public tokenAllowedLoops;
-}

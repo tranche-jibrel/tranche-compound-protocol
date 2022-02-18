@@ -16,7 +16,7 @@ var JTrancheBToken = artifacts.require('./JTrancheBToken');
 
 var EthGateway = artifacts.require('./ETHGateway');
 
-var IncentivesController = artifacts.require('./IncentivesController');
+const MultiRewards = artifacts.require('MultiRewards');
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
@@ -68,7 +68,7 @@ module.exports = async (deployer, network, accounts) => {
     console.log("Tranches Deployer: " + JTDeployer.address);
 
     const JCinstance = await deployProxy(JCompound, [JATinstance.address, JFCinstance.address, JTDeployer.address,
-      COMP_ADDRESS, COMP_CONTROLLER, SLICE_ADDRESS], { from: factoryOwner });
+      COMP_ADDRESS, COMP_CONTROLLER], { from: factoryOwner });
     console.log('JCompound Deployed: ', JCinstance.address);
 
     await deployer.deploy(EthGateway, CETH_ADDRESS, JCinstance.address);
@@ -79,7 +79,7 @@ module.exports = async (deployer, network, accounts) => {
 
     await JCinstance.setETHGateway(JEGinstance.address, { from: factoryOwner });
 
-    const JCHelper = await deployProxy(JCompoundHelper, [/*JCinstance.address*/], { from: factoryOwner });
+    const JCHelper = await deployProxy(JCompoundHelper, [], { from: factoryOwner });
     console.log("JC Helper: " + JCHelper.address);
 
     await JCinstance.setJCompoundHelperAddress(JCHelper.address)
@@ -105,10 +105,9 @@ module.exports = async (deployer, network, accounts) => {
 
     await JCinstance.setTrancheDeposit(1, true); // enabling deposit
 
-    const JIController = await deployProxy(IncentivesController, [], { from: factoryOwner });
-    console.log("Tranches Deployer: " + JIController.address);
-    
-    await JCinstance.setIncentivesControllerAddress(JIController.address, { from: factoryOwner })
+    await deployer.deploy(MultiRewards, factoryOwner, SLICE_ADDRESS);
+    const MR1instance = await MultiRewards.deployed();
+    console.log('MultiRewards Deployed: ', JEGinstance.address);
 
   } else if (network == "kovan") {
     let { 
