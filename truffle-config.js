@@ -1,9 +1,5 @@
 const HDWalletProvider = require('@truffle/hdwallet-provider');
 require('dotenv').config();
-const ganache = require("ganache");
-const options = {};
-const provider = ganache.provider(options);
-// const accounts = await provider.request({ method: "eth_accounts", params: [] });
 
 module.exports = {
   networks: {
@@ -46,6 +42,10 @@ module.exports = {
   // Set default mocha options here, use special reporters etc.
   mocha: {
     reporter: 'eth-gas-reporter',
+    reporterOptions: {
+      currency: "USD",
+      coinmarketcap: `${process.env.CMC_API_KEY}`
+    },
     timeout: 100000
   },
   // Configure your compilers

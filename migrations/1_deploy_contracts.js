@@ -1,22 +1,15 @@
 require('dotenv').config();
 const { deployProxy, upgradeProxy } = require('@openzeppelin/truffle-upgrades');
 
-var myERC20 = artifacts.require("./mocks/myERC20.sol");
-// var CErc20 = artifacts.require('./mocks/CErc20.sol');
-// var CEther = artifacts.require('./mocks/CEther.sol');
-
 var JAdminTools = artifacts.require("./JAdminTools.sol");
 var JFeesCollector = artifacts.require("./JFeesCollector.sol");
 var JCompound = artifacts.require('./JCompound');
-var JCompoundHelper = artifacts.require('./JCompoundHelper');
 var JTranchesDeployer = artifacts.require('./JTranchesDeployer');
 
 var JTrancheAToken = artifacts.require('./JTrancheAToken');
 var JTrancheBToken = artifacts.require('./JTrancheBToken');
 
 var EthGateway = artifacts.require('./ETHGateway');
-
-const MultiRewards = artifacts.require('MultiRewards');
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
@@ -44,20 +37,6 @@ module.exports = async (deployer, network, accounts) => {
   if (network == "development") {
     const factoryOwner = accounts[0];
 
-    // const mySLICEinstance = await deployProxy(myERC20, [MYERC20_TOKEN_SUPPLY], { from: factoryOwner });
-    const mySLICEinstance = await myERC20.at(SLICE_ADDRESS);
-    console.log('mySLICE Deployed: ', mySLICEinstance.address);
-
-    // const myDAIinstance = await deployProxy(myERC20, [MYERC20_TOKEN_SUPPLY], { from: factoryOwner });
-    const myDAIinstance = await myERC20.at(DAI_ADDRESS)
-    console.log('myDAI Deployed: ', myDAIinstance.address);
-
-    // const mycEthinstance = await deployProxy(CEther, [], { from: factoryOwner });
-    // console.log('myCEth Deployed: ', mycEthinstance.address);
-
-    // const mycDaiinstance = await deployProxy(CErc20, [], { from: factoryOwner });
-    // console.log('myCErc20 Deployed: ', mycDaiinstance.address);
-
     const JATinstance = await deployProxy(JAdminTools, [], { from: factoryOwner });
     console.log('JAdminTools Deployed: ', JATinstance.address);
 
@@ -79,10 +58,6 @@ module.exports = async (deployer, network, accounts) => {
 
     await JCinstance.setETHGateway(JEGinstance.address, { from: factoryOwner });
 
-    const JCHelper = await deployProxy(JCompoundHelper, [], { from: factoryOwner });
-    console.log("JC Helper: " + JCHelper.address);
-
-    await JCinstance.setJCompoundHelperAddress(JCHelper.address)
     await JATinstance.addAdmin(JTDeployer.address, { from: factoryOwner })
 
     await JCinstance.setCEtherContract(CETH_ADDRESS, { from: factoryOwner });
@@ -104,10 +79,6 @@ module.exports = async (deployer, network, accounts) => {
     console.log("DAI Tranche B Token Address: " + DaiTrB.address);
 
     await JCinstance.setTrancheDeposit(1, true); // enabling deposit
-
-    await deployer.deploy(MultiRewards, factoryOwner, SLICE_ADDRESS);
-    const MR1instance = await MultiRewards.deployed();
-    console.log('MultiRewards Deployed: ', JEGinstance.address);
 
   } else if (network == "kovan") {
     let { 
@@ -137,13 +108,7 @@ module.exports = async (deployer, network, accounts) => {
 
         console.log(`COMPOUND_TRANCHE_ADDRESS=${JCompoundInstance.address}`);
         compoundDeployer.setJCompoundAddress(JCompoundInstance.address);
-        console.log('compound deployer 1');
-
-        const JCHelper = await deployProxy(JCompoundHelper, [], { from: factoryOwner });
-        console.log("JC Helper: " + JCHelper.address);
-    
-        await JCompoundInstance.setJCompoundHelperAddress(JCHelper.address)
-    
+        console.log('compound deployer 1');    
 
         await JCompoundInstance.setCTokenContract(TRANCHE_ONE_TOKEN_ADDRESS, TRANCHE_ONE_CTOKEN_ADDRESS, { from: factoryOwner });
         console.log('compound deployer 2');
@@ -182,10 +147,6 @@ module.exports = async (deployer, network, accounts) => {
       console.log('contracts are being upgraded');
       const JCompoundInstance = await upgradeProxy(COMPOUND_TRANCHE_ADDRESS, JCompound, { from: factoryOwner });
       console.log(`COMPOUND_TRANCHE_ADDRESS=${JCompoundInstance.address}`)
-      const JCHelper = await deployProxy(JCompoundHelper, [], { from: factoryOwner });
-      console.log("JC Helper: " + JCHelper.address);
-      await JcompoundInstance.setJCompoundHelperAddress(JCHelper.address)
-      console.log('set helper in jcompound');
     } else {
       try {
         const JATinstance = await deployProxy(JAdminTools, [], { from: factoryOwner });

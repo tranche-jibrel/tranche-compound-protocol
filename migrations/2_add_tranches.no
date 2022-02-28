@@ -4,7 +4,6 @@ const { deployProxy, upgradeProxy } = require('@openzeppelin/truffle-upgrades');
 var JAdminTools = artifacts.require("./JAdminTools.sol");
 var JFeesCollector = artifacts.require("./JFeesCollector.sol");
 var JCompound = artifacts.require('./JCompound');
-var JCompoundHelper = artifacts.require('./JCompoundHelper');
 var JTranchesDeployer = artifacts.require('./JTranchesDeployer');
 
 const AAVE_TOKEN = "0x7FC66500C84A76AD7E9C93437BFC5AC33E2DDAE9";
@@ -39,10 +38,6 @@ module.exports = async (deployer, network, accounts) => {
       console.log('contracts are being upgraded');
       const JCompoundInstance = await upgradeProxy(COMPOUND_TRANCHE_ADDRESS, JCompound, { from: factoryOwner });
       console.log(`COMPOUND_TRANCHE_ADDRESS=${JCompoundInstance.address}`)
-      const JCHelper = await deployProxy(JCompoundHelper, [], { from: factoryOwner });
-      console.log("JC Helper: " + JCHelper.address);
-      await JcompoundInstance.setJCompoundHelperAddress(JCHelper.address)
-      console.log('set helper in jcompound');
     } else {
       try {
         const JATinstance = await JAdminTools.at(ADMIN_TOOLS_ADDRESS);

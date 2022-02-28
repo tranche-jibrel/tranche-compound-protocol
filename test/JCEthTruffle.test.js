@@ -18,12 +18,10 @@ const {
   time
 } = require('@openzeppelin/test-helpers');
 
-const myERC20 = artifacts.require("myERC20");
 const JAdminTools = artifacts.require('JAdminTools');
 const JFeesCollector = artifacts.require('JFeesCollector');
 
 const JCompound = artifacts.require('JCompound');
-const JCompoundHelper = artifacts.require('JCompoundHelper');
 const JTranchesDeployer = artifacts.require('JTranchesDeployer');
 
 const JTrancheAToken = artifacts.require('JTrancheAToken');
@@ -53,7 +51,7 @@ let daiContract, jFCContract, jATContract, jTrDeplContract, jCompContract;
 let ethTrAContract, ethTrBContract, daiTrAContract, daiTrBContract;
 let tokenOwner, user1;
 
-contract("JCompound", function (accounts) {
+contract("JCompound ETH", function (accounts) {
 
   it("ETH balances", async function () {
     //accounts = await web3.eth.getAccounts();
@@ -84,11 +82,6 @@ contract("JCompound", function (accounts) {
     expect(jCompContract.address).to.be.not.equal(ZERO_ADDRESS);
     expect(jCompContract.address).to.match(/0x[0-9a-fA-F]{40}/);
     console.log(jCompContract.address);
-
-    jCompHelperContract = await JCompoundHelper.deployed();
-    expect(jCompHelperContract.address).to.be.not.equal(ZERO_ADDRESS);
-    expect(jCompHelperContract.address).to.match(/0x[0-9a-fA-F]{40}/);
-    console.log(jCompHelperContract.address);
 
     trParams0 = await jCompContract.trancheAddresses(0);
     ethTrAContract = await JTrancheAToken.at(trParams0.ATrancheAddress);
@@ -130,7 +123,7 @@ contract("JCompound", function (accounts) {
     console.log("User1 Eth balance: " + fromWei(await web3.eth.getBalance(user1)) + " ETH");
     trAddresses = await jCompContract.trancheAddresses(0); //.cTokenAddress;
     trPars = await jCompContract.trancheParameters(0);
-    console.log("Compound Price: " + await jCompHelperContract.getCompoundPriceHelper(trAddresses[1], trPars[6], trPars[5]));
+    console.log("Compound Price: " + await jCompContract.getCompoundPrice(trAddresses[1], trPars[6], trPars[5]));
     trPar = await jCompContract.trancheParameters(0);
     console.log("param tranche A: " + JSON.stringify(trPar));
     console.log("rpb tranche A: " + trPar[3].toString());
@@ -154,7 +147,7 @@ contract("JCompound", function (accounts) {
     console.log("TrA price: " + fromWei(trPar[2].toString()));
     trAddresses = await jCompContract.trancheAddresses(0); //.cTokenAddress;
     trPars = await jCompContract.trancheParameters(0);
-    console.log("Compound Price: " + await jCompHelperContract.getCompoundPriceHelper(trAddresses[1], trPars[6], trPars[5]));
+    console.log("Compound Price: " + await jCompContract.getCompoundPrice(trAddresses[1], trPars[6], trPars[5]));
     trPar = await jCompContract.trancheParameters(0);
     console.log("TrA price: " + fromWei(trPar[2].toString()));
   

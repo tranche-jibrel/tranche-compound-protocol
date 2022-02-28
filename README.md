@@ -42,33 +42,52 @@ truffle run coverage --network development --file="test/JCTruffle.test.js"
 
 [(Back to top)](#Compound-Tranche-Protocol)
 
-## Tranche Compound Protocol Usage
-
-Following is a description on how to use project on Kovan testnet, for Mainnet please change addresses accordingly.
-
-a) deploy JCompound contract and initialize it ((address _adminTools, address _feesCollector, address _tranchesDepl,
-            address _compTokenAddress, address _comptrollAddress, address _rewardsToken)
-
-b) call setCEtherContract(address payable _cEtherContract) (cETH address) and setCTokenContract(address _erc20Contract, address _cErc20Contract), i.e. DAI and cDAI address, or 0x0(ethers) and cETH address, and so on.
-
-c) set jCompound address in jTranchesDeployer contract
-
-d) call addTrancheToProtocol(address _erc20Contract, string memory _nameA, string memory _symbolA, 
-            string memory _nameB, string memory _symbolB, uint256 _fixedRpb, uint8 _cTokenDec, uint8 _underlyingDec) to set a new tranche set
-
-e) remember to enable every tranche deposit with setTrancheDeposit(uint256 _trancheNum, bool _enable) function
-
-Users can now call buy and redeem functions for tranche A & B tokens
-
-Note: if ETH tranche is deployed, please deploy ETHGateway contract without a proxy, then set its address in JCompound with setETHGateway function.
-
-[(Back to top)](#Compound-Tranche-Protocol)
-
 ## Multirewards
 
 forked from: https://github.com/curvefi/multi-rewards
 
 [(Back to top)](#Compound-Tranche-Protocol)
+
+### Test Coverage
+
+<table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Test %</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>ETHGateway</td>
+            <td><code>77.27%</code></td>
+            <td>---</td>
+        </tr>
+        <tr>
+            <td>JAdminTools</td>
+            <td><code>57.89%</code></td>
+            <td>---</td>
+        </tr>
+        <tr>
+            <td>JCompound</td>
+            <td><code>79.18%</code></td>
+            <td>---</td>
+        </tr>
+        <tr>
+            <td>JFeesCollector</td>
+            <td><code>6.25%</code></td>
+            <td>---</td>
+        </tr>
+        <tr>
+            <td>JTrancheTokensDeployer</td>
+            <td><code>100%</code></td>
+            <td>---</td>
+        </tr>
+    </tbody>
+  </table>
+
+[(Back to top)](#BenQi-Tranche-Protocol)
 
 ## Main contracts - Name, Size and Description
 
@@ -98,18 +117,8 @@ forked from: https://github.com/curvefi/multi-rewards
         </tr>
         <tr>
             <td>JCompound</td>
-            <td><code>18.14</code></td>
+            <td><code>18.11</code></td>
             <td>Core contract protocol (implementation). It is responsible to make all actions to give the exact amount of tranche token to users, connecting with Compound to have interest rates and other informations to give tokens the price they should have block by block. It claims extra token from Compound, sending them to Fees collector contract, that changes all fees and extra tokens into new interests for token holders. It also opens new tranches, and, via Tranche Deployer contract, it deploys new tranche tokens.</td>
-        </tr>
-        <tr>
-            <td>JCompoundHelper</td>
-            <td><code>1.96</code></td>
-            <td>JCompound Helper for some calculation on price from Compound</td>
-        </tr>
-        <tr>
-            <td>JCompoundStorage</td>
-            <td><code>1.49</code></td>
-            <td>Core contract protocol (storage)</td>
         </tr>
         <tr>
             <td>JCompoundStorageV2</td>
@@ -148,7 +157,7 @@ forked from: https://github.com/curvefi/multi-rewards
         </tr>
         <tr>
             <td>MigrateOldTokens</td>
-            <td><code>2.44</code></td>
+            <td><code>2.24</code></td>
             <td>Token migration, v1 to v2</td>
         </tr>
         <tr>

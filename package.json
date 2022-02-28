@@ -8,7 +8,6 @@
   },
   "scripts": {
     "compile": "npx truffle compile --all",
-    "ganache": "ganache --wallet.seed myCustomSeed",
     "test": "mocha --exit --recursive --timeout 20000"
   },
   "repository": {
@@ -29,11 +28,9 @@
     "@uniswap/v2-core": "^1.0.1",
     "@uniswap/v2-periphery": "^1.1.0-beta.0",
     "dotenv": "8.2.0",
-    "ganache-core": "latest",
     "mocha": "8.1.3",
     "truffle": "latest",
     "truffle-contract-size": "latest",
-    "truffle-flattener": "latest",
     "web3": "latest"
   },
   "devDependencies": {
@@ -42,7 +39,8 @@
     "chai": "4.2.0",
     "chai-bn": "0.2.1",
     "eth-gas-reporter": "^0.2.22",
-    "ganache": "^7.0.2",
+    "ganache-cli": "^6.12.2",
+    "ganache-time-traveler": "^1.0.16",
     "solidity-coverage": "^0.7.16",
     "truffle-plugin-verify": "^0.5.20"
   }
