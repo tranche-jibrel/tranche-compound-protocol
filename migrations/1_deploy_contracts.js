@@ -61,6 +61,7 @@ module.exports = async (deployer, network, accounts) => {
     await JATinstance.addAdmin(JTDeployer.address, { from: factoryOwner })
 
     await JCinstance.setCEtherContract(CETH_ADDRESS, { from: factoryOwner });
+    
     await JCinstance.addTrancheToProtocol(ZERO_ADDRESS, "jEthTrancheAToken", "JEA", "jEthTrancheBToken", "JEB", web3.utils.toWei("0.04", "ether"), 8, 18, { from: factoryOwner });
     trParams = await JCinstance.trancheAddresses(0);
     let EthTrA = await JTrancheAToken.at(trParams.ATrancheAddress);

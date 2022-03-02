@@ -71,7 +71,7 @@ forked from: https://github.com/curvefi/multi-rewards
         </tr>
         <tr>
             <td>JCompound</td>
-            <td><code>79.18%</code></td>
+            <td><code>76,63%</code></td>
             <td>---</td>
         </tr>
         <tr>
@@ -81,6 +81,11 @@ forked from: https://github.com/curvefi/multi-rewards
         </tr>
         <tr>
             <td>JTrancheTokensDeployer</td>
+            <td><code>100%</code></td>
+            <td>---</td>
+        </tr>
+        <tr>
+            <td>JTrancheTokens</td>
             <td><code>100%</code></td>
             <td>---</td>
         </tr>
@@ -117,7 +122,7 @@ forked from: https://github.com/curvefi/multi-rewards
         </tr>
         <tr>
             <td>JCompound</td>
-            <td><code>18.11</code></td>
+            <td><code>17,99</code></td>
             <td>Core contract protocol (implementation). It is responsible to make all actions to give the exact amount of tranche token to users, connecting with Compound to have interest rates and other informations to give tokens the price they should have block by block. It claims extra token from Compound, sending them to Fees collector contract, that changes all fees and extra tokens into new interests for token holders. It also opens new tranches, and, via Tranche Deployer contract, it deploys new tranche tokens.</td>
         </tr>
         <tr>
@@ -159,11 +164,6 @@ forked from: https://github.com/curvefi/multi-rewards
             <td>MigrateOldTokens</td>
             <td><code>2.24</code></td>
             <td>Token migration, v1 to v2</td>
-        </tr>
-        <tr>
-            <td>MultiRewards</td>
-            <td><code>6.43</code></td>
-            <td>Slice token staking, multi tokens rewards available</td>
         </tr>
     </tbody>
 </table>

@@ -26,8 +26,6 @@ const JTranchesDeployer = artifacts.require('JTranchesDeployer');
 const JTrancheAToken = artifacts.require('JTrancheAToken');
 const JTrancheBToken = artifacts.require('JTrancheBToken');
 
-const MultiRewards = artifacts.require('MultiRewards');
-
 const {ZERO_ADDRESS} = constants;
 
 const COMP_ADDRESS = "0xc00e94cb662c3520282e6f5717214004a7f26888";  // COMP TOKEN
@@ -43,7 +41,7 @@ const toWei = (x) => web3.utils.toWei(x.toString());
 const fromWei8Dec = (x) => x / Math.pow(10, 8);
 const toWei8Dec = (x) => x * Math.pow(10, 8);
 
-let daiContract, jFCContract, jATContract, jTrDeplContract, jCompContract, jMultiRewardsContract;
+let daiContract, jFCContract, jATContract, jTrDeplContract, jCompContract;
 let ethTrAContract, ethTrBContract, daiTrAContract, daiTrBContract;
 let tokenOwner, user1;
 
@@ -116,11 +114,6 @@ contract("JCompound Dai", function (accounts) {
     expect(daiTrBContract.address).to.be.not.equal(ZERO_ADDRESS);
     expect(daiTrBContract.address).to.match(/0x[0-9a-fA-F]{40}/);
     console.log(daiTrBContract.address);
-
-    jMultiRewardsContract = await MultiRewards.at(trParams1.BTrancheAddress);
-    expect(jMultiRewardsContract.address).to.be.not.equal(ZERO_ADDRESS);
-    expect(jMultiRewardsContract.address).to.match(/0x[0-9a-fA-F]{40}/);
-    console.log(jMultiRewardsContract.address);
   });
 
   it("user1 buys some token daiTrA", async function () {
@@ -173,13 +166,13 @@ contract("JCompound Dai", function (accounts) {
     console.log("Compound total Value: " + fromWei(await jCompContract.getTotalValue(1)));
     console.log("TrB total supply: " + fromWei(await daiTrBContract.totalSupply()));
     console.log("Compound TrA Value: " + fromWei(await jCompContract.getTrAValue(1)));
-    console.log("TrB price: " + fromWei(await jCompContract.getTrancheBExchangeRate(1, toWei("1000"))));
+    console.log("TrB price: " + fromWei(await jCompContract.getTrancheBExchangeRate(1)));
     tx = await daiContract.methods.approve(jCompContract.address, toWei("1000")).send({from: user1});
     tx = await jCompContract.buyTrancheBToken(1, toWei("1000"), {from: user1});
     console.log("User1 New DAI balance: " + fromWei(await daiContract.methods.balanceOf(user1).call()) + " DAI");
     console.log("User1 trB tokens: " + fromWei(await daiTrBContract.balanceOf(user1)) + " DTB");
     console.log("JCompound DAI balance: " + fromWei8Dec(await jCompContract.getTokenBalance(CDAI_ADDRESS)) + " cDai");
-    console.log("TrB price: " + fromWei(await jCompContract.getTrancheBExchangeRate(1, 0)));
+    console.log("TrB price: " + fromWei(await jCompContract.getTrancheBExchangeRate(1)));
     trAddresses = await jCompContract.trancheAddresses(1); //.cTokenAddress;
     trPars = await jCompContract.trancheParameters(1);
     console.log("Compound Price: " + await jCompContract.getCompoundPrice(trAddresses[1], trPars[6], trPars[5]));
@@ -237,7 +230,7 @@ contract("JCompound Dai", function (accounts) {
     console.log("User1 trB tokens: "+ fromWei(bal) + " DTB");
     console.log("JCompound cDai balance: "+ fromWei8Dec(await jCompContract.getTokenBalance(CDAI_ADDRESS)) + " cDai");
     tx = await daiTrBContract.approve(jCompContract.address, bal, {from: user1});
-    console.log("TrB price: " + fromWei(await jCompContract.getTrancheBExchangeRate(1, 0)));
+    console.log("TrB price: " + fromWei(await jCompContract.getTrancheBExchangeRate(1)));
     console.log("TrB value: " +  fromWei(await jCompContract.getTrBValue(1)));
     tx = await jCompContract.redeemTrancheBToken(1, bal, {from: user1});
     newBal = fromWei(await daiContract.methods.balanceOf(user1).call());

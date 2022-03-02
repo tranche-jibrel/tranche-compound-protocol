@@ -31,8 +31,6 @@ const JTranchesDeployer = artifacts.require('JTranchesDeployer');
 const JTrancheAToken = artifacts.require('JTrancheAToken');
 const JTrancheBToken = artifacts.require('JTrancheBToken');
 
-const MultiRewards = artifacts.require('MultiRewards');
-
 const {ZERO_ADDRESS} = constants;
 
 const COMP_ADDRESS = "0xc00e94cb662c3520282e6f5717214004a7f26888";  // COMP TOKEN
@@ -122,11 +120,6 @@ contract("JCompound ETH and DAI", function (accounts) {
     expect(daiTrBContract.address).to.be.not.equal(ZERO_ADDRESS);
     expect(daiTrBContract.address).to.match(/0x[0-9a-fA-F]{40}/);
     console.log(daiTrBContract.address);
-        
-    jMultiRewardsContract = await MultiRewards.at(trParams1.BTrancheAddress);
-    expect(jMultiRewardsContract.address).to.be.not.equal(ZERO_ADDRESS);
-    expect(jMultiRewardsContract.address).to.match(/0x[0-9a-fA-F]{40}/);
-    console.log(jMultiRewardsContract.address);
   });
 
   it("user1 buys some token EthTrA", async function () {
@@ -169,7 +162,7 @@ contract("JCompound ETH and DAI", function (accounts) {
     console.log("User1 New Eth balance: " + fromWei(await web3.eth.getBalance(user1)) + " ETH");
     console.log("User1 trB tokens: " + fromWei(await ethTrBContract.balanceOf(user1)) + " ETB");
     console.log("JCompound cEth balance: " + fromWei8Dec(await jCompContract.getTokenBalance(CETH_ADDRESS)) + " cEth");
-    console.log("TrB price: " + fromWei(await jCompContract.getTrancheBExchangeRate(0, 0)));
+    console.log("TrB price: " + fromWei(await jCompContract.getTrancheBExchangeRate(0)));
 
     console.log("staker counter trB: " + (await jCompContract.stakeCounterTrB(user1, 0)).toString())
     stkDetails = await jCompContract.stakingDetailsTrancheB(user1, 0, 1);
@@ -221,14 +214,14 @@ contract("JCompound ETH and DAI", function (accounts) {
     console.log("Compound total Value: " + fromWei(await jCompContract.getTotalValue(1)));
     console.log("TrB total supply: " + fromWei(await daiTrBContract.totalSupply()));
     console.log("Compound TrA Value: " + fromWei(await jCompContract.getTrAValue(1)));
-    console.log("TrB price: " + fromWei(await jCompContract.getTrancheBExchangeRate(1, toWei("10000"))));
+    console.log("TrB price: " + fromWei(await jCompContract.getTrancheBExchangeRate(1)));
     tx = await daiContract.methods.approve(jCompContract.address, toWei("1000")).send({from: user1});
     tx = await jCompContract.buyTrancheBToken(1, toWei("1000"), {from: user1});
     console.log("User1 New DAI balance: " + fromWei(await daiContract.methods.balanceOf(user1).call()) + " DAI");
     console.log("User1 trB tokens: " + fromWei(await daiTrBContract.balanceOf(user1)) + " DTB");
     console.log("CErc20 DAI balance: " + fromWei(await daiContract.methods.balanceOf(CDAI_ADDRESS).call()) + " DAI");
     console.log("JCompound DAI balance: " + fromWei8Dec(await jCompContract.getTokenBalance(CDAI_ADDRESS)) + " cDai");
-    console.log("TrB price: " + fromWei(await jCompContract.getTrancheBExchangeRate(1, 0)));
+    console.log("TrB price: " + fromWei(await jCompContract.getTrancheBExchangeRate(1)));
     trAddresses = await jCompContract.trancheAddresses(1); //.cTokenAddress;
     trPars = await jCompContract.trancheParameters(1);
     console.log("Compound Price: " + await jCompContract.getCompoundPrice(trAddresses[1], trPars[6], trPars[5]));
@@ -321,7 +314,7 @@ contract("JCompound ETH and DAI", function (accounts) {
     bal = await ethTrBContract.balanceOf(user1);
     console.log("User1 trB tokens: " + fromWei(bal) + " ETB");
     console.log("JCompound cEth balance: " + fromWei8Dec(await jCompContract.getTokenBalance(CETH_ADDRESS)) + " cEth");
-    console.log("TrB price: " + fromWei(await jCompContract.getTrancheBExchangeRate(0, 0)));
+    console.log("TrB price: " + fromWei(await jCompContract.getTrancheBExchangeRate(0)));
     tx = await ethTrBContract.approve(jCompContract.address, bal, {
       from: user1
     });
@@ -333,7 +326,7 @@ contract("JCompound ETH and DAI", function (accounts) {
     console.log("User1 trB interest: " + (newBal - oldBal) + " ETH");
     console.log("User1 trB tokens: " + fromWei(await ethTrAContract.balanceOf(user1)) + " ETB");
     console.log("JCompound new cEth balance: " + fromWei8Dec(await jCompContract.getTokenBalance(CETH_ADDRESS)) + " cEth");
-    console.log("TrB price: " + fromWei(await jCompContract.getTrancheBExchangeRate(0, 0)));
+    console.log("TrB price: " + fromWei(await jCompContract.getTrancheBExchangeRate(0)));
   });
 
   it('let timeout elapsed', async function () {
@@ -352,7 +345,7 @@ contract("JCompound ETH and DAI", function (accounts) {
     console.log("User1 trB tokens: "+ fromWei(bal) + " DTB");
     console.log("JCompound cDai balance: "+ fromWei8Dec(await jCompContract.getTokenBalance(CDAI_ADDRESS)) + " cDai");
     tx = await daiTrBContract.approve(jCompContract.address, bal, {from: user1});
-    console.log("TrB price: " + fromWei(await jCompContract.getTrancheBExchangeRate(1, 0)));
+    console.log("TrB price: " + fromWei(await jCompContract.getTrancheBExchangeRate(1)));
     console.log("TrB value: " +  fromWei(await jCompContract.getTrBValue(1)));
     tx = await jCompContract.redeemTrancheBToken(1, bal, {from: user1});
     newBal = fromWei(await daiContract.methods.balanceOf(user1).call());

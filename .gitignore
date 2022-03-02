@@ -12,3 +12,4 @@ package-lock.json
 .openzeppelin/unknown*.json
 coverage
 coverage.json
+.DS_Store
