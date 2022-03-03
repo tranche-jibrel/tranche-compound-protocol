@@ -122,7 +122,7 @@ forked from: https://github.com/curvefi/multi-rewards
         </tr>
         <tr>
             <td>JCompound</td>
-            <td><code>17,99</code></td>
+            <td><code>18.03</code></td>
             <td>Core contract protocol (implementation). It is responsible to make all actions to give the exact amount of tranche token to users, connecting with Compound to have interest rates and other informations to give tokens the price they should have block by block. It claims extra token from Compound, sending them to Fees collector contract, that changes all fees and extra tokens into new interests for token holders. It also opens new tranches, and, via Tranche Deployer contract, it deploys new tranche tokens.</td>
         </tr>
         <tr>

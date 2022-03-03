@@ -1543,9 +1543,9 @@
     "solidity-ast" "^0.4.15"
 
 "@openzeppelin/upgrades-core@^1.10.0":
-  "integrity" "sha512-gu/ijQW+RJqGlniNkpNmiwBus3R1cuJNT0/MEJASWRFNr4Qvn0d7LZONaAkhnvlBpxdiiPenMcFIrRlwvZL4iw=="
-  "resolved" "https://registry.npmjs.org/@openzeppelin/upgrades-core/-/upgrades-core-1.12.0.tgz"
-  "version" "1.12.0"
+  "integrity" "sha512-HhAozSupbXYHvdqYCAoRE9CrpAnaUYpzuKxMrFkTYpxfMfFr1dTM8wd/VXY1DvYfO/06AWLAGw5tG9vtTkz/xQ=="
+  "resolved" "https://registry.npmjs.org/@openzeppelin/upgrades-core/-/upgrades-core-1.13.0.tgz"
+  "version" "1.13.0"
   dependencies:
     "bn.js" "^5.1.2"
     "cbor" "^8.0.0"

@@ -380,7 +380,9 @@ contract JCompound is OwnableUpgradeable, ReentrancyGuardUpgradeable, JCompoundS
      */
     function getTotalValue(uint256 _trancheNum) public view returns (uint256) {
         address cTokenAddress = trancheAddresses[_trancheNum].cTokenAddress;
-        uint256 compNormPrice = getCompoundPurePrice(cTokenAddress);
+        uint256 underDecs = uint256(trancheParameters[_trancheNum].underlyingDecimals);
+        uint256 cTokenDecs = uint256(trancheParameters[_trancheNum].cTokenDecimals);
+        uint256 compNormPrice = getCompoundPrice(cTokenAddress, underDecs, cTokenDecs); // already scaled correctly to 18 decimals
         uint256 totProtSupply = getTokenBalance(cTokenAddress);
         return totProtSupply.mul(compNormPrice).div(1e18);
     }
